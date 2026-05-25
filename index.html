@@ -1637,11 +1637,8 @@ function studentLoadTerm(term) {
 
   // Fetch the correct term CSV from Google Sheets
   fetchCSV(url)
-    .then(csv => {
+    .then(async csv => {
       // ── STEP 1: Parse FULL class CSV (all students in this class/term) ──
-      // We need ALL students so we can calculate positions correctly.
-      // Previously only [singleStudent] was passed to renderCards(), which
-      // always produced position "1/1". Now we pass the whole class.
       const allStudentsInSheet = parseCSV(csv);
 
       // ── STEP 2: Find the logged-in student inside the full list ──
@@ -1659,42 +1656,26 @@ function studentLoadTerm(term) {
       }
 
       // ── STEP 3: Determine the logged-in student's class group ──
-      // Students are grouped by classType + classSection inside renderCards().
-      // We must match exactly the same grouping key to get an accurate total.
-      // For example: classType="JSS 1", classSection="A" → only JSS 1A students
-      // are compared against each other for ranking.
       const studentClassType    = (stuRecord['Class Type']    || '').trim();
       const studentClassSection = (stuRecord['Class Section'] || '').trim();
 
       // ── STEP 4: Filter to only the same class section ──
-      // If the CSV contains multiple sections (e.g. JSS 1A and JSS 1B), we only
-      // pass the students in the SAME section as the logged-in student.
-      // This matches how the admin report calculates positions per group.
       const classStudents = allStudentsInSheet.filter(s =>
         (s['Class Type']    || '').trim() === studentClassType &&
         (s['Class Section'] || '').trim() === studentClassSection
       );
 
-      // Total students in this class section — used for "X/totalStudents" display
       const totalStudents = classStudents.length;
 
       // ── STEP 5: Stamp the correct Term onto every student in the class ──
-      // renderCards() reads stu.term (set from stu['Term']) to decide:
-      //   • which scoring mode to use (CA weights differ by term)
-      //   • whether to show the Annual Summary box (Third Term only)
-      //   • what label to print on the report card
-      // Every student in the class must have the same Term value so the
-      // positions and rendering are consistent across the whole group.
       const classStudentsWithTerm = classStudents.map(s => ({ ...s, Term: term }));
 
+      // ── Annual Summary fix: fetch 1st & 2nd term averages for Third Term ──
+      if (term === 'Third Term') {
+        await enrichWithTermAverages(classStudentsWithTerm, studentLoginData.className);
+      }
+
       // ── STEP 6: Render ALL class students (needed for correct ranking) ──
-      // renderCards() will:
-      //   a. Process scores for all students
-      //   b. Group them by classType||classSection
-      //   c. Sort by average descending
-      //   d. Assign _pos (with tie handling) — e.g. two students at 88% both get pos 1
-      //   e. Count totalInClass = classStudentsWithTerm.length  (the real class total)
-      //   f. Build one .card element per student, each showing "${_pos}/${totalInClass}"
       renderCards(area, classStudentsWithTerm);
 
       // ── STEP 7: Hide all cards EXCEPT the logged-in student's card ──
@@ -1953,7 +1934,7 @@ function generateFromDetail() {
   loader.classList.add('visible');
 
   fetchCSV(url)
-    .then(csv => {
+    .then(async csv => {
       const freshStudents = parseCSV(csv);
       loader.classList.remove('visible');
 
@@ -1964,6 +1945,12 @@ function generateFromDetail() {
 
       // Stamp the selected term onto each record (ensures correct term label on cards)
       students = freshStudents.map(s => ({ ...s, Term: currentTerm }));
+
+      // ── Annual Summary fix: fetch 1st & 2nd term averages for Third Term ──
+      if (currentTerm === 'Third Term') {
+        showToast('⏳ Loading annual averages from all terms…');
+        await enrichWithTermAverages(students, currentClass);
+      }
 
       // Now switch to admin dashboard and show reports
       showScreen('screen-admin-dash');
@@ -2021,6 +2008,106 @@ function parseCSV(csv) {
   }
   return records;
 }
+
+/* ============================================================
+   ENRICH WITH TERM AVERAGES  (Third Term Annual Summary fix)
+   Purpose: Dynamically fetch First & Second Term CSVs and stamp
+            First_Term_Avg / Second_Term_Avg onto each student
+            record so the Annual Summary table populates correctly.
+   ── WHY THIS IS NEEDED ──
+   The Annual Summary reads stu['First_Term_Avg'] and
+   stu['Second_Term_Avg'] from the Third Term CSV row.
+   When those columns are blank/missing the table shows "—" for
+   1st and 2nd averages, making the Annual Average wrong.
+   This function fixes that by loading the other term CSVs
+   and matching students by Admission No → Name → order.
+   ── USAGE ──
+   Call BEFORE renderCards() when term === 'Third Term'.
+   The students array is mutated in-place; renderCards stays unchanged.
+   ============================================================ */
+async function enrichWithTermAverages(students, className) {
+  // Only enrich when we have a valid className linked
+  if (!className) return;
+
+  // Helper: extract a student's average from a parsed CSV row.
+  // Looks for explicit "Average" / "Avg" columns, or computes from subjects.
+  function extractAvg(row) {
+    // 1. Explicit column names
+    const explicit = row['Average'] || row['Avg'] || row['Term Average'] ||
+                     row['Term_Average'] || row['Total Average'] || '';
+    if (explicit !== '' && !isNaN(parseFloat(explicit))) {
+      return +parseFloat(explicit).toFixed(2);
+    }
+    // 2. Compute from subject totals (same logic as renderCards)
+    const headers = Object.keys(row);
+    const subjects = [...new Set(
+      headers
+        .filter(h => h.includes('_CA') || h.includes('_Exams'))
+        .map(h => h.split('_')[0])
+    )];
+    if (!subjects.length) return null;
+    let totalMarks = 0, subjectCount = 0;
+    subjects.forEach(sub => {
+      const s1   = parseFloat(row[`${sub}_CA1`])   || 0;
+      const s2   = parseFloat(row[`${sub}_CA2`])   || 0;
+      const s3   = parseFloat(row[`${sub}_CA3`])   || 0;
+      const exam = parseFloat(row[`${sub}_Exams`]) || 0;
+      totalMarks += s1 + s2 + s3 + exam;
+      subjectCount++;
+    });
+    return subjectCount ? +(totalMarks / subjectCount).toFixed(2) : null;
+  }
+
+  // Fetch and parse a term CSV, returning a map keyed by lower-case Admission No
+  async function fetchTermMap(term) {
+    const url = getTermUrl(className, term);
+    if (!url) return {};
+    try {
+      const csv  = await fetchCSV(url);
+      const rows = parseCSV(csv);
+      const map  = {};
+      rows.forEach(row => {
+        const adm = (row['Admission No'] || '').trim().toLowerCase();
+        if (adm) map[adm] = row;
+      });
+      return map;
+    } catch (e) {
+      console.warn(`enrichWithTermAverages: could not fetch ${term} for ${className}`, e);
+      return {};
+    }
+  }
+
+  // Fetch both earlier terms in parallel
+  const [firstMap, secondMap] = await Promise.all([
+    fetchTermMap('First Term'),
+    fetchTermMap('Second Term')
+  ]);
+
+  // Stamp averages onto each Third Term student record
+  students.forEach(stu => {
+    const adm = (stu['Admission No'] || '').trim().toLowerCase();
+
+    // ── First Term average ──
+    // Only overwrite if the column is blank/zero in the Third Term sheet
+    const existingAvg1 = parseFloat(stu['First_Term_Avg'] || stu['1st_Term_Avg'] || 0);
+    if ((!existingAvg1 || isNaN(existingAvg1)) && firstMap[adm]) {
+      const computed = extractAvg(firstMap[adm]);
+      if (computed !== null) {
+        stu['First_Term_Avg'] = computed;
+      }
+    }
+
+    // ── Second Term average ──
+    const existingAvg2 = parseFloat(stu['Second_Term_Avg'] || stu['2nd_Term_Avg'] || 0);
+    if ((!existingAvg2 || isNaN(existingAvg2)) && secondMap[adm]) {
+      const computed = extractAvg(secondMap[adm]);
+      if (computed !== null) {
+        stu['Second_Term_Avg'] = computed;
+      }
+    }
+  });
+}
+/* END — enrichWithTermAverages */
 
 /* ============================================================
    GRADING HELPERS
