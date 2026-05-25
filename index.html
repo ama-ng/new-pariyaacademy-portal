@@ -2005,6 +2005,105 @@ function isPrimaryOrNursery(catClass) {
 }
 
 /* ============================================================
+   ANNUAL POSITION CALCULATOR  (Third Term only)
+   ── WHAT THIS DOES ──
+   At the end of the year (Third Term), each student's true annual
+   ranking should be based on the COMBINED average of all three
+   terms — not just the Third Term average alone.
+
+   This function:
+     1. Reads each student's First_Term_Avg, Second_Term_Avg, and
+        current Third Term average (stu.avg).
+     2. Calculates:  annualAverage = (avg1 + avg2 + avg3) / 3
+     3. Groups students by their class (classType + classSection)
+        so we only compare students in the SAME class against each
+        other — just like the normal per-term position does.
+     4. Sorts each group from highest annualAverage to lowest.
+     5. Assigns _annualPos using the same tie-handling rule as
+        the normal position logic:
+          - Highest average = Position 1.
+          - Students with equal averages share the SAME position.
+          - The next distinct average skips ahead by the number
+            of students above it (not just +1).
+          Example:  95 = 1st,  95 = 1st,  90 = 3rd  (NOT 2nd)
+     6. Stores the result in  stu._annualPos  on each student
+        object, leaving stu._pos (the term position) untouched.
+
+   USAGE:  Call this function AFTER the normal _pos loop, but
+           ONLY when rendering Third Term cards.
+   ============================================================ */
+function calculateAnnualPositions(students) {
+
+  /* Step 1: Group students by class.
+   * We use the same key format as the term-position logic so the
+   * grouping is always consistent between _pos and _annualPos.
+   * Key format:  "Class Type||Class Section"
+   * Example:     "JSS 1||A"  or  "Primary 3||B"               */
+  const annualGroups = {};
+
+  students.forEach(stu => {
+    /* Read first and second term averages from the CSV columns.
+     * Two naming styles are supported (First_Term_Avg or 1st_Term_Avg)
+     * so the sheet column name is flexible.
+     * If a column is missing or blank we default to 0.          */
+    const raw1 = parseFloat(stu['First_Term_Avg']  || stu['1st_Term_Avg']  || 0);
+    const raw2 = parseFloat(stu['Second_Term_Avg'] || stu['2nd_Term_Avg']  || 0);
+    const avg1 = isNaN(raw1) ? 0 : +raw1.toFixed(2);
+    const avg2 = isNaN(raw2) ? 0 : +raw2.toFixed(2);
+    const avg3 = stu.avg; // Third Term average already computed in renderCards
+
+    /* Annual average: always divide by 3 regardless of blanks.
+     * This matches the display formula in the Annual Summary box. */
+    stu._annualAvg = +((avg1 + avg2 + avg3) / 3).toFixed(2);
+
+    /* Build the grouping key */
+    const annualKey = `${stu.classType}||${stu.classSection}`;
+    if (!annualGroups[annualKey]) annualGroups[annualKey] = [];
+    annualGroups[annualKey].push(stu);
+  });
+
+  /* Step 2: Sort each group and assign annual positions.
+   * Sort descending by annualAvg (highest first).
+   * Then walk through and assign positions with tie handling:
+   *   - First student always gets position 1.
+   *   - If a student has the SAME annualAvg as the one before,
+   *     they share the same position number (a tie).
+   *   - If the average is lower, the new position equals the
+   *     1-based index (i + 1), which automatically skips slots
+   *     consumed by tied students above.
+   *
+   * Example with 4 students (avgs: 90, 85, 85, 70):
+   *   i=0: avg 90 → _annualPos = 1
+   *   i=1: avg 85 → different from 90 → _annualPos = 2
+   *   i=2: avg 85 → same as 85 → _annualPos = 2  (tied)
+   *   i=3: avg 70 → different from 85 → _annualPos = 4  (skips 3)  */
+  for (const annualKey in annualGroups) {
+    annualGroups[annualKey].sort((a, b) => b._annualAvg - a._annualAvg);
+
+    let prevAnnualAvg = null;
+    let prevAnnualPos = null;
+
+    annualGroups[annualKey].forEach((stu, i) => {
+      if (i === 0) {
+        /* First in sorted list always gets position 1 */
+        stu._annualPos = 1;
+        prevAnnualAvg  = stu._annualAvg;
+        prevAnnualPos  = 1;
+      } else if (stu._annualAvg === prevAnnualAvg) {
+        /* Same annual average → tied → same position */
+        stu._annualPos = prevAnnualPos;
+      } else {
+        /* Lower average → position equals 1-based rank in sorted array */
+        stu._annualPos = i + 1;
+        prevAnnualAvg  = stu._annualAvg;
+        prevAnnualPos  = stu._annualPos;
+      }
+    });
+  }
+  /* _annualPos is now set on every student. stu._pos is NOT changed. */
+}
+
+/* ============================================================
    RENDER CARDS
    Purpose: Generate HTML report cards for an array of students
    ── HOW IT WORKS ──
@@ -2095,6 +2194,25 @@ function renderCards(container, rawStudents) {
     });
   }
 
+  /* 2b. Compute ANNUAL positions (Third Term only) ────────────────
+   *
+   * WHY this is separate from the term position above:
+   *   stu._pos  = position based on THIS term's average only.
+   *   stu._annualPos = position based on the AVERAGE of all three
+   *                    terms combined — which is what we want to
+   *                    display in the Annual Summary box.
+   *
+   * We only run this block when the data is Third Term, because
+   * First_Term_Avg and Second_Term_Avg columns only exist in the
+   * Third Term CSV sheet.
+   * ─────────────────────────────────────────────────────────────── */
+  const isThirdTermRender = processedStudents.length > 0 &&
+    (processedStudents[0].term || '').toLowerCase().includes('third');
+
+  if (isThirdTermRender) {
+    calculateAnnualPositions(processedStudents);
+  }
+
   /* 3. Build HTML for each card ─────────────────────────────── */
   const allCards = [];
   Object.keys(groups).sort().forEach(key => {
@@ -2170,8 +2288,10 @@ function renderCards(container, rawStudents) {
       const annualAvg   = +((avg1 + avg2 + avg3) / 3).toFixed(2);
       const annualGrade = calculateGrade(annualAvg);
 
-      // Annual position is this term's position (position within class for the year)
-      const annualPos = stu._pos;
+      // Annual position: use the real annual ranking calculated by calculateAnnualPositions().
+      // This is based on (1st + 2nd + 3rd term averages) / 3, NOT just the Third Term alone.
+      // Falls back to _pos if _annualPos is somehow undefined (should never happen in normal use).
+      const annualPos = stu._annualPos !== undefined ? stu._annualPos : stu._pos;
 
       // Display helper: show "—" for a missing term average (zero means not provided)
       const fmtAvg = v => (v === 0 ? '—' : v + '%');
