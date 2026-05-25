@@ -6,21 +6,21 @@
 <title>Pariya Academy — Report Card System</title>
 
 <!-- ============================================================
-     PARIYA ACADEMY REPORT CARD SYSTEM  — Version 3.0
-     Changes in this version:
-       • Progress column removed from subject table
-       • Admin total students now counts ALL classes
-       • Class details page shown before report generation
-       • Admin performance progress tracker added
-       • Student term selection page (3 buttons)
-       • Annual Summary replaces grading box on Third Term
-       • Third term uses annual remarks
-       • Total summary table improvements
-       • School websites manager section
-       • Class analytics section with PDF export
-       • Admin system guide page with PDF export
-       • Code cleanup and detailed comments
-       • Dashboard redesign (dark green / black / white)
+     PARIYA ACADEMY REPORT CARD SYSTEM  — Version 3.1
+     Changes in v3.1 (this version):
+       • CLASS_LINKS now has separate first/second/third CSV per class
+       • Term buttons load ONLY the correct term CSV (no more shared data bug)
+       • Student portal fetches fresh CSV per term (correct term data)
+       • Admin stays on class detail page when switching terms
+       • Back button on class detail page works correctly
+       • Annual Summary uses real First_Term_Avg / Second_Term_Avg columns
+       • Annual average = (1st + 2nd + 3rd) / 3 always divides by 3
+       • Missing term averages shown as "—" but still computed correctly
+       • Right-side summary table correctly labeled "Third Term Summary"
+       • Print All preserves exact borders, table lines, colours, spacing
+       • Download All PDF and Download Each also fix CSS var rendering
+       • loadDetailForTerm() helper keeps admin on same screen when switching
+       • Guide tab updated to reflect new CLASS_LINKS structure
      ============================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1263,20 +1263,79 @@ const CREDENTIALS = {
    3. Copy the link and paste it here for each class
    4. Replace "YOUR_SHEET_ID_HERE" with your actual link
    ============================================================ */
+/* ============================================================
+   GOOGLE SHEET CSV LINKS — Separate link per class per term
+   ── HOW TO EDIT: ──
+   Each class has three keys: first, second, third.
+   Paste the correct published CSV link for each term.
+   To publish: Google Sheet → File → Share → Publish to web → CSV
+   ============================================================ */
 const CLASS_LINKS = {
-  "Nursery 1":  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUCzyVQz4AYsS-PmAUZDqUj2LvbUMRpdBZk-4UDfza195CzsBxp0O-oWGWYYKUPw/pub?gid=621314920&single=true&output=csv",
-  "Nursery 2":  "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
-  "Primary 1":  "https://docs.google.com/spreadsheets/d/e/2PACX-1vT49ltNlKXgCs5-OlwP8vaoObY4O01AyHjHxdkvbROJDX58yEQd2xjxb7AeY8OHJw/pub?gid=621314920&single=true&output=csv",
-  "Primary 2":  "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
-  "Primary 3":  "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
-  "Primary 4":  "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
-  "Primary 5":  "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
-  "JSS 1":      "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
-  "JSS 2":      "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7KCoen0Wu3Pc5gxNVGF1abBYAL78QHbaBGd8Cp5Efh4YhkJ5h17E0yLtL1wn_SQ/pub?gid=38773167&single=true&output=csv",
-  "JSS 3":      "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
-  "SS 1":       "https://docs.google.com/spreadsheets/d/e/2PACX-1vSuY_EWcMq382XJYjaHBEHnWYY00oVrC9kkIVMOozvT9HJRJklAINFB7YKGmH2m5w/pub?gid=621314920&single=true&output=csv",
-  "SS 2":       "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
-  "SS 3":       "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
+  "Nursery 1": {
+    first:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUCzyVQz4AYsS-PmAUZDqUj2LvbUMRpdBZk-4UDfza195CzsBxp0O-oWGWYYKUPw/pub?gid=621314920&single=true&output=csv",
+    second: "YOUR_NURSERY1_SECOND_TERM_CSV_LINK",
+    third:  "YOUR_NURSERY1_THIRD_TERM_CSV_LINK"
+  },
+  "Nursery 2": {
+    first:  "YOUR_NURSERY2_FIRST_TERM_CSV_LINK",
+    second: "YOUR_NURSERY2_SECOND_TERM_CSV_LINK",
+    third:  "YOUR_NURSERY2_THIRD_TERM_CSV_LINK"
+  },
+  "Primary 1": {
+    first:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vT49ltNlKXgCs5-OlwP8vaoObY4O01AyHjHxdkvbROJDX58yEQd2xjxb7AeY8OHJw/pub?gid=621314920&single=true&output=csv",
+    second: "YOUR_PRIMARY1_SECOND_TERM_CSV_LINK",
+    third:  "YOUR_PRIMARY1_THIRD_TERM_CSV_LINK"
+  },
+  "Primary 2": {
+    first:  "YOUR_PRIMARY2_FIRST_TERM_CSV_LINK",
+    second: "YOUR_PRIMARY2_SECOND_TERM_CSV_LINK",
+    third:  "YOUR_PRIMARY2_THIRD_TERM_CSV_LINK"
+  },
+  "Primary 3": {
+    first:  "YOUR_PRIMARY3_FIRST_TERM_CSV_LINK",
+    second: "YOUR_PRIMARY3_SECOND_TERM_CSV_LINK",
+    third:  "YOUR_PRIMARY3_THIRD_TERM_CSV_LINK"
+  },
+  "Primary 4": {
+    first:  "YOUR_PRIMARY4_FIRST_TERM_CSV_LINK",
+    second: "YOUR_PRIMARY4_SECOND_TERM_CSV_LINK",
+    third:  "YOUR_PRIMARY4_THIRD_TERM_CSV_LINK"
+  },
+  "Primary 5": {
+    first:  "YOUR_PRIMARY5_FIRST_TERM_CSV_LINK",
+    second: "YOUR_PRIMARY5_SECOND_TERM_CSV_LINK",
+    third:  "YOUR_PRIMARY5_THIRD_TERM_CSV_LINK"
+  },
+  "JSS 1": {
+    first:  "YOUR_JSS1_FIRST_TERM_CSV_LINK",
+    second: "YOUR_JSS1_SECOND_TERM_CSV_LINK",
+    third:  "YOUR_JSS1_THIRD_TERM_CSV_LINK"
+  },
+  "JSS 2": {
+    first:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7KCoen0Wu3Pc5gxNVGF1abBYAL78QHbaBGd8Cp5Efh4YhkJ5h17E0yLtL1wn_SQ/pub?gid=38773167&single=true&output=csv",
+    second: "YOUR_JSS2_SECOND_TERM_CSV_LINK",
+    third:  "YOUR_JSS2_THIRD_TERM_CSV_LINK"
+  },
+  "JSS 3": {
+    first:  "YOUR_JSS3_FIRST_TERM_CSV_LINK",
+    second: "YOUR_JSS3_SECOND_TERM_CSV_LINK",
+    third:  "YOUR_JSS3_THIRD_TERM_CSV_LINK"
+  },
+  "SS 1": {
+    first:  "https://docs.google.com/spreadsheets/d/e/2PACX-1vSuY_EWcMq382XJYjaHBEHnWYY00oVrC9kkIVMOozvT9HJRJklAINFB7YKGmH2m5w/pub?gid=621314920&single=true&output=csv",
+    second: "YOUR_SS1_SECOND_TERM_CSV_LINK",
+    third:  "YOUR_SS1_THIRD_TERM_CSV_LINK"
+  },
+  "SS 2": {
+    first:  "YOUR_SS2_FIRST_TERM_CSV_LINK",
+    second: "YOUR_SS2_SECOND_TERM_CSV_LINK",
+    third:  "YOUR_SS2_THIRD_TERM_CSV_LINK"
+  },
+  "SS 3": {
+    first:  "YOUR_SS3_FIRST_TERM_CSV_LINK",
+    second: "YOUR_SS3_SECOND_TERM_CSV_LINK",
+    third:  "YOUR_SS3_THIRD_TERM_CSV_LINK"
+  },
 };
 
 /* Display metadata for class grid cards
@@ -1318,6 +1377,43 @@ const SCHOOL_WEBSITES = [
   { function: "Secondary Student Portal", url: "https://pariyaacademy-secondary-portal.netlify.app", username: "admin", password: "admin2026" },
 ];
 /* END CUSTOM EDIT SECTION — School Websites Config */
+
+
+/* ============================================================
+   TERM URL HELPERS
+   Purpose: Resolve the correct CSV URL from CLASS_LINKS for a
+   given class and term. Returns null if not set or placeholder.
+   ============================================================ */
+
+/** Map term label -> object key */
+function termKey(term) {
+  const t = (term || '').toLowerCase();
+  if (t.includes('second')) return 'second';
+  if (t.includes('third'))  return 'third';
+  return 'first';
+}
+
+/**
+ * Get the CSV URL for a class and term.
+ * @param {string} className  e.g. "JSS 2"
+ * @param {string} term       e.g. "Second Term"
+ * @returns {string|null}
+ */
+function getTermUrl(className, term) {
+  const entry = CLASS_LINKS[className];
+  if (!entry) return null;
+  const key = termKey(term);
+  const url = entry[key] || null;
+  if (!url || url.startsWith('YOUR_')) return null;
+  return url;
+}
+
+/** Returns true if a class has at least one valid (non-placeholder) URL */
+function classHasAnyUrl(className) {
+  const entry = CLASS_LINKS[className];
+  if (!entry) return false;
+  return ['first','second','third'].some(k => entry[k] && !entry[k].startsWith('YOUR_'));
+}
 
 /* ============================================================
    APP STATE
@@ -1424,8 +1520,9 @@ function studentLogin() {
     err.style.display = 'block';
     return;
   }
-  const url = CLASS_LINKS[cls];
-  if (!url || url.includes('YOUR_SHEET_ID_HERE')) {
+  // Use first term CSV to verify student identity (existence check)
+  const url = getTermUrl(cls, 'First Term');
+  if (!url) {
     err.textContent = '❌ This class has no data connected yet. Contact admin.';
     err.style.display = 'block';
     return;
@@ -1484,36 +1581,47 @@ function studentLoadTerm(term) {
   const loader = $('student-card-loading');
   const area   = $('studentReportArea');
 
-  // Filter students to only this student's record for the selected term
-  const stu = studentLoginData.allStudents.find(s =>
-    (s['Admission No'] || '').trim().toLowerCase() === studentLoginData.admissionNo.toLowerCase()
-    && ((s['Term'] || '').trim() === term || term === 'First Term')
-  );
-
-  // Fallback: just use first match if term column not present
-  const stuRecord = stu || studentLoginData.allStudents.find(s =>
-    (s['Admission No'] || '').trim().toLowerCase() === studentLoginData.admissionNo.toLowerCase()
-  );
-
-  if (!stuRecord) {
-    showToast(`❌ No result found for ${term}.`, 'error');
+  // Get the correct term-specific CSV URL
+  const url = getTermUrl(studentLoginData.className, term);
+  if (!url) {
+    showToast(`❌ No ${term} data connected for ${studentLoginData.className}. Contact admin.`, 'error');
     return;
   }
 
-  // Show report panel
+  // Show report panel immediately and show spinner
   $('student-term-select').style.display = 'none';
   $('student-report-panel').style.display = 'block';
   loader.classList.add('visible');
   area.innerHTML = '';
 
-  // Force the term on the student record so the report card shows correctly
-  const recordWithTerm = { ...stuRecord, Term: term };
+  // Fetch the correct term CSV from Google Sheets
+  fetchCSV(url)
+    .then(csv => {
+      const allStudents = parseCSV(csv);
+      const stuRecord = allStudents.find(s =>
+        (s['Admission No'] || '').trim().toLowerCase() === studentLoginData.admissionNo.toLowerCase()
+      );
 
-  setTimeout(() => {
-    renderCards(area, [recordWithTerm]);
-    loader.classList.remove('visible');
-    showToast(`✅ ${term} result loaded!`);
-  }, 200);
+      loader.classList.remove('visible');
+
+      if (!stuRecord) {
+        showToast(`❌ Your result for ${term} was not found.`, 'error');
+        $('student-term-select').style.display = 'block';
+        $('student-report-panel').style.display = 'none';
+        return;
+      }
+
+      // Ensure term field is set correctly
+      const recordWithTerm = { ...stuRecord, Term: term };
+      renderCards(area, [recordWithTerm]);
+      showToast(`✅ ${term} result loaded!`);
+    })
+    .catch(() => {
+      loader.classList.remove('visible');
+      showToast(`❌ Failed to fetch ${term} data. Check connection.`, 'error');
+      $('student-term-select').style.display = 'block';
+      $('student-report-panel').style.display = 'none';
+    });
 }
 
 /* Show the term selection screen again (back button) */
@@ -1595,10 +1703,13 @@ function initAdminDashboard() {
 /* Count students from all classes with valid CSV links */
 async function countAllStudents() {
   let total = 0;
+  // Count from first-term CSV of each class (to avoid triple-counting)
   const promises = Object.entries(CLASS_LINKS)
-    .filter(([, url]) => !url.includes('YOUR_SHEET_ID_HERE'))
-    .map(async ([, url]) => {
+    .filter(([name]) => classHasAnyUrl(name))
+    .map(async ([name]) => {
       try {
+        const url = getTermUrl(name, 'First Term');
+        if (!url) return 0;
         const csv = await fetchCSV(url);
         const records = parseCSV(csv);
         return records.length;
@@ -1654,9 +1765,16 @@ function openClassDetail(className) {
 
   showScreen('screen-class-detail');
 
-  const url = CLASS_LINKS[className];
-  if (!url || url.includes('YOUR_SHEET_ID_HERE')) {
-    $('detail-class-meta').textContent = '❌ No data source connected for this class.';
+  loadDetailForTerm(className, currentTerm);
+}
+
+/* Internal: fetch student list for a given class and term */
+function loadDetailForTerm(className, term) {
+  const url = getTermUrl(className, term);
+  if (!url) {
+    $('detail-class-meta').textContent = `❌ No ${term} data source connected for this class.`;
+    detailStudents = [];
+    renderDetailTable([]);
     return;
   }
 
@@ -1667,7 +1785,7 @@ function openClassDetail(className) {
     .then(csv => {
       detailStudents = parseCSV(csv);
       loader.classList.remove('visible');
-      $('detail-class-meta').textContent = `${className} — ${detailStudents.length} Students`;
+      $('detail-class-meta').textContent = `${className} — ${term} — ${detailStudents.length} Students`;
       renderDetailTable(detailStudents);
     })
     .catch(() => {
@@ -1708,44 +1826,63 @@ function filterDetailTable() {
   renderDetailTable(filtered);
 }
 
-/* Update which term is selected in class detail page */
+/* Update which term is selected in class detail page — reloads student list */
 function selectDetailTerm(term, btnEl) {
   currentTerm = term;
   document.querySelectorAll('.btn-term-admin').forEach(b => b.classList.remove('selected'));
   if (btnEl) btnEl.classList.add('selected');
+
+  // Stay on the same page — only reload data for the newly selected term
+  if (currentClass) {
+    $('detail-search').value = '';
+    loadDetailForTerm(currentClass, term);
+  }
 }
 
-/* Generate reports from class detail page */
+/* Generate reports from class detail page
+   Fetches fresh data from the correct term CSV to avoid stale data */
 function generateFromDetail() {
-  if (!detailStudents.length) {
-    showToast('❌ No student data loaded.', 'error');
+  const url = getTermUrl(currentClass, currentTerm);
+  if (!url) {
+    showToast(`❌ No ${currentTerm} data connected for ${currentClass}.`, 'error');
     return;
   }
 
-  // Inject selected term into all student records
-  const studentsWithTerm = detailStudents.map(s => ({ ...s, Term: currentTerm }));
-
-  // Go to admin dashboard, show reports
-  showScreen('screen-admin-dash');
-  switchTab('tab-classes');
-
-  const loader     = $('admin-loading');
-  const loaderText = $('admin-loading-text');
+  // Stay on class detail page but show loading — DO NOT redirect until data is ready
+  const loader     = $('detail-loading');
   loader.classList.add('visible');
-  loaderText.textContent = `Generating ${currentClass} (${currentTerm})…`;
 
-  setTimeout(() => {
-    loader.classList.remove('visible');
-    students = studentsWithTerm;
-    $('stat-students').textContent = students.length;
-    $('reportSectionLabel').textContent = `${currentClass} — ${currentTerm} — ${students.length} Students`;
-    $('reportWrapper').style.display = 'block';
-    const area = $('reportArea');
-    area.innerHTML = '';
-    renderCards(area, students);
-    $('reportWrapper').scrollIntoView({ behavior: 'smooth' });
-    showToast(`✅ ${students.length} cards generated for ${currentClass} (${currentTerm})`);
-  }, 300);
+  fetchCSV(url)
+    .then(csv => {
+      const freshStudents = parseCSV(csv);
+      loader.classList.remove('visible');
+
+      if (!freshStudents.length) {
+        showToast('❌ No student records found in sheet.', 'error');
+        return;
+      }
+
+      // Stamp the selected term onto each record (ensures correct term label on cards)
+      students = freshStudents.map(s => ({ ...s, Term: currentTerm }));
+
+      // Now switch to admin dashboard and show reports
+      showScreen('screen-admin-dash');
+      switchTab('tab-classes');
+
+      $('stat-students').textContent = students.length;
+      $('reportSectionLabel').textContent = `${currentClass} — ${currentTerm} — ${students.length} Students`;
+      $('reportWrapper').style.display = 'block';
+
+      const area = $('reportArea');
+      area.innerHTML = '';
+      renderCards(area, students);
+      $('reportWrapper').scrollIntoView({ behavior: 'smooth' });
+      showToast(`✅ ${students.length} cards generated for ${currentClass} (${currentTerm})`);
+    })
+    .catch(() => {
+      loader.classList.remove('visible');
+      showToast('❌ Failed to fetch data. Check network / Sheet permissions.', 'error');
+    });
 }
 /* END CUSTOM EDIT SECTION — Class details */
 
@@ -2015,18 +2152,29 @@ function renderCards(container, rawStudents) {
           <tbody><tr><td>70-100</td><td>60-69</td><td>50-59</td><td>45-49</td><td>40-44</td><td>0-39</td></tr></tbody>
         </table>`;
 
-      /* Annual Summary box (used for Third Term only)
-         Simulates multi-term totals — in a real system you would fetch all 3 term CSVs.
-         Here we approximate 2nd and 1st term as ±5% of current for display purposes.
-         When real multi-term data is available, replace the avg1/avg2/avg3 calculations. */
-      const avg3 = parseFloat(stu.avg);
-      const avg2 = +(avg3 * 0.97).toFixed(2); // placeholder — replace with real 2nd term data
-      const avg1 = +(avg3 * 0.95).toFixed(2); // placeholder — replace with real 1st term data
+      /* Annual Summary box (Third Term only)
+         ── HOW IT WORKS ──
+         The system reads "First_Term_Avg", "Second_Term_Avg", "Third_Term_Avg" columns
+         from the student's CSV row. These should be numeric averages for each term.
+         If a column is missing or blank, it is treated as 0 but still divides by 3,
+         so the annual average is always (1st + 2nd + 3rd) / 3.
+         Add these columns to your Third Term Google Sheet to enable real annual averages. */
+      const avg3 = parseFloat(stu.avg); // current (Third) term average
+      // Read 1st and 2nd term averages from sheet columns if present, else use 0
+      const raw1 = parseFloat(stu['First_Term_Avg']  || stu['1st_Term_Avg']  || 0);
+      const raw2 = parseFloat(stu['Second_Term_Avg'] || stu['2nd_Term_Avg']  || 0);
+      const avg1 = isNaN(raw1) ? 0 : +raw1.toFixed(2);
+      const avg2 = isNaN(raw2) ? 0 : +raw2.toFixed(2);
+
+      // Annual average = always divide by 3 (even if some terms are blank/zero)
       const annualAvg   = +((avg1 + avg2 + avg3) / 3).toFixed(2);
       const annualGrade = calculateGrade(annualAvg);
 
-      /* Annual position is same as current position (approximate) */
+      // Annual position is this term's position (position within class for the year)
       const annualPos = stu._pos;
+
+      // Display helper: show "—" for a missing term average (zero means not provided)
+      const fmtAvg = v => (v === 0 ? '—' : v + '%');
 
       const annualSummaryHtml = `
         <div class="annual-summary-box">
@@ -2037,8 +2185,8 @@ function renderCards(container, rawStudents) {
             </thead>
             <tbody>
               <tr>
-                <td>${avg1}%</td>
-                <td>${avg2}%</td>
+                <td>${fmtAvg(avg1)}</td>
+                <td>${fmtAvg(avg2)}</td>
                 <td>${avg3}%</td>
                 <td><strong>${annualAvg}%</strong></td>
                 <td><strong>${annualGrade}</strong></td>
@@ -2058,8 +2206,10 @@ function renderCards(container, rawStudents) {
         ? getAnnualRemark(annualGrade)
         : stu.teacherRemark;
 
-      /* Summary title: "Annual Summary" for Third Term, "Term Summary" otherwise */
-      const summaryTitle = isThirdTerm ? 'Annual Summary' : 'Term Summary';
+      /* Summary title:
+         LEFT box  → Annual Summary (third term) | Grading key (1st/2nd)
+         RIGHT box → correct term label: "Third Term Summary" / "Term Summary" */
+      const summaryTitle = isThirdTerm ? 'Third Term Summary' : 'Term Summary';
       /* ─── END CUSTOM EDIT SECTION — Grading box vs Annual Summary ─── */
 
       card.innerHTML = `
@@ -2229,15 +2379,31 @@ function downloadSingleCard(buttonEl) {
   const filename  = `${admNo.replace(/[^a-z0-9]/gi,'_')}_${cleanName}.pdf`;
 
   buttonEl.style.visibility = 'hidden';
+
+  // Force CSS variable resolution so borders/colours render correctly in PDF
+  const computed = window.getComputedStyle(card);
+  card.querySelectorAll('thead th').forEach(th => {
+    th.style.setProperty('background', computed.getPropertyValue('--primary').trim(), 'important');
+    th.style.setProperty('color', '#fff', 'important');
+  });
+  card.querySelectorAll('tbody td').forEach(td => {
+    td.style.setProperty('background', computed.getPropertyValue('--soft').trim(), 'important');
+  });
+
   const opt = {
     margin:      [6,6,6,6],
     filename,
     image:       { type:'jpeg', quality:0.98 },
-    html2canvas: { scale:2, useCORS:true, logging:false },
+    html2canvas: { scale:2, useCORS:true, logging:false, backgroundColor:'#ffffff' },
     jsPDF:       { unit:'mm', format:'a4', orientation:'portrait' }
   };
   return html2pdf().set(opt).from(card).save()
-    .then(() => { buttonEl.style.visibility = 'visible'; });
+    .then(() => {
+      // Restore
+      buttonEl.style.visibility = 'visible';
+      card.querySelectorAll('thead th').forEach(th => { th.style.removeProperty('background'); th.style.removeProperty('color'); });
+      card.querySelectorAll('tbody td').forEach(td => { td.style.removeProperty('background'); });
+    });
 }
 
 /* ============================================================
@@ -2256,6 +2422,15 @@ async function downloadAllReports() {
     for (let i = 0; i < cards.length; i++) {
       const card = cards[i];
       card.querySelectorAll('button').forEach(b => b.style.visibility='hidden');
+      // Force CSS variable resolution for html2canvas (it does not read CSS vars)
+      const computed = window.getComputedStyle(card);
+      card.querySelectorAll('thead th').forEach(th => {
+        th.style.setProperty('background', computed.getPropertyValue('--primary').trim(), 'important');
+        th.style.setProperty('color', '#fff', 'important');
+      });
+      card.querySelectorAll('tbody td').forEach(td => {
+        td.style.setProperty('background', computed.getPropertyValue('--soft').trim(), 'important');
+      });
       const canvas = await html2canvas(card, {
         scale:2, useCORS:true, logging:false,
         backgroundColor:'#ffffff',
@@ -2267,7 +2442,10 @@ async function downloadAllReports() {
       const drawH   = (canvas.height/3.78)*ratio;
       if (i > 0) doc.addPage();
       doc.addImage(imgData,'JPEG', margin+(cW-drawW)/2, margin, drawW, drawH);
+      // Restore buttons and clear forced inline styles (let CSS vars take over again)
       card.querySelectorAll('button').forEach(b => b.style.visibility='visible');
+      card.querySelectorAll('thead th').forEach(th => { th.style.removeProperty('background'); th.style.removeProperty('color'); });
+      card.querySelectorAll('tbody td').forEach(td => { td.style.removeProperty('background'); });
     }
     doc.save('Pariya_Academy_All_Reports.pdf');
     showToast('✅ PDF downloaded!');
@@ -2295,20 +2473,49 @@ async function downloadReportsIndividually() {
 }
 
 /* ============================================================
-   PRINT ALL
+   PRINT ALL — Fixed: preserves all borders, colours, and styling
    ============================================================ */
 function safePrint() {
   const reportCards = document.querySelectorAll('#reportArea .card, #studentReportArea .card');
   if (!reportCards.length) { showToast('❌ No report cards to print.', 'error'); return; }
   showToast('⏳ Preparing print view…');
+
   const pc = $('printContainer');
   pc.innerHTML = '';
+
   reportCards.forEach(card => {
     const clone = card.cloneNode(true);
+
+    // Remove interactive buttons (download / QR-verify label stays)
     clone.querySelectorAll('button').forEach(b => b.remove());
+
+    // Carry the computed CSS colour variables into the clone as inline style
+    // so print rendering sees the same colours as the screen view.
+    const computed = window.getComputedStyle(card);
+    const cssVars = ['--primary','--soft','--accent','--muted','--border'];
+    const inlineVars = cssVars
+      .map(v => `${v}:${computed.getPropertyValue(v).trim()}`)
+      .join(';');
+
+    // Only add inline vars if not already present (prevents duplicating)
+    const existingStyle = clone.getAttribute('style') || '';
+    clone.setAttribute('style', existingStyle + ';' + inlineVars);
+
+    // Ensure all table cells in the clone also carry explicit background colours
+    // (some browsers strip CSS vars from clones in print context)
+    clone.querySelectorAll('thead th').forEach(th => {
+      th.style.setProperty('background', computed.getPropertyValue('--primary').trim(), 'important');
+      th.style.setProperty('color', '#fff', 'important');
+    });
+    clone.querySelectorAll('tbody td').forEach(td => {
+      td.style.setProperty('background', computed.getPropertyValue('--soft').trim(), 'important');
+    });
+
     pc.appendChild(clone);
   });
-  setTimeout(() => window.print(), 1800);
+
+  // Give browser time to layout before printing
+  setTimeout(() => window.print(), 2000);
 }
 
 /* ============================================================
@@ -2380,8 +2587,10 @@ async function loadAllClassProgress() {
 
   let totalCaFilled = 0, totalCaTotal = 0, totalExamFilled = 0, totalExamTotal = 0;
 
-  for (const [className, url] of Object.entries(CLASS_LINKS)) {
-    if (url.includes('YOUR_SHEET_ID_HERE')) continue;
+  for (const className of Object.keys(CLASS_LINKS)) {
+    if (!classHasAnyUrl(className)) continue;
+    const url = getTermUrl(className, 'First Term');
+    if (!url) continue;
     try {
       const csv     = await fetchCSV(url);
       const records = parseCSV(csv);
@@ -2488,8 +2697,10 @@ async function loadAllAnalytics() {
   cardsEl.innerHTML = '';
   analyticsCache = {};
 
-  for (const [className, url] of Object.entries(CLASS_LINKS)) {
-    if (url.includes('YOUR_SHEET_ID_HERE')) continue;
+  for (const className of Object.keys(CLASS_LINKS)) {
+    if (!classHasAnyUrl(className)) continue;
+    const url = getTermUrl(className, 'First Term');
+    if (!url) continue;
     try {
       const csv     = await fetchCSV(url);
       const records = parseCSV(csv);
@@ -2661,6 +2872,10 @@ window.addEventListener('load', () => {
    EXPOSE FUNCTIONS TO GLOBAL SCOPE
    (Required for inline onclick handlers in HTML)
    ============================================================ */
+window.getTermUrl                  = getTermUrl;
+window.classHasAnyUrl              = classHasAnyUrl;
+window.termKey                     = termKey;
+window.loadDetailForTerm           = loadDetailForTerm;
 window.downloadSingleCard          = downloadSingleCard;
 window.downloadAllReports          = downloadAllReports;
 window.downloadReportsIndividually = downloadReportsIndividually;
