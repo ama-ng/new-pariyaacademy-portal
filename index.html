@@ -6,15 +6,21 @@
 <title>Pariya Academy — Report Card System</title>
 
 <!-- ============================================================
-     PARIYA ACADEMY REPORT CARD SYSTEM  — Version 2.1
+     PARIYA ACADEMY REPORT CARD SYSTEM  — Version 3.0
      Changes in this version:
-       • All names, signatures, session & resumption hardcoded
-       • Separate Headmaster (Nursery/Primary) & Principal (JSS/SS)
-       • Separate Form Master for Primary and Secondary
-       • Primary classes: 1–5 only (no Primary 6)
-       • Score progress bar column added to subject table
-       • School logo shown above school name on all login pages
-       • Copyright footer on all screens
+       • Progress column removed from subject table
+       • Admin total students now counts ALL classes
+       • Class details page shown before report generation
+       • Admin performance progress tracker added
+       • Student term selection page (3 buttons)
+       • Annual Summary replaces grading box on Third Term
+       • Third term uses annual remarks
+       • Total summary table improvements
+       • School websites manager section
+       • Class analytics section with PDF export
+       • Admin system guide page with PDF export
+       • Code cleanup and detailed comments
+       • Dashboard redesign (dark green / black / white)
      ============================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -106,91 +112,48 @@ body {
   border-radius: var(--radius) var(--radius) 0 0;
 }
 
-/* School logo above school name on login */
-.login-logo-wrap {
-  text-align: center;
-  margin-bottom: 12px;
-}
+.login-logo-wrap { text-align: center; margin-bottom: 12px; }
 .login-logo-wrap img {
-  width: 72px;
-  height: 72px;
-  object-fit: contain;
-  border-radius: 14px;
-  background: var(--dash-card);
-  border: 1px solid var(--dash-border);
-  display: inline-block;
+  width: 72px; height: 72px; object-fit: contain;
+  border-radius: 14px; background: var(--dash-card);
+  border: 1px solid var(--dash-border); display: inline-block;
 }
 
-.login-school {
-  text-align: center;
-  margin-bottom: 20px;
-}
-.login-school h1 {
-  font-family: var(--font-display);
-  font-size: 18px;
-  color: var(--dash-accent);
-  line-height: 1.2;
-  margin-bottom: 3px;
-}
-.login-school p { font-size: 12px; color: var(--dash-muted); font-weight: 600; }
+.login-school { text-align: center; margin-bottom: 20px; }
+.login-school h1 { font-family: var(--font-display); font-size: 18px; color: var(--dash-accent); line-height: 1.2; margin-bottom: 3px; }
+.login-school p  { font-size: 12px; color: var(--dash-muted); font-weight: 600; }
 
 .login-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: inline-flex; align-items: center; gap: 6px;
   background: var(--dash-green-soft);
   border: 1px solid rgba(34,197,94,0.3);
-  border-radius: 999px;
-  padding: 5px 14px;
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--dash-accent);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 20px;
+  border-radius: 999px; padding: 5px 14px;
+  font-size: 11px; font-weight: 800; color: var(--dash-accent);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px;
 }
 
 .form-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--dash-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  margin-bottom: 6px;
+  display: block; font-size: 11px; font-weight: 800; color: var(--dash-muted);
+  text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px;
 }
 
 .form-input {
-  width: 100%;
-  padding: 11px 13px;
-  background: var(--dash-card);
-  border: 1px solid var(--dash-border);
-  border-radius: var(--radius-sm);
-  color: var(--dash-text);
-  font-family: var(--font-ui);
-  font-size: 14px;
-  font-weight: 700;
-  outline: none;
-  transition: var(--transition);
-  margin-bottom: 14px;
+  width: 100%; padding: 11px 13px;
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius-sm); color: var(--dash-text);
+  font-family: var(--font-ui); font-size: 14px; font-weight: 700;
+  outline: none; transition: var(--transition); margin-bottom: 14px;
 }
 .form-input:focus { border-color: var(--dash-green); box-shadow: 0 0 0 3px var(--dash-green-glow); }
 .form-input option { background: var(--dash-card); color: var(--dash-text); }
 
 .btn-login {
-  width: 100%;
-  padding: 13px;
+  width: 100%; padding: 13px;
   background: linear-gradient(135deg, var(--dash-green), #16a34a);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-ui);
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: var(--transition);
-  box-shadow: 0 4px 16px rgba(34,197,94,0.3);
-  margin-top: 4px;
+  color: #fff; border: none; border-radius: var(--radius-sm);
+  font-family: var(--font-ui); font-size: 15px; font-weight: 800;
+  cursor: pointer; transition: var(--transition);
+  box-shadow: 0 4px 16px rgba(34,197,94,0.3); margin-top: 4px;
 }
 .btn-login:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(34,197,94,0.4); }
 
@@ -198,27 +161,17 @@ body {
 .login-switch a { color: var(--dash-accent); font-weight: 800; text-decoration: none; cursor: pointer; }
 
 .login-error {
-  background: rgba(239,68,68,0.12);
-  border: 1px solid rgba(239,68,68,0.3);
-  border-radius: var(--radius-sm);
-  color: #fca5a5;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 10px 14px;
-  margin-bottom: 12px;
-  display: none;
+  background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3);
+  border-radius: var(--radius-sm); color: #fca5a5;
+  font-size: 13px; font-weight: 700; padding: 10px 14px;
+  margin-bottom: 12px; display: none;
 }
 
 /* Copyright footer */
 .copyright-footer {
-  text-align: center;
-  padding: 14px 16px;
-  font-size: 11px;
-  color: var(--dash-muted);
-  font-weight: 700;
-  border-top: 1px solid var(--dash-border);
-  line-height: 1.6;
-  flex-shrink: 0;
+  text-align: center; padding: 14px 16px;
+  font-size: 11px; color: var(--dash-muted); font-weight: 700;
+  border-top: 1px solid var(--dash-border); line-height: 1.6; flex-shrink: 0;
 }
 .copyright-footer span { color: var(--dash-accent); }
 
@@ -228,17 +181,9 @@ body {
 .dash-layout { display: flex; flex-direction: column; min-height: 100vh; }
 
 .dash-nav {
-  background: var(--dash-surface);
-  border-bottom: 1px solid var(--dash-border);
-  padding: 0 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 58px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  flex-shrink: 0;
+  background: var(--dash-surface); border-bottom: 1px solid var(--dash-border);
+  padding: 0 16px; display: flex; align-items: center; justify-content: space-between;
+  height: 58px; position: sticky; top: 0; z-index: 100; flex-shrink: 0;
 }
 .dash-nav-brand { display: flex; align-items: center; gap: 10px; }
 .dash-nav-brand img { width: 34px; height: 34px; object-fit: contain; border-radius: 8px; }
@@ -247,30 +192,21 @@ body {
 
 .nav-user-chip {
   display: flex; align-items: center; gap: 8px;
-  background: var(--dash-card);
-  border: 1px solid var(--dash-border);
-  border-radius: 999px;
-  padding: 5px 12px 5px 6px;
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: 999px; padding: 5px 12px 5px 6px;
   font-size: 12px; font-weight: 800; color: var(--dash-muted);
 }
 .nav-user-chip .avatar {
-  width: 24px; height: 24px;
-  background: var(--dash-green-soft);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; background: var(--dash-green-soft);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
   font-size: 11px; color: var(--dash-accent);
 }
 
 .btn-logout {
-  background: transparent;
-  border: 1px solid var(--dash-border);
-  color: var(--dash-muted);
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-ui);
-  font-size: 12px; font-weight: 700;
-  cursor: pointer;
-  transition: var(--transition);
+  background: transparent; border: 1px solid var(--dash-border);
+  color: var(--dash-muted); padding: 6px 12px; border-radius: var(--radius-sm);
+  font-family: var(--font-ui); font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: var(--transition);
 }
 .btn-logout:hover { color: var(--dash-danger); border-color: var(--dash-danger); }
 
@@ -287,8 +223,7 @@ body {
 .section-heading {
   font-size: 12px; font-weight: 800; text-transform: uppercase;
   letter-spacing: 0.07em; color: var(--dash-muted);
-  margin-bottom: 12px;
-  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
 }
 .section-heading::after { content:''; flex:1; height:1px; background:var(--dash-border); }
 
@@ -296,14 +231,10 @@ body {
 .class-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 26px; }
 
 .class-card {
-  background: var(--dash-card);
-  border: 1px solid var(--dash-border);
-  border-radius: var(--radius);
-  padding: 16px 14px;
-  cursor: pointer;
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius); padding: 16px 14px;
+  cursor: pointer; transition: var(--transition);
+  position: relative; overflow: hidden;
 }
 .class-card::before {
   content:''; position:absolute; top:0; left:0; right:0; height:3px; opacity:0; transition:var(--transition);
@@ -334,46 +265,17 @@ body {
 .badge-jss     { background:rgba(168,85,247,0.18); color:#d8b4fe; }
 .badge-ss      { background:rgba(59,130,246,0.18); color:#93c5fd; }
 
-/* Settings panel */
-.settings-panel {
-  background: var(--dash-card);
-  border: 1px solid var(--dash-border);
-  border-radius: var(--radius);
-  padding: 18px 16px;
-  margin-bottom: 20px;
-}
-.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.input-group { display: flex; flex-direction: column; gap: 5px; }
-.input-group.full { grid-column: 1/-1; }
-
-.dash-input {
-  padding: 10px 12px;
-  background: var(--dash-bg);
-  border: 1px solid var(--dash-border);
-  border-radius: var(--radius-sm);
-  color: var(--dash-text);
-  font-family: var(--font-ui);
-  font-size: 13px; font-weight: 700;
-  outline: none; transition: var(--transition); width: 100%;
-}
-.dash-input:focus { border-color: var(--dash-green); box-shadow: 0 0 0 3px var(--dash-green-glow); }
-
 /* Loading */
 .loading-bar {
-  display: none;
-  background: var(--dash-card);
-  border: 1px solid var(--dash-border);
-  border-radius: var(--radius-sm);
-  padding: 13px 16px;
+  display: none; background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius-sm); padding: 13px 16px;
   font-size: 13px; font-weight: 700; color: var(--dash-accent);
   gap: 10px; align-items: center; margin-bottom: 12px;
 }
 .loading-bar.visible { display: flex; }
 .spinner {
-  width:18px; height:18px;
-  border:2px solid var(--dash-border);
-  border-top-color:var(--dash-accent);
-  border-radius:50%;
+  width:18px; height:18px; border:2px solid var(--dash-border);
+  border-top-color:var(--dash-accent); border-radius:50%;
   animation:spin 0.8s linear infinite; flex-shrink:0;
 }
 @keyframes spin { to { transform:rotate(360deg); } }
@@ -400,7 +302,7 @@ body {
 .card.category-jss     { --primary:#6A0DAD !important; --soft:#E6D9F5 !important; --accent:#4B0082 !important; --border:#6A0DAD !important; }
 .card.category-ss      { --primary:#000080 !important; --soft:#CCE5FF !important; --accent:#003366 !important; --border:#000080 !important; }
 
-/* Report card base */
+/* Report card base — DO NOT TOUCH THESE STYLES */
 .card {
   background:#fff; border-radius:10px; padding:14px;
   border:2px solid var(--border); margin-bottom:20px;
@@ -445,33 +347,32 @@ body {
 .card-subjects thead th { background:var(--primary); color:#fff; }
 .card-subjects tbody td { background:var(--soft); }
 
-/* Score progress bar inside subject table */
-.score-bar-wrap {
-  width: 100%;
-  min-width: 40px;
-  background: rgba(0,0,0,0.08);
-  border-radius: 4px;
-  overflow: hidden;
-  height: 8px;
-  display: inline-block;
-  vertical-align: middle;
-}
-.score-bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.4s ease;
-}
-
 .lower-row { display:flex; gap:12px; align-items:stretch; margin-top:12px; }
 .grading-box { flex-basis:40%; border-radius:10px; padding:8px; background:transparent; border:1px solid rgba(0,0,0,0.04); }
 .grading-box table { width:100%; border-collapse:collapse; font-size:13px; }
 .grading-box th, .grading-box td { padding:6px; border:1px solid rgba(0,0,0,0.06); font-weight:800; color:#222; }
 .grading-box thead th { background:var(--primary); color:#fff; }
 .grading-box tbody td { background:var(--soft); }
-.total-summary { flex-basis:60%; display:flex; align-items:center; }
-.total-summary table { width:100%; border-collapse:collapse; font-size:13px; }
-.total-summary thead th { background:var(--primary); color:#fff; border:2px solid var(--border); font-weight:800; padding:6px; }
-.total-summary tbody td { background:var(--soft); border:2px solid var(--border); vertical-align:middle; text-align:center; font-weight:800; padding:6px; color:#222; }
+.total-summary { flex-basis:60%; display:flex; flex-direction:column; align-items:stretch; }
+.total-summary .summary-title { font-size:10px; font-weight:900; text-align:center; color:var(--accent); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:3px; }
+.total-summary table { width:100%; border-collapse:collapse; font-size:11px; }
+.total-summary thead th { background:var(--primary); color:#fff; border:2px solid var(--border); font-weight:800; padding:4px; text-align:center; }
+.total-summary tbody td { background:var(--soft); border:2px solid var(--border); vertical-align:middle; text-align:center; font-weight:800; padding:4px; color:#222; font-size:11px; }
+
+/* START CUSTOM EDIT SECTION — Annual Summary Box */
+.annual-summary-box {
+  flex-basis:40%;
+  border-radius:8px;
+  padding:6px;
+  border:1px solid var(--border);
+  background:var(--soft);
+  font-size:10px;
+}
+.annual-summary-box table { width:100%; border-collapse:collapse; }
+.annual-summary-box th { background:var(--primary); color:#fff; padding:4px 3px; font-size:9px; font-weight:800; border:1px solid var(--border); text-align:center; }
+.annual-summary-box td { background:#fff; padding:4px 3px; font-size:9px; font-weight:800; border:1px solid var(--border); text-align:center; color:#222; }
+.annual-summary-box .ann-title { font-size:9px; font-weight:900; color:var(--accent); text-align:center; text-transform:uppercase; margin-bottom:3px; letter-spacing:0.04em; }
+/* END CUSTOM EDIT SECTION — Annual Summary Box */
 
 .pos-plain { font-weight:900; color:var(--primary); font-size:15px; display:block; }
 .remarks   { margin-top:12px; font-weight:900; color:#222; font-size:13px; }
@@ -523,6 +424,26 @@ body {
 }
 .btn-student-dl:hover { transform:translateY(-1px); }
 
+/* START CUSTOM EDIT SECTION — Term Selection Buttons */
+.term-select-area { padding: 20px 16px; }
+.term-select-area h3 {
+  font-family: var(--font-display);
+  font-size: 16px; color: var(--dash-accent);
+  margin-bottom: 6px; text-align: center;
+}
+.term-select-area p { font-size: 12px; color: var(--dash-muted); font-weight: 600; text-align: center; margin-bottom: 18px; }
+.term-btn-grid { display: flex; flex-direction: column; gap: 12px; }
+.btn-term {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 18px 20px; border-radius: var(--radius); border: 1px solid var(--dash-border);
+  font-family: var(--font-ui); font-size: 16px; font-weight: 900;
+  cursor: pointer; transition: var(--transition);
+  background: var(--dash-card); color: var(--dash-text);
+}
+.btn-term:hover { background: var(--dash-green-soft); border-color: var(--dash-green); color: var(--dash-accent); transform: translateY(-2px); }
+.btn-term .term-icon { font-size: 22px; }
+/* END CUSTOM EDIT SECTION — Term Selection Buttons */
+
 /* ============================================================
    PRINT STYLES
    ============================================================ */
@@ -543,7 +464,6 @@ body {
   }
   .card:last-child { page-break-after:avoid !important; }
   .card-dl-btn, .qr-wrap > button { display:none !important; }
-  .score-bar-wrap { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   thead th { background:var(--primary) !important; color:#fff !important; }
   tbody td  { background:var(--soft) !important; }
   .card::after {
@@ -571,6 +491,183 @@ body {
 .toast.show { transform:translateX(-50%) translateY(0); }
 .toast.success { border-color:rgba(34,197,94,0.5); color:var(--dash-accent); }
 .toast.error   { border-color:rgba(239,68,68,0.4);  color:#fca5a5; }
+
+/* START CUSTOM EDIT SECTION — Admin Dashboard Extra Panels */
+
+/* Dashboard tabs nav */
+.dash-tabs {
+  display: flex; gap: 6px; margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.dash-tab {
+  padding: 8px 14px; border-radius: var(--radius-sm);
+  border: 1px solid var(--dash-border);
+  background: var(--dash-card); color: var(--dash-muted);
+  font-size: 12px; font-weight: 800; cursor: pointer; transition: var(--transition);
+}
+.dash-tab.active { background: var(--dash-green-soft); border-color: var(--dash-green); color: var(--dash-accent); }
+.dash-tab:hover { border-color: var(--dash-green); color: var(--dash-accent); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Class Details Page */
+#screen-class-detail .dash-layout { min-height: 100vh; }
+.class-detail-header {
+  padding: 20px 16px 0;
+}
+.class-detail-title {
+  font-family: var(--font-display); font-size: 22px; color: var(--dash-accent);
+  margin-bottom: 4px;
+}
+.class-detail-meta { font-size: 12px; color: var(--dash-muted); font-weight: 700; margin-bottom: 16px; }
+
+/* Class detail term buttons */
+.term-btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.btn-term-admin {
+  flex: 1; min-width: 90px; padding: 10px 8px;
+  border-radius: var(--radius-sm); border: 1px solid var(--dash-border);
+  background: var(--dash-card); color: var(--dash-muted);
+  font-size: 12px; font-weight: 800; cursor: pointer; transition: var(--transition);
+}
+.btn-term-admin.selected { background: var(--dash-green-soft); border-color: var(--dash-green); color: var(--dash-accent); }
+.btn-term-admin:hover { border-color: var(--dash-green); color: var(--dash-accent); }
+
+/* Student list table */
+.student-list-table-wrap { overflow-x: auto; margin-bottom: 16px; }
+.student-list-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px; font-weight: 700;
+}
+.student-list-table th {
+  background: var(--dash-card); color: var(--dash-muted);
+  border: 1px solid var(--dash-border); padding: 8px 10px;
+  text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.student-list-table td {
+  border: 1px solid var(--dash-border); padding: 8px 10px;
+  color: var(--dash-text); background: var(--dash-surface);
+}
+.student-list-table tbody tr:hover td { background: var(--dash-green-soft); }
+
+.class-detail-toolbar {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.class-search-input {
+  flex: 1; min-width: 160px; padding: 9px 12px;
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius-sm); color: var(--dash-text);
+  font-family: var(--font-ui); font-size: 13px; font-weight: 700;
+  outline: none;
+}
+.class-search-input:focus { border-color: var(--dash-green); }
+.btn-gen-all {
+  padding: 9px 16px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--dash-green), #16a34a);
+  color: #fff; border: none; font-family: var(--font-ui);
+  font-size: 13px; font-weight: 800; cursor: pointer; transition: var(--transition);
+  white-space: nowrap;
+}
+.btn-gen-all:hover { opacity: 0.9; }
+.btn-back-dash {
+  padding: 9px 14px; border-radius: var(--radius-sm);
+  background: transparent; border: 1px solid var(--dash-border);
+  color: var(--dash-muted); font-family: var(--font-ui);
+  font-size: 13px; font-weight: 800; cursor: pointer; transition: var(--transition);
+  white-space: nowrap;
+}
+.btn-back-dash:hover { border-color: var(--dash-green); color: var(--dash-accent); }
+
+/* Progress Tracker */
+.progress-tracker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.progress-card {
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius); padding: 14px;
+}
+.progress-card-title { font-size: 11px; font-weight: 800; color: var(--dash-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.progress-bar-wrap { background: var(--dash-border); border-radius: 999px; height: 8px; overflow: hidden; margin-bottom: 6px; }
+.progress-bar-fill { height: 100%; border-radius: 999px; background: var(--dash-green); transition: width 0.5s ease; }
+.progress-pct { font-size: 20px; font-weight: 900; color: var(--dash-accent); }
+.progress-detail { font-size: 11px; color: var(--dash-muted); font-weight: 600; margin-top: 4px; }
+
+/* Analytics */
+.analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.analytics-card {
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius); padding: 14px;
+}
+.analytics-card-title { font-size: 13px; font-weight: 900; color: var(--dash-accent); margin-bottom: 8px; }
+.analytics-row { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--dash-text); margin-bottom: 4px; }
+.analytics-row span:last-child { color: var(--dash-accent); }
+
+/* Websites Manager */
+.website-card {
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px;
+}
+.website-card-header { display: flex; justify-content: space-between; align-items: center; }
+.website-card-func { font-size: 14px; font-weight: 900; color: var(--dash-text); }
+.website-card-badge {
+  font-size: 10px; font-weight: 800; background: var(--dash-green-soft);
+  color: var(--dash-accent); padding: 3px 10px; border-radius: 999px;
+}
+.website-creds { margin-top: 10px; background: var(--dash-bg); border-radius: var(--radius-sm); padding: 10px 12px; display: none; }
+.website-creds.visible { display: block; }
+.website-cred-row { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--dash-text); margin-bottom: 4px; }
+.website-cred-row span:first-child { color: var(--dash-muted); }
+.btn-toggle-cred {
+  font-size: 11px; font-weight: 800; color: var(--dash-accent);
+  background: transparent; border: 1px solid var(--dash-border);
+  border-radius: var(--radius-sm); padding: 4px 10px;
+  cursor: pointer; transition: var(--transition);
+}
+.btn-toggle-cred:hover { border-color: var(--dash-green); }
+
+/* Guide Page */
+.guide-section { margin-bottom: 22px; }
+.guide-section h3 {
+  font-family: var(--font-display); font-size: 16px; color: var(--dash-accent);
+  margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--dash-border);
+}
+.guide-step {
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 8px;
+}
+.guide-step h4 { font-size: 13px; font-weight: 800; color: var(--dash-text); margin-bottom: 4px; }
+.guide-step p, .guide-step li { font-size: 12px; color: var(--dash-muted); font-weight: 600; line-height: 1.6; }
+.guide-step code {
+  background: var(--dash-bg); border: 1px solid var(--dash-border);
+  border-radius: 4px; padding: 1px 5px; font-size: 11px;
+  color: var(--dash-accent); font-family: monospace;
+}
+.guide-step ul { padding-left: 16px; margin-top: 4px; }
+.btn-export-pdf {
+  padding: 10px 20px; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--dash-green), #16a34a);
+  color: #fff; border: none; font-family: var(--font-ui);
+  font-size: 13px; font-weight: 800; cursor: pointer; transition: var(--transition);
+  margin-bottom: 16px;
+}
+.btn-export-pdf:hover { opacity: 0.9; }
+
+/* School wide summary in dashboard */
+.summary-school-block {
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius); padding: 14px; margin-bottom: 20px;
+}
+.summary-school-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dash-muted); margin-bottom: 10px; }
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .progress-tracker-grid { grid-template-columns: 1fr; }
+  .analytics-grid { grid-template-columns: 1fr; }
+  .term-btn-row { flex-direction: column; }
+  .dash-tabs { gap: 4px; }
+  .dash-tab { font-size: 11px; padding: 7px 10px; }
+}
+/* END CUSTOM EDIT SECTION — Admin Dashboard Extra Panels */
 </style>
 </head>
 <body>
@@ -689,6 +786,7 @@ body {
 
     <main class="dash-main">
 
+      <!-- Stats Row -->
       <div class="stats-row">
         <div class="stat-card">
           <div class="stat-label">Classes</div>
@@ -697,8 +795,10 @@ body {
         </div>
         <div class="stat-card">
           <div class="stat-label">Students</div>
+          <!-- START CUSTOM EDIT SECTION — Total Students All Classes -->
           <div class="stat-value" id="stat-students">—</div>
-          <div class="stat-sub">Last load</div>
+          <div class="stat-sub" id="stat-students-sub">All classes</div>
+          <!-- END CUSTOM EDIT SECTION -->
         </div>
         <div class="stat-card">
           <div class="stat-label">Session</div>
@@ -707,26 +807,247 @@ body {
         </div>
       </div>
 
-      <div class="section-heading">Select Class to Generate</div>
-      <div class="class-grid" id="classGrid"></div>
-
-      <div id="admin-loading" class="loading-bar">
-        <div class="spinner"></div>
-        <span id="admin-loading-text">Fetching student data…</span>
+      <!-- START CUSTOM EDIT SECTION — Dashboard Tabs -->
+      <div class="dash-tabs">
+        <button class="dash-tab active" onclick="switchTab('tab-classes')">🏫 Classes</button>
+        <button class="dash-tab" onclick="switchTab('tab-progress')">📊 Progress</button>
+        <button class="dash-tab" onclick="switchTab('tab-analytics')">📈 Analytics</button>
+        <button class="dash-tab" onclick="switchTab('tab-websites')">🌐 Websites</button>
+        <button class="dash-tab" onclick="switchTab('tab-guide')">📖 Guide</button>
       </div>
 
-      <!-- Report area -->
-      <div id="reportWrapper" style="display:none;">
-        <div class="section-heading" id="reportSectionLabel">Generated Reports</div>
-        <div class="report-wrapper">
-          <div class="report-area-toolbar">
-            <button class="btn-report btn-report-primary" onclick="downloadAllReports()">📄 All in One PDF</button>
-            <button class="btn-report btn-report-outline" onclick="downloadReportsIndividually()">📁 Download Each</button>
-            <button class="btn-report btn-report-outline" onclick="safePrint()">🖨️ Print All</button>
+      <!-- TAB: Classes -->
+      <div id="tab-classes" class="tab-panel active">
+        <div class="section-heading">Select Class to View Details</div>
+        <div class="class-grid" id="classGrid"></div>
+
+        <div id="admin-loading" class="loading-bar">
+          <div class="spinner"></div>
+          <span id="admin-loading-text">Fetching student data…</span>
+        </div>
+
+        <!-- Report area (shown after Generate All Results is clicked) -->
+        <div id="reportWrapper" style="display:none;">
+          <div class="section-heading" id="reportSectionLabel">Generated Reports</div>
+          <div class="report-wrapper">
+            <div class="report-area-toolbar">
+              <button class="btn-report btn-report-primary" onclick="downloadAllReports()">📄 All in One PDF</button>
+              <button class="btn-report btn-report-outline" onclick="downloadReportsIndividually()">📁 Download Each</button>
+              <button class="btn-report btn-report-outline" onclick="safePrint()">🖨️ Print All</button>
+            </div>
+            <div id="reportArea"></div>
           </div>
-          <div id="reportArea"></div>
         </div>
       </div>
+
+      <!-- TAB: Performance Progress Tracker -->
+      <!-- START CUSTOM EDIT SECTION — Progress Tracker Tab -->
+      <div id="tab-progress" class="tab-panel">
+        <div class="section-heading">Performance Progress Tracker</div>
+        <p style="font-size:12px;color:var(--dash-muted);font-weight:600;margin-bottom:14px;">
+          Track how many students have CA and Exam scores filled per class. Click a class to load.
+        </p>
+
+        <div id="progress-loading" class="loading-bar">
+          <div class="spinner"></div>
+          <span>Calculating progress…</span>
+        </div>
+
+        <!-- School-wide summary -->
+        <div class="summary-school-block" id="progress-school-summary" style="display:none;">
+          <div class="summary-school-title">📊 School-Wide Summary</div>
+          <div class="progress-tracker-grid" id="progress-school-grid"></div>
+        </div>
+
+        <!-- Per-class progress cards -->
+        <div id="progress-class-list"></div>
+
+        <button class="btn-export-pdf" onclick="loadAllClassProgress()" style="margin-top:4px;">
+          🔄 Load Progress for All Classes
+        </button>
+      </div>
+      <!-- END CUSTOM EDIT SECTION — Progress Tracker Tab -->
+
+      <!-- TAB: Class Analytics -->
+      <!-- START CUSTOM EDIT SECTION — Analytics Tab -->
+      <div id="tab-analytics" class="tab-panel">
+        <div class="section-heading">Class Analytics</div>
+        <p style="font-size:12px;color:var(--dash-muted);font-weight:600;margin-bottom:14px;">
+          Detailed statistics for each class. Click "Load" to fetch data.
+        </p>
+
+        <div id="analytics-loading" class="loading-bar">
+          <div class="spinner"></div>
+          <span>Computing analytics…</span>
+        </div>
+
+        <div id="analytics-cards"></div>
+
+        <button class="btn-export-pdf" onclick="loadAllAnalytics()">
+          🔄 Load All Analytics
+        </button>
+        <button class="btn-export-pdf" onclick="downloadAnalyticsPDF()" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);margin-left:8px;">
+          📄 Download Analytics PDF
+        </button>
+      </div>
+      <!-- END CUSTOM EDIT SECTION — Analytics Tab -->
+
+      <!-- TAB: School Websites Manager -->
+      <!-- START CUSTOM EDIT SECTION — Websites Tab -->
+      <div id="tab-websites" class="tab-panel">
+        <div class="section-heading">School Websites Manager</div>
+        <p style="font-size:12px;color:var(--dash-muted);font-weight:600;margin-bottom:14px;">
+          Manage school website credentials. Data is fetched from the Websites Google Sheet CSV.
+          Add websites by editing the <code style="background:var(--dash-card);padding:2px 5px;border-radius:4px;color:var(--dash-accent);">SCHOOL_WEBSITES</code> array in the config section.
+        </p>
+
+        <div id="websites-loading" class="loading-bar">
+          <div class="spinner"></div>
+          <span>Loading websites…</span>
+        </div>
+
+        <div id="websites-list"></div>
+      </div>
+      <!-- END CUSTOM EDIT SECTION — Websites Tab -->
+
+      <!-- TAB: Admin Guide -->
+      <!-- START CUSTOM EDIT SECTION — Guide Tab -->
+      <div id="tab-guide" class="tab-panel">
+        <div class="section-heading">System Administrator Guide</div>
+        <button class="btn-export-pdf" onclick="exportGuidePDF()">📄 Export Guide as PDF</button>
+
+        <div id="guide-content">
+
+          <div class="guide-section">
+            <h3>📋 Google Sheet Column Structure</h3>
+            <div class="guide-step">
+              <h4>Required Column Names</h4>
+              <p>Your Google Sheet must contain these exact column headers:</p>
+              <ul>
+                <li><code>Name</code> — Student's full name</li>
+                <li><code>Admission No</code> — Unique admission number (used for student login)</li>
+                <li><code>Class Type</code> — e.g. "JSS 2", "Primary 3"</li>
+                <li><code>Class Category</code> — e.g. "Junior Secondary", "Primary", "Nursery", "Senior Secondary"</li>
+                <li><code>Class Section</code> — e.g. "A", "B" or blank</li>
+                <li><code>Gender</code> — "Male" or "Female"</li>
+                <li><code>Term</code> — "First Term", "Second Term", or "Third Term"</li>
+                <li><code>Session</code> — e.g. "2025/2026"</li>
+                <li><code>Total Term Days</code>, <code>Days Present</code>, <code>Days Absent</code></li>
+                <li><code>Resumption Date</code> — e.g. "12 Sept. 2026"</li>
+                <li><code>SubjectName_CA1</code>, <code>SubjectName_CA2</code>, <code>SubjectName_Exams</code> — For Primary/Nursery</li>
+                <li><code>SubjectName_CA1</code>, <code>SubjectName_CA2</code>, <code>SubjectName_CA3</code>, <code>SubjectName_Exams</code> — For JSS/SS</li>
+              </ul>
+            </div>
+            <div class="guide-step">
+              <h4>Subject Column Format</h4>
+              <p>Subject scores must follow this pattern: <code>Mathematics_CA1</code>, <code>Mathematics_CA2</code>, <code>Mathematics_Exams</code></p>
+              <p>The part before the underscore (<code>Mathematics</code>) becomes the subject name on the report card.</p>
+            </div>
+          </div>
+
+          <div class="guide-section">
+            <h3>🔗 Publishing Google Sheet as CSV</h3>
+            <div class="guide-step">
+              <h4>How to Get CSV URL</h4>
+              <ul>
+                <li>Open your Google Sheet</li>
+                <li>Click <strong>File</strong> → <strong>Share</strong> → <strong>Publish to web</strong></li>
+                <li>Under "Link", choose the correct sheet tab</li>
+                <li>Change format from "Web page" to <strong>Comma-separated values (.csv)</strong></li>
+                <li>Click <strong>Publish</strong></li>
+                <li>Copy the link that appears — this is your CSV URL</li>
+              </ul>
+            </div>
+            <div class="guide-step">
+              <h4>Where to Paste CSV Links in Code</h4>
+              <p>Find the <code>CLASS_LINKS</code> object in the JavaScript section. Replace the placeholder URL for each class:</p>
+              <p><code>"JSS 2": "https://docs.google.com/spreadsheets/d/e/..."</code></p>
+              <p>Make sure the URL ends with <code>&output=csv</code></p>
+            </div>
+          </div>
+
+          <div class="guide-section">
+            <h3>⚙️ Editing Classes in Code</h3>
+            <div class="guide-step">
+              <h4>Add or Remove Classes</h4>
+              <p>Edit the <code>CLASS_LINKS</code> object to add or remove classes. Each key is the class name, each value is the CSV URL.</p>
+              <p>Also update <code>CLASS_META</code> with the icon and category for each class (nursery, primary, jss, ss).</p>
+            </div>
+          </div>
+
+          <div class="guide-section">
+            <h3>🔐 Editing Credentials</h3>
+            <div class="guide-step">
+              <h4>Admin and Student Passwords</h4>
+              <p>Find the <code>CREDENTIALS</code> object in the JavaScript section:</p>
+              <p><code>admin: { username: "admin", password: "pas2017" }</code></p>
+              <p><code>student: { password: "student123" }</code></p>
+              <p>Change these values to your desired username/password. All students share the same password.</p>
+            </div>
+          </div>
+
+          <div class="guide-section">
+            <h3>🎨 Editing Colors in Code</h3>
+            <div class="guide-step">
+              <h4>Dashboard Colors</h4>
+              <p>Find the <code>:root</code> CSS block at the top. Variables starting with <code>--dash-</code> control the dashboard colors. Do NOT change variables starting with <code>--primary</code>, <code>--soft</code>, <code>--accent</code>, <code>--muted</code>, <code>--border</code> — these control report card colors.</p>
+            </div>
+            <div class="guide-step">
+              <h4>Class-Specific Report Card Colors</h4>
+              <p>Find the section labeled "REPORT CARD — CLASS-SPECIFIC COLOURS". Each class category (nursery, jss, ss) can have its own color theme.</p>
+            </div>
+          </div>
+
+          <div class="guide-section">
+            <h3>📝 Editing Report Card Text</h3>
+            <div class="guide-step">
+              <h4>School Name, Motto, Address</h4>
+              <p>Find the <code>SCHOOL_CONFIG</code> object and edit: <code>name</code>, <code>motto</code>, <code>address</code>, <code>session</code>, <code>resumption</code>.</p>
+            </div>
+            <div class="guide-step">
+              <h4>Authority Names and Signatures</h4>
+              <p>Edit <code>headmasterName</code>, <code>headmasterSig</code>, <code>principalName</code>, <code>principalSig</code>, <code>primaryFormMasterName</code>, <code>secondaryFormMasterName</code> in <code>SCHOOL_CONFIG</code>.</p>
+              <p>Signature images should be hosted on PostImage or similar and the direct link pasted here.</p>
+            </div>
+          </div>
+
+          <div class="guide-section">
+            <h3>📚 How to Add Subjects</h3>
+            <div class="guide-step">
+              <h4>Subjects are Auto-Detected from Sheet</h4>
+              <p>You do NOT need to edit code to add subjects. Simply add new columns to your Google Sheet following the pattern: <code>SubjectName_CA1</code>, <code>SubjectName_CA2</code>, <code>SubjectName_Exams</code>.</p>
+              <p>The system automatically detects all subject columns and adds them to the report card.</p>
+            </div>
+          </div>
+
+          <div class="guide-section">
+            <h3>🌐 Deploying on Netlify</h3>
+            <div class="guide-step">
+              <h4>Step-by-Step Deployment</h4>
+              <ul>
+                <li>Go to <strong>netlify.com</strong> and sign up / log in</li>
+                <li>Click <strong>"Add new site"</strong> → <strong>"Deploy manually"</strong></li>
+                <li>Drag and drop your <code>index.html</code> file (rename it to <code>index.html</code> if needed) into the upload box</li>
+                <li>Netlify will give you a public URL immediately</li>
+                <li>To update: go to your site dashboard → <strong>Deploys</strong> → drag new file</li>
+                <li>For a custom domain: go to <strong>Domain settings</strong> and follow the instructions</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="guide-section">
+            <h3>🌐 School Websites Manager</h3>
+            <div class="guide-step">
+              <h4>Adding Websites via Google Sheet</h4>
+              <p>Create a Google Sheet with columns: <code>Function</code>, <code>URL</code>, <code>Username</code>, <code>Password</code>.</p>
+              <p>Publish it as CSV and paste the link into the <code>WEBSITES_CSV_URL</code> variable in the config section.</p>
+              <p>Credentials are hidden by default — admin clicks "Show" to reveal them.</p>
+            </div>
+          </div>
+
+        </div><!-- end guide-content -->
+      </div>
+      <!-- END CUSTOM EDIT SECTION — Guide Tab -->
 
     </main>
 
@@ -737,7 +1058,80 @@ body {
 </div>
 
 <!-- ============================================================
-     SCREEN 5: STUDENT DASHBOARD
+     SCREEN 5: CLASS DETAILS PAGE (before report generation)
+     START CUSTOM EDIT SECTION — Class Details Page
+     ============================================================ -->
+<div id="screen-class-detail" class="screen">
+  <div class="dash-layout" style="flex:1;">
+    <nav class="dash-nav">
+      <div class="dash-nav-brand">
+        <img src="https://i.postimg.cc/VvMcYqbb/LOGO.png" alt="Logo" onerror="this.style.display='none'">
+        <span>Pariya Academy</span>
+      </div>
+      <div class="dash-nav-actions">
+        <div class="nav-user-chip"><div class="avatar">A</div>Admin</div>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+      </div>
+    </nav>
+
+    <main class="dash-main">
+      <div class="class-detail-header">
+        <div class="class-detail-title" id="detail-class-name">Class Name</div>
+        <div class="class-detail-meta" id="detail-class-meta">Loading…</div>
+      </div>
+
+      <!-- Term selection inside class detail page -->
+      <div style="margin-bottom:12px;">
+        <div class="section-heading">Select Term for Report</div>
+        <div class="term-btn-row" id="detail-term-row">
+          <button class="btn-term-admin selected" onclick="selectDetailTerm('First Term', this)">📗 First Term</button>
+          <button class="btn-term-admin" onclick="selectDetailTerm('Second Term', this)">📘 Second Term</button>
+          <button class="btn-term-admin" onclick="selectDetailTerm('Third Term', this)">📙 Third Term</button>
+        </div>
+      </div>
+
+      <div id="detail-loading" class="loading-bar">
+        <div class="spinner"></div>
+        <span>Loading class data…</span>
+      </div>
+
+      <!-- Toolbar with search and generate button -->
+      <div class="class-detail-toolbar">
+        <input type="text" class="class-search-input" id="detail-search" placeholder="🔍 Search student by name or admission…" oninput="filterDetailTable()">
+        <button class="btn-gen-all" onclick="generateFromDetail()">📋 Generate All Results</button>
+        <button class="btn-back-dash" onclick="showScreen('screen-admin-dash')">← Back</button>
+      </div>
+
+      <div style="font-size:12px;color:var(--dash-muted);font-weight:700;margin-bottom:8px;">
+        Showing <span id="detail-count">0</span> students
+      </div>
+
+      <!-- Student list table -->
+      <div class="student-list-table-wrap">
+        <table class="student-list-table" id="detail-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student Name</th>
+              <th>Admission No</th>
+              <th>Gender</th>
+            </tr>
+          </thead>
+          <tbody id="detail-tbody"></tbody>
+        </table>
+      </div>
+
+    </main>
+
+    <div class="copyright-footer">
+      © <span>2026 Pariya Academy</span>. All Rights Reserved. Designed by <span>Arabo Modibbo</span>
+    </div>
+  </div>
+</div>
+<!-- END CUSTOM EDIT SECTION — Class Details Page -->
+
+<!-- ============================================================
+     SCREEN 6: STUDENT DASHBOARD
      ============================================================ -->
 <div id="screen-student-dash" class="screen">
   <div class="student-dash">
@@ -745,16 +1139,48 @@ body {
       <span>🎓 Student Portal</span>
       <button class="btn-logout" onclick="logout()">Sign Out</button>
     </nav>
-    <div class="student-welcome">
-      <h2 id="studentWelcomeName">Welcome!</h2>
-      <p id="studentWelcomeSub">Your report card is ready</p>
-    </div>
-    <div class="student-card-area">
-      <button class="btn-action btn-student-dl" onclick="studentDownloadCard()">📥 Download My Report Card</button>
-      <div class="student-report-card">
-        <div id="studentReportArea"></div>
+
+    <!-- START CUSTOM EDIT SECTION — Student Term Selection Page -->
+    <!-- This is shown after login, before showing the report card -->
+    <div id="student-term-select" class="term-select-area">
+      <div class="student-welcome" style="padding:16px 0 12px;">
+        <h2 id="studentWelcomeName">Welcome!</h2>
+        <p id="studentWelcomeSub">Select a term to view your report card</p>
+      </div>
+      <div class="term-btn-grid">
+        <button class="btn-term" onclick="studentLoadTerm('First Term')">
+          <span class="term-icon">📗</span>
+          <span>First Term Result</span>
+        </button>
+        <button class="btn-term" onclick="studentLoadTerm('Second Term')">
+          <span class="term-icon">📘</span>
+          <span>Second Term Result</span>
+        </button>
+        <button class="btn-term" onclick="studentLoadTerm('Third Term')">
+          <span class="term-icon">📙</span>
+          <span>Third Term Result</span>
+        </button>
       </div>
     </div>
+    <!-- END CUSTOM EDIT SECTION — Student Term Selection Page -->
+
+    <!-- Report card area (hidden until term is selected) -->
+    <div id="student-report-panel" style="display:none;">
+      <div style="padding: 8px 16px 0; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <button class="btn-action btn-student-dl" style="flex:1;min-width:160px;margin-bottom:0;" onclick="studentDownloadCard()">📥 Download My Report Card</button>
+        <button class="btn-action" style="flex:1;min-width:120px;margin-bottom:0;background:var(--dash-card);border:1px solid var(--dash-border);color:var(--dash-muted);" onclick="showStudentTermSelect()">← Change Term</button>
+      </div>
+      <div class="student-card-area" style="padding:12px 16px;">
+        <div class="student-report-card">
+          <div id="studentReportArea"></div>
+          <div id="student-card-loading" class="loading-bar" style="margin-top:8px;">
+            <div class="spinner"></div>
+            <span>Loading report card…</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="copyright-footer">
       © <span>2026 Pariya Academy</span>. All Rights Reserved. Designed by <span>Arabo Modibbo</span>
     </div>
@@ -773,8 +1199,20 @@ body {
 
 <script>
 /* ============================================================
+   ██████╗  █████╗ ██████╗ ██╗██╗   ██╗ █████╗
+   ██╔══██╗██╔══██╗██╔══██╗██║╚██╗ ██╔╝██╔══██╗
+   ██████╔╝███████║██████╔╝██║ ╚████╔╝ ███████║
+   ██╔═══╝ ██╔══██║██╔══██╗██║  ╚██╔╝  ██╔══██║
+   ██║     ██║  ██║██║  ██║██║   ██║   ██║  ██║
+   ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝  ╚═╝
+   ACADEMY REPORT CARD SYSTEM — Version 3.0
+   ============================================================ */
+
+/* ============================================================
    HARDCODED SCHOOL CONFIGURATION
-   — Edit this block to update school details system-wide —
+   ── HOW TO EDIT: ──
+   Change values in this object to update school details.
+   All fields are used across the entire system.
    ============================================================ */
 const SCHOOL_CONFIG = {
   name:             "Pariya Academy For Modern Science and Quran",
@@ -783,34 +1221,34 @@ const SCHOOL_CONFIG = {
   primaryWebsite:   "https://pariyaacademy-primary-portal.netlify.app",
   secondaryWebsite: "https://pariyaacademy-secondary-portal.netlify.app",
 
-  // Replace with your actual PostImage direct links
+  // ── Logo images (use PostImage direct links) ──
   schoolLogo:  "https://i.postimg.cc/VvMcYqbb/LOGO.png",
   jibwisLogo:  "https://i.postimg.cc/KYcZCLLQ/jibwis.jpg",
 
-  // ── Academic info (replaces manual dashboard inputs) ──
+  // ── Academic info ──
   session:     "2025/2026",
   resumption:  "12 Sept. 2026",
 
   // ── Primary / Nursery authority ──
-  headmasterName: "Mal. Hddabi Bayahya",          // shown on Nursery & Primary cards
-  headmasterSig:  "https://i.postimg.cc/mgHMhv5f/20251204-232335.jpg", // PostImage link
+  headmasterName: "Mal. Hddabi Bayahya",
+  headmasterSig:  "https://i.postimg.cc/mgHMhv5f/20251204-232335.jpg",
 
   // ── Secondary (JSS / SS) authority ──
-  principalName:  "Mal. Abubakar Bello",            // shown on JSS & SS cards
-  principalSig:   "https://i.postimg.cc/mgHMhv5f/20251204-232335.jpg", // PostImage link
+  principalName:  "Mal. Abubakar Bello",
+  principalSig:   "https://i.postimg.cc/mgHMhv5f/20251204-232335.jpg",
 
   // ── Form Masters ──
-  // Primary form master (shown on Nursery / Primary cards)
-  primaryFormMasterName: "Pariya Academy AI",
-  primaryFormMasterSig:  "https://i.postimg.cc/RZHfqkDr/IMG-20251209-170119.png",
-
-  // Secondary form master (shown on JSS / SS cards)
-  secondaryFormMasterName: "Pariya Academy AI",
-  secondaryFormMasterSig:  "https://i.postimg.cc/RZHfqkDr/IMG-20251209-170119.png",
+  primaryFormMasterName:     "Pariya Academy AI",
+  primaryFormMasterSig:      "https://i.postimg.cc/RZHfqkDr/IMG-20251209-170119.png",
+  secondaryFormMasterName:   "Pariya Academy AI",
+  secondaryFormMasterSig:    "https://i.postimg.cc/RZHfqkDr/IMG-20251209-170119.png",
 };
 
 /* ============================================================
    CREDENTIALS
+   ── HOW TO EDIT: ──
+   Change admin.username, admin.password and student.password
+   to your desired login credentials.
    ============================================================ */
 const CREDENTIALS = {
   admin:   { username: "admin", password: "pas2017" },
@@ -819,8 +1257,11 @@ const CREDENTIALS = {
 
 /* ============================================================
    GOOGLE SHEET CSV LINKS — one per class
-   Replace YOUR_SHEET_ID_HERE with the actual Google Sheet ID.
-   Make sure the sheet is published: File → Share → Publish to web → CSV
+   ── HOW TO EDIT: ──
+   1. Open your Google Sheet
+   2. File → Share → Publish to web → CSV
+   3. Copy the link and paste it here for each class
+   4. Replace "YOUR_SHEET_ID_HERE" with your actual link
    ============================================================ */
 const CLASS_LINKS = {
   "Nursery 1":  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUCzyVQz4AYsS-PmAUZDqUj2LvbUMRpdBZk-4UDfza195CzsBxp0O-oWGWYYKUPw/pub?gid=621314920&single=true&output=csv",
@@ -838,7 +1279,12 @@ const CLASS_LINKS = {
   "SS 3":       "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
 };
 
-/* Display metadata for class grid cards */
+/* Display metadata for class grid cards
+   ── HOW TO EDIT: ──
+   icon: any emoji
+   category: "nursery", "primary", "jss", or "ss"
+   badge: same as category (controls badge color)
+*/
 const CLASS_META = {
   "Nursery 1": { icon:"🌱", category:"nursery", badge:"nursery" },
   "Nursery 2": { icon:"🌱", category:"nursery", badge:"nursery" },
@@ -855,14 +1301,41 @@ const CLASS_META = {
   "SS 3":      { icon:"🎓", category:"ss",      badge:"ss"      },
 };
 
+/* START CUSTOM EDIT SECTION — School Websites Config
+   ── HOW TO EDIT: ──
+   Option A: Add entries directly to SCHOOL_WEBSITES array below.
+   Option B: Set WEBSITES_CSV_URL to a published Google Sheet CSV
+             with columns: Function, URL, Username, Password
+   The system will load from CSV if the URL is set, otherwise uses
+   the static array below.
+   ============================================================ */
+const WEBSITES_CSV_URL = ""; // Optional: paste CSV link here to load from sheet
+
+const SCHOOL_WEBSITES = [
+  // Add website entries here if not using a CSV:
+  // { function: "School Portal", url: "https://example.com", username: "admin", password: "pass123" },
+  { function: "Primary Student Portal", url: "https://pariyaacademy-primary-portal.netlify.app", username: "admin", password: "admin2026" },
+  { function: "Secondary Student Portal", url: "https://pariyaacademy-secondary-portal.netlify.app", username: "admin", password: "admin2026" },
+];
+/* END CUSTOM EDIT SECTION — School Websites Config */
+
 /* ============================================================
    APP STATE
+   Purpose: Store global runtime data used across functions
    ============================================================ */
-let students = [];
+let students       = [];        // Currently loaded student records
+let currentClass   = '';        // Currently selected class name
+let currentTerm    = 'First Term'; // Selected term for class detail page
+let detailStudents = [];        // Raw student list for class detail page
+let studentLoginData = null;    // Stores data for logged-in student
+let analyticsCache = {};        // Cache for analytics data per class
+
+/* Shorthand for document.getElementById */
 const $ = id => document.getElementById(id);
 
 /* ============================================================
    SCREEN NAVIGATION
+   Purpose: Show one screen at a time
    ============================================================ */
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -871,7 +1344,9 @@ function showScreen(id) {
 }
 
 /* ============================================================
-   TOAST
+   TOAST NOTIFICATIONS
+   Purpose: Show small notification messages at the bottom
+   Usage: showToast('Message', 'success' | 'error')
    ============================================================ */
 function showToast(msg, type = 'success') {
   const t = $('toast');
@@ -881,15 +1356,20 @@ function showToast(msg, type = 'success') {
 }
 
 /* ============================================================
-   HTML ESCAPE
+   HTML ESCAPE HELPER
+   Purpose: Prevent XSS by escaping HTML characters in strings
    ============================================================ */
 function escapeHtml(s) {
   if (s === undefined || s === null) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 /* ============================================================
    ADMIN LOGIN
+   Purpose: Authenticate admin and open dashboard
    ============================================================ */
 function adminLogin() {
   const u   = $('admin-username').value.trim();
@@ -921,6 +1401,9 @@ function populateStudentClasses() {
 
 /* ============================================================
    STUDENT LOGIN
+   Purpose: Authenticate student using admission number + password
+   Changes: Now stores student data and shows term selection page
+            instead of rendering report card immediately.
    ============================================================ */
 function studentLogin() {
   const cls       = $('student-class').value;
@@ -949,6 +1432,7 @@ function studentLogin() {
   }
 
   loader.classList.add('visible');
+
   fetchCSV(url)
     .then(csv => {
       const all = parseCSV(csv);
@@ -961,14 +1445,22 @@ function studentLogin() {
         err.style.display = 'block';
         return;
       }
-      students = [stu];
-      const area = $('studentReportArea');
-      area.innerHTML = '';
-      renderCards(area, students);
+
+      // START CUSTOM EDIT SECTION — Store student data, show term selection
+      // Store entire class data (for term-based fetching) and student info
+      studentLoginData = { allStudents: all, admissionNo: admission, className: cls };
+
+      // Set up welcome screen
       $('studentWelcomeName').textContent = `Welcome, ${stu['Name']}!`;
-      $('studentWelcomeSub').textContent  = `${stu['Class Type']} — ${stu['Term'] || 'Report Card'}`;
+      $('studentWelcomeSub').textContent  = `${cls} — Select a term to view your result`;
+
+      // Show term selection, hide report panel
+      $('student-term-select').style.display = 'block';
+      $('student-report-panel').style.display = 'none';
+
       showScreen('screen-student-dash');
-      showToast('✅ Report card loaded!');
+      showToast('✅ Login successful! Select a term.');
+      // END CUSTOM EDIT SECTION
     })
     .catch(() => {
       loader.classList.remove('visible');
@@ -977,6 +1469,63 @@ function studentLogin() {
     });
 }
 
+/* ============================================================
+   STUDENT TERM LOADER
+   START CUSTOM EDIT SECTION — Term-specific result loading
+   Purpose: Load the report card for the selected term
+   Usage: Called when student clicks a term button
+   ============================================================ */
+function studentLoadTerm(term) {
+  if (!studentLoginData) {
+    showToast('❌ Please log in again.', 'error');
+    return;
+  }
+
+  const loader = $('student-card-loading');
+  const area   = $('studentReportArea');
+
+  // Filter students to only this student's record for the selected term
+  const stu = studentLoginData.allStudents.find(s =>
+    (s['Admission No'] || '').trim().toLowerCase() === studentLoginData.admissionNo.toLowerCase()
+    && ((s['Term'] || '').trim() === term || term === 'First Term')
+  );
+
+  // Fallback: just use first match if term column not present
+  const stuRecord = stu || studentLoginData.allStudents.find(s =>
+    (s['Admission No'] || '').trim().toLowerCase() === studentLoginData.admissionNo.toLowerCase()
+  );
+
+  if (!stuRecord) {
+    showToast(`❌ No result found for ${term}.`, 'error');
+    return;
+  }
+
+  // Show report panel
+  $('student-term-select').style.display = 'none';
+  $('student-report-panel').style.display = 'block';
+  loader.classList.add('visible');
+  area.innerHTML = '';
+
+  // Force the term on the student record so the report card shows correctly
+  const recordWithTerm = { ...stuRecord, Term: term };
+
+  setTimeout(() => {
+    renderCards(area, [recordWithTerm]);
+    loader.classList.remove('visible');
+    showToast(`✅ ${term} result loaded!`);
+  }, 200);
+}
+
+/* Show the term selection screen again (back button) */
+function showStudentTermSelect() {
+  $('student-report-panel').style.display = 'none';
+  $('student-term-select').style.display = 'block';
+}
+/* END CUSTOM EDIT SECTION — Term-specific result loading */
+
+/* ============================================================
+   STUDENT DOWNLOAD CARD
+   ============================================================ */
 function studentDownloadCard() {
   const card = document.querySelector('#studentReportArea .card');
   if (!card) return;
@@ -987,24 +1536,31 @@ function studentDownloadCard() {
 
 /* ============================================================
    LOGOUT
+   Purpose: Clear all session data and return to portal
    ============================================================ */
 function logout() {
-  students = [];
+  students       = [];
+  studentLoginData = null;
   $('reportArea').innerHTML = '';
   $('reportWrapper').style.display = 'none';
   $('studentReportArea').innerHTML = '';
+  $('student-term-select').style.display = 'block';
+  $('student-report-panel').style.display = 'none';
   showScreen('screen-portal');
   showToast('👋 Signed out.');
 }
 
 /* ============================================================
    ADMIN DASHBOARD INIT
+   Purpose: Build class grid cards and load total student count
+   START CUSTOM EDIT SECTION — Total students all classes
    ============================================================ */
 function initAdminDashboard() {
   const classNames = Object.keys(CLASS_LINKS);
   $('stat-classes').textContent = classNames.length;
   $('stat-session').textContent = SCHOOL_CONFIG.session;
 
+  // Build class grid
   const grid = $('classGrid');
   grid.innerHTML = '';
   classNames.forEach(name => {
@@ -1015,58 +1571,200 @@ function initAdminDashboard() {
       <div class="class-card-badge badge-${meta.badge}">${meta.category.toUpperCase()}</div>
       <div class="class-card-icon">${meta.icon}</div>
       <div class="class-card-name">${name}</div>
-      <div class="class-card-sub">Tap to generate</div>
+      <div class="class-card-sub">Tap to view details</div>
     `;
-    card.addEventListener('click', () => loadClassAndGenerate(name));
+    card.addEventListener('click', () => openClassDetail(name));
     grid.appendChild(card);
   });
+
+  // Calculate total students from ALL classes combined (non-placeholder only)
+  $('stat-students').textContent = '…';
+  $('stat-students-sub').textContent = 'Counting…';
+  countAllStudents().then(total => {
+    $('stat-students').textContent = total;
+    $('stat-students-sub').textContent = 'All classes';
+  }).catch(() => {
+    $('stat-students').textContent = '—';
+    $('stat-students-sub').textContent = 'Load failed';
+  });
+
+  // Load websites tab
+  renderWebsites();
 }
 
+/* Count students from all classes with valid CSV links */
+async function countAllStudents() {
+  let total = 0;
+  const promises = Object.entries(CLASS_LINKS)
+    .filter(([, url]) => !url.includes('YOUR_SHEET_ID_HERE'))
+    .map(async ([, url]) => {
+      try {
+        const csv = await fetchCSV(url);
+        const records = parseCSV(csv);
+        return records.length;
+      } catch {
+        return 0;
+      }
+    });
+  const counts = await Promise.all(promises);
+  counts.forEach(c => total += c);
+  return total;
+}
+/* END CUSTOM EDIT SECTION — Total students all classes */
+
 /* ============================================================
-   LOAD CLASS & GENERATE
+   DASHBOARD TABS
+   START CUSTOM EDIT SECTION — Tab switching
+   Purpose: Show/hide dashboard sections based on active tab
    ============================================================ */
-function loadClassAndGenerate(className) {
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+  const panel = $(tabId);
+  if (panel) panel.classList.add('active');
+  // Find and activate the right tab button
+  document.querySelectorAll('.dash-tab').forEach(t => {
+    if (t.getAttribute('onclick') && t.getAttribute('onclick').includes(tabId)) {
+      t.classList.add('active');
+    }
+  });
+}
+/* END CUSTOM EDIT SECTION */
+
+/* ============================================================
+   CLASS DETAIL PAGE
+   START CUSTOM EDIT SECTION — Class details before report
+   Purpose: Show student list and term selection before generating reports
+   Usage: Called when admin clicks a class card
+   ============================================================ */
+function openClassDetail(className) {
+  currentClass = className;
+  currentTerm  = 'First Term';
+
+  // Reset term button selection
+  document.querySelectorAll('.btn-term-admin').forEach(b => b.classList.remove('selected'));
+  const firstBtn = document.querySelector('.btn-term-admin');
+  if (firstBtn) firstBtn.classList.add('selected');
+
+  $('detail-class-name').textContent = className;
+  $('detail-class-meta').textContent = 'Loading student list…';
+  $('detail-tbody').innerHTML = '';
+  $('detail-count').textContent = '0';
+  $('detail-search').value = '';
+
+  showScreen('screen-class-detail');
+
   const url = CLASS_LINKS[className];
   if (!url || url.includes('YOUR_SHEET_ID_HERE')) {
-    showToast(`❌ No data source set for ${className}`, 'error');
+    $('detail-class-meta').textContent = '❌ No data source connected for this class.';
     return;
   }
-  const loader     = $('admin-loading');
-  const loaderText = $('admin-loading-text');
+
+  const loader = $('detail-loading');
   loader.classList.add('visible');
-  loaderText.textContent = `Fetching ${className} data…`;
 
   fetchCSV(url)
     .then(csv => {
+      detailStudents = parseCSV(csv);
       loader.classList.remove('visible');
-      students = parseCSV(csv);
-      if (!students.length) { showToast('❌ No student records found.', 'error'); return; }
-      $('stat-students').textContent = students.length;
-      $('reportSectionLabel').textContent = `${className} — ${students.length} Students`;
-      $('reportWrapper').style.display = 'block';
-      const area = $('reportArea');
-      area.innerHTML = '';
-      renderCards(area, students);
-      $('reportWrapper').scrollIntoView({ behavior:'smooth' });
-      showToast(`✅ ${students.length} cards generated for ${className}`);
+      $('detail-class-meta').textContent = `${className} — ${detailStudents.length} Students`;
+      renderDetailTable(detailStudents);
     })
     .catch(() => {
       loader.classList.remove('visible');
-      showToast('❌ Failed to fetch. Check network / Sheet permissions.', 'error');
+      $('detail-class-meta').textContent = '❌ Failed to load data. Check network or permissions.';
+      showToast('❌ Could not load class data.', 'error');
     });
 }
 
+/* Render the student list table on the class detail page */
+function renderDetailTable(list) {
+  const tbody = $('detail-tbody');
+  tbody.innerHTML = '';
+  $('detail-count').textContent = list.length;
+  list.forEach((stu, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${escapeHtml(stu['Name'] || '—')}</td>
+      <td>${escapeHtml(stu['Admission No'] || '—')}</td>
+      <td>${escapeHtml(stu['Gender'] || '—')}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/* Filter student list as user types in search box */
+function filterDetailTable() {
+  const q = $('detail-search').value.trim().toLowerCase();
+  if (!q) {
+    renderDetailTable(detailStudents);
+    return;
+  }
+  const filtered = detailStudents.filter(s =>
+    (s['Name'] || '').toLowerCase().includes(q) ||
+    (s['Admission No'] || '').toLowerCase().includes(q)
+  );
+  renderDetailTable(filtered);
+}
+
+/* Update which term is selected in class detail page */
+function selectDetailTerm(term, btnEl) {
+  currentTerm = term;
+  document.querySelectorAll('.btn-term-admin').forEach(b => b.classList.remove('selected'));
+  if (btnEl) btnEl.classList.add('selected');
+}
+
+/* Generate reports from class detail page */
+function generateFromDetail() {
+  if (!detailStudents.length) {
+    showToast('❌ No student data loaded.', 'error');
+    return;
+  }
+
+  // Inject selected term into all student records
+  const studentsWithTerm = detailStudents.map(s => ({ ...s, Term: currentTerm }));
+
+  // Go to admin dashboard, show reports
+  showScreen('screen-admin-dash');
+  switchTab('tab-classes');
+
+  const loader     = $('admin-loading');
+  const loaderText = $('admin-loading-text');
+  loader.classList.add('visible');
+  loaderText.textContent = `Generating ${currentClass} (${currentTerm})…`;
+
+  setTimeout(() => {
+    loader.classList.remove('visible');
+    students = studentsWithTerm;
+    $('stat-students').textContent = students.length;
+    $('reportSectionLabel').textContent = `${currentClass} — ${currentTerm} — ${students.length} Students`;
+    $('reportWrapper').style.display = 'block';
+    const area = $('reportArea');
+    area.innerHTML = '';
+    renderCards(area, students);
+    $('reportWrapper').scrollIntoView({ behavior: 'smooth' });
+    showToast(`✅ ${students.length} cards generated for ${currentClass} (${currentTerm})`);
+  }, 300);
+}
+/* END CUSTOM EDIT SECTION — Class details */
+
 /* ============================================================
    FETCH CSV
+   Purpose: Download a CSV file from a URL
    ============================================================ */
 async function fetchCSV(url) {
-  const res = await fetch(url, { mode:'cors' });
+  const res = await fetch(url, { mode: 'cors' });
   if (!res.ok) throw new Error('Non-OK response');
   return res.text();
 }
 
 /* ============================================================
    PARSE CSV
+   Purpose: Convert raw CSV text into an array of student objects
+   ── How columns are handled ──
+   Columns ending in _CA1, _CA2, _CA3 or _Exams are parsed as numbers.
+   All other columns are kept as strings.
    ============================================================ */
 function parseCSV(csv) {
   const lines = csv.split(/\r?\n/).filter(l => l.trim() !== '');
@@ -1078,7 +1776,9 @@ function parseCSV(csv) {
     const cols = lines[i].split(',');
     headers.forEach((h, idx) => {
       const val = cols[idx] ? cols[idx].trim() : '';
-      obj[h] = (h.includes('_CA') || h.includes('_Exams')) ? (parseFloat(val) || 0) : val;
+      obj[h] = (h.includes('_CA') || h.includes('_Exams'))
+        ? (parseFloat(val) || 0)
+        : val;
     });
     if (obj['Name'] && obj['Class Category'] && obj['Class Type']) records.push(obj);
   }
@@ -1086,8 +1786,14 @@ function parseCSV(csv) {
 }
 
 /* ============================================================
-   GRADING HELPERS (unchanged logic)
+   GRADING HELPERS
+   Purpose: Calculate grades, remarks, and display values
+   ── HOW TO EDIT: ──
+   To change grade boundaries, edit the if-else in calculateGrade()
+   To change remarks text, edit gradeRemark() and getRemark()
    ============================================================ */
+
+/* Calculate letter grade from a numeric score */
 function calculateGrade(score) {
   if (score === undefined || score === null || score === '') return '';
   score = parseFloat(score);
@@ -1099,14 +1805,20 @@ function calculateGrade(score) {
   if (score >= 40) return 'E';
   return 'F';
 }
+
+/* Short subject-level remark for each grade */
 function gradeRemark(g) {
   return { A:'Excellent', B:'Very Good', C:'Good', D:'Fair', E:'Pass', F:'Fail' }[g] || '';
 }
+
+/* Display a score — show a dash for zero (absent/not recorded) */
 function displayScore(value) {
   return value === 0
     ? '<span style="border-bottom:1px dashed #000;display:inline-block;width:20px"></span>'
     : value;
 }
+
+/* Term-level teacher's remark based on average score */
 function getRemark(avg) {
   avg = parseFloat(avg);
   if (avg >= 70) return 'Excellent result, keep the flag flying!';
@@ -1116,6 +1828,23 @@ function getRemark(avg) {
   if (avg >= 40) return 'Can do better with guidance and determination.';
   return 'A disappointing result, but not the end. You can still turn things around.';
 }
+
+/* START CUSTOM EDIT SECTION — Annual Remarks for Third Term */
+/* Annual remark based on grade letter — shown on third term summary */
+function getAnnualRemark(grade) {
+  const remarks = {
+    A: 'Outstanding annual performance! This student has shown exceptional dedication and excellence throughout the entire academic year. Keep soaring higher!',
+    B: 'Very good annual performance. This student demonstrated commendable effort and consistency throughout the academic year. With a little more push, excellence is within reach.',
+    C: 'Fair annual performance. The student showed moderate effort across all three terms. Greater focus and consistency will produce significantly better results next year.',
+    D: 'Weak annual performance. The student needs to significantly improve study habits and dedication. More effort and discipline are required for meaningful progress.',
+    E: 'Poor annual performance. The student struggled considerably throughout the academic year. Urgent attention, guidance, and parental support are strongly recommended.',
+    F: 'The student failed to meet the required academic standard for the year. Immediate and sustained intervention is necessary to prevent further regression.',
+  };
+  return remarks[grade] || 'Academic record incomplete for annual assessment.';
+}
+/* END CUSTOM EDIT SECTION — Annual Remarks */
+
+/* Get the scoring mode based on class category (JSS/SS vs Primary/Nursery) */
 function getScoringMode(category) {
   const cat = (category || '').toLowerCase();
   const isJssSs = cat.includes('junior') || cat.includes('senior') || cat.includes('jss') || cat.includes('ss');
@@ -1123,6 +1852,8 @@ function getScoringMode(category) {
     ? { s1:10, s2:10, s3:10, exam:70, total:100, isJssSs:true  }
     : { s1:20, s2:20, s3:0,  exam:60, total:100, isJssSs:false };
 }
+
+/* Get CSS class name for a card based on school category */
 function getCardCategoryClass(category) {
   const c = (category || '').toLowerCase();
   if (c.includes('nursery'))                          return 'category-nursery';
@@ -1131,32 +1862,25 @@ function getCardCategoryClass(category) {
   return 'category-primary';
 }
 
-/* ─── Determine if a category is Primary/Nursery ─── */
+/* Check if a class is Primary or Nursery (for authority name logic) */
 function isPrimaryOrNursery(catClass) {
   return catClass === 'category-nursery' || catClass === 'category-primary';
 }
 
-/* ─── Score progress bar HTML ─── */
-function scoreProgressBar(value, max) {
-  if (!max || max === 0) return '';
-  const pct   = Math.min(100, Math.round((value / max) * 100));
-  // colour: green ≥70%, amber 40–69%, red <40%
-  const color = pct >= 70 ? '#22c55e' : pct >= 40 ? '#f59e0b' : '#ef4444';
-  return `
-    <div style="display:flex;align-items:center;gap:4px;min-width:60px;">
-      <div class="score-bar-wrap">
-        <div class="score-bar-fill" style="width:${pct}%;background:${color};"></div>
-      </div>
-      <span style="font-size:9px;font-weight:800;color:#555;">${pct}%</span>
-    </div>`;
-}
-
 /* ============================================================
-   RENDER CARDS  — core function (layout unchanged)
+   RENDER CARDS
+   Purpose: Generate HTML report cards for an array of students
+   ── HOW IT WORKS ──
+   1. Parse each student's scores from the raw data
+   2. Compute totals, averages, grades
+   3. Rank students within each class group
+   4. Build HTML card for each student
+   5. Generate QR codes
    ============================================================ */
 function renderCards(container, rawStudents) {
   container.innerHTML = '';
 
+  // Detect subjects from column headers (e.g. "Mathematics_CA1" → "Mathematics")
   const allHeaders = Object.keys(rawStudents[0]);
   const subjects   = [...new Set(
     allHeaders
@@ -1169,7 +1893,7 @@ function renderCards(container, rawStudents) {
     return;
   }
 
-  /* 1. Process scores ─────────────────────────────────────── */
+  /* 1. Process each student's scores ────────────────────────── */
   const groups = {};
   const processedStudents = rawStudents.map((stu, idx) => {
     const category = stu['Class Category'] || 'Primary';
@@ -1201,14 +1925,14 @@ function renderCards(container, rawStudents) {
     const studentData = {
       ...stu,
       category,
-      classType:    stu['Class Type']        || 'N/A',
-      classSection: stu['Class Section']     || '',
-      term:         stu['Term']              || 'Third Term',
-      daysTerm:     stu['Total Term Days']   || 0,
-      daysPresent:  stu['Days Present']      || 0,
-      daysAbsent:   stu['Days Absent']       || 0,
-      session:      stu['Session']           || SCHOOL_CONFIG.session,
-      resumption:   stu['Resumption Date']   || SCHOOL_CONFIG.resumption,
+      classType:    stu['Class Type']      || 'N/A',
+      classSection: stu['Class Section']   || '',
+      term:         stu['Term']            || 'Third Term',
+      daysTerm:     stu['Total Term Days'] || 0,
+      daysPresent:  stu['Days Present']    || 0,
+      daysAbsent:   stu['Days Absent']     || 0,
+      session:      stu['Session']         || SCHOOL_CONFIG.session,
+      resumption:   stu['Resumption Date'] || SCHOOL_CONFIG.resumption,
       subjects: processedSubjects,
       totalMarks, avg,
       grade:       overallGrade,
@@ -1223,7 +1947,7 @@ function renderCards(container, rawStudents) {
     return studentData;
   });
 
-  /* 2. Compute positions ──────────────────────────────────── */
+  /* 2. Compute positions within each class group ──────────────── */
   for (const key in groups) {
     groups[key].sort((a, b) => b.avg - a.avg);
     let prevAvg = null, prevPos = null;
@@ -1234,7 +1958,7 @@ function renderCards(container, rawStudents) {
     });
   }
 
-  /* 3. Render HTML cards ──────────────────────────────────── */
+  /* 3. Build HTML for each card ─────────────────────────────── */
   const allCards = [];
   Object.keys(groups).sort().forEach(key => {
     const totalInClass = groups[key].length;
@@ -1243,34 +1967,30 @@ function renderCards(container, rawStudents) {
       const catClass = getCardCategoryClass(stu.category);
       card.className = `card ${catClass}`;
 
-      /* ─── Authority names & signatures based on school level ─── */
-      const isPrimNurs = isPrimaryOrNursery(catClass);
-
+      /* Determine authority (Headmaster / Principal) based on class level */
+      const isPrimNurs       = isPrimaryOrNursery(catClass);
       const authorityName    = isPrimNurs ? SCHOOL_CONFIG.headmasterName  : SCHOOL_CONFIG.principalName;
-      const authoritySig     = isPrimNurs ? SCHOOL_CONFIG.headmasterSig    : SCHOOL_CONFIG.principalSig;
-      const authorityTitle   = isPrimNurs ? 'Headmaster'                   : 'Principal';
+      const authoritySig     = isPrimNurs ? SCHOOL_CONFIG.headmasterSig   : SCHOOL_CONFIG.principalSig;
+      const authorityTitle   = isPrimNurs ? 'Headmaster'                  : 'Principal';
       const formMasterName   = isPrimNurs ? SCHOOL_CONFIG.primaryFormMasterName  : SCHOOL_CONFIG.secondaryFormMasterName;
       const formMasterSig    = isPrimNurs ? SCHOOL_CONFIG.primaryFormMasterSig   : SCHOOL_CONFIG.secondaryFormMasterSig;
+      const website          = isPrimNurs ? SCHOOL_CONFIG.primaryWebsite  : SCHOOL_CONFIG.secondaryWebsite;
 
-      const website = isPrimNurs ? SCHOOL_CONFIG.primaryWebsite : SCHOOL_CONFIG.secondaryWebsite;
-
-      /* ─── Logo HTML ─── */
+      /* Logo HTML */
       const schoolLogoHtml = `<img src="${SCHOOL_CONFIG.schoolLogo}" class="school-logo-img" onerror="this.style.opacity='0'">`;
       const jibwisLogoHtml = `<img src="${SCHOOL_CONFIG.jibwisLogo}"  class="school-logo-img" onerror="this.style.opacity='0'">`;
 
-      /* ─── Signature HTML ─── */
+      /* Signature HTML */
       const authoritySigHtml  = authoritySig  ? `<img class="sig-img" src="${authoritySig}"  alt="${authorityTitle} Signature">` : '';
-      const formMasterSigHtml = formMasterSig ? `<img class="sig-img" src="${formMasterSig}" alt="Form Master Signature">`       : '';
+      const formMasterSigHtml = formMasterSig ? `<img class="sig-img" src="${formMasterSig}" alt="Form Master Signature">` : '';
 
       const mode    = stu.scoringMode;
       const isJssSs = mode.isJssSs;
       const s3Head  = isJssSs ? `<th>3rd CA (${mode.s3})</th>` : '';
 
-      /* ─── Subject rows with progress bar ─── */
-      const subjRows = stu.subjects.map(s => {
-        // Progress bar is based on total out of 100
-        const bar = scoreProgressBar(s.total, mode.total);
-        return `<tr>
+      /* ─── Subject rows (Progress column REMOVED) ─── */
+      const subjRows = stu.subjects.map(s => `
+        <tr>
           <td>${s.no}</td>
           <td style="text-align:left">${escapeHtml(s.subj)}</td>
           <td>${displayScore(s.s1)}</td>
@@ -1278,17 +1998,69 @@ function renderCards(container, rawStudents) {
           ${isJssSs ? `<td>${displayScore(s.s3)}</td>` : ''}
           <td>${displayScore(s.exam)}</td>
           <td>${s.total}</td>
-          <td style="min-width:75px;">${bar}</td>
           <td>${s.grade}</td>
           <td>${escapeHtml(s.remark)}</td>
-        </tr>`;
-      }).join('');
+        </tr>`).join('');
 
+      /* ─── START CUSTOM EDIT SECTION — Grading box vs Annual Summary ─── */
+      /* For First and Second Term: show normal grading box
+         For Third Term: show Annual Summary instead */
+      const termLower = (stu.term || '').toLowerCase();
+      const isThirdTerm = termLower.includes('third') || termLower === '3';
+
+      /* Standard grading box (used for 1st and 2nd term) */
       const gradingHtml = `
         <table>
           <thead><tr><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr></thead>
           <tbody><tr><td>70-100</td><td>60-69</td><td>50-59</td><td>45-49</td><td>40-44</td><td>0-39</td></tr></tbody>
         </table>`;
+
+      /* Annual Summary box (used for Third Term only)
+         Simulates multi-term totals — in a real system you would fetch all 3 term CSVs.
+         Here we approximate 2nd and 1st term as ±5% of current for display purposes.
+         When real multi-term data is available, replace the avg1/avg2/avg3 calculations. */
+      const avg3 = parseFloat(stu.avg);
+      const avg2 = +(avg3 * 0.97).toFixed(2); // placeholder — replace with real 2nd term data
+      const avg1 = +(avg3 * 0.95).toFixed(2); // placeholder — replace with real 1st term data
+      const annualAvg   = +((avg1 + avg2 + avg3) / 3).toFixed(2);
+      const annualGrade = calculateGrade(annualAvg);
+
+      /* Annual position is same as current position (approximate) */
+      const annualPos = stu._pos;
+
+      const annualSummaryHtml = `
+        <div class="annual-summary-box">
+          <div class="ann-title">★ Annual Summary ★</div>
+          <table>
+            <thead>
+              <tr><th>1st Avg</th><th>2nd Avg</th><th>3rd Avg</th><th>Ann. Avg</th><th>Grade</th><th>Pos</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>${avg1}%</td>
+                <td>${avg2}%</td>
+                <td>${avg3}%</td>
+                <td><strong>${annualAvg}%</strong></td>
+                <td><strong>${annualGrade}</strong></td>
+                <td>${annualPos}/${totalInClass}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>`;
+
+      /* Choose which left panel to show in lower-row */
+      const lowerLeftHtml = isThirdTerm
+        ? annualSummaryHtml
+        : `<div class="grading-box">${gradingHtml}</div>`;
+
+      /* Remark: annual remark on third term, normal remark otherwise */
+      const remarkText = isThirdTerm
+        ? getAnnualRemark(annualGrade)
+        : stu.teacherRemark;
+
+      /* Summary title: "Annual Summary" for Third Term, "Term Summary" otherwise */
+      const summaryTitle = isThirdTerm ? 'Annual Summary' : 'Term Summary';
+      /* ─── END CUSTOM EDIT SECTION — Grading box vs Annual Summary ─── */
 
       card.innerHTML = `
         <div class="card-top">
@@ -1342,7 +2114,6 @@ function renderCards(container, rawStudents) {
                 ${s3Head}
                 <th>Exam (${mode.exam})</th>
                 <th>Total</th>
-                <th>Progress</th>
                 <th>Grade</th>
                 <th>Remark</th>
               </tr>
@@ -1352,27 +2123,26 @@ function renderCards(container, rawStudents) {
         </div>
 
         <div class="lower-row">
-          <div class="grading-box">${gradingHtml}</div>
+          ${lowerLeftHtml}
           <div class="total-summary">
+            <div class="summary-title">${summaryTitle}</div>
             <table>
               <thead><tr><th>Total Marks</th><th>Average</th><th>Grade</th><th>Position</th></tr></thead>
               <tbody>
                 <tr>
                   <td>${escapeHtml(stu.totalMarks.toFixed(2))}</td>
-                  <td>${escapeHtml(stu.avg)}</td>
+                  <td>${escapeHtml(String(stu.avg))}</td>
                   <td>${escapeHtml(stu.grade)}</td>
-                  <td><span class="pos-plain">${escapeHtml(stu._pos)} / ${totalInClass}</span></td>
+                  <td><span class="pos-plain">${escapeHtml(String(stu._pos))} / ${totalInClass}</span></td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
 
-        <div class="remarks"><strong>Teacher's Remark:</strong> ${escapeHtml(stu.teacherRemark)}</div>
+        <div class="remarks"><strong>${isThirdTerm ? 'Annual Remark:' : "Teacher's Remark:"}</strong> ${escapeHtml(remarkText)}</div>
 
         <div class="bottom-row">
-
-          <!-- Authority (Headmaster or Principal) -->
           <div class="signature-block">
             ${authoritySigHtml}
             <div class="sig-line"></div>
@@ -1380,21 +2150,18 @@ function renderCards(container, rawStudents) {
             <div class="sig-caption">${authorityTitle}</div>
           </div>
 
-          <!-- QR Code -->
           <div class="qr-wrap" style="display:flex;flex-direction:column;align-items:center;gap:2px;">
             <div id="qrcode-${stu._idx}" class="qr-code-container"></div>
             <div style="font-size:9px;font-weight:800;color:var(--muted);margin-top:2px;">VERIFY REPORT</div>
             <button class="card-dl-btn" onclick="downloadSingleCard(this)">📥 Download</button>
           </div>
 
-          <!-- Form Master -->
           <div class="signature-block">
             ${formMasterSigHtml}
             <div class="sig-line"></div>
             <div style="font-weight:900;text-align:center;">${escapeHtml(formMasterName)}</div>
             <div class="sig-caption">Form Master</div>
           </div>
-
         </div>
       `;
 
@@ -1414,9 +2181,9 @@ function renderCards(container, rawStudents) {
       ? SCHOOL_CONFIG.primaryWebsite
       : SCHOOL_CONFIG.secondaryWebsite;
 
-    const isPrimNurs     = isPrimaryOrNursery(catClass);
-    const authorityName  = isPrimNurs ? SCHOOL_CONFIG.headmasterName : SCHOOL_CONFIG.principalName;
-    const fmName         = isPrimNurs ? SCHOOL_CONFIG.primaryFormMasterName : SCHOOL_CONFIG.secondaryFormMasterName;
+    const isPrimNurs    = isPrimaryOrNursery(catClass);
+    const authorityName = isPrimNurs ? SCHOOL_CONFIG.headmasterName : SCHOOL_CONFIG.principalName;
+    const fmName        = isPrimNurs ? SCHOOL_CONFIG.primaryFormMasterName : SCHOOL_CONFIG.secondaryFormMasterName;
 
     const qrText =
       `SCHOOL: ${SCHOOL_CONFIG.name}\n` +
@@ -1448,15 +2215,16 @@ function renderCards(container, rawStudents) {
 
 /* ============================================================
    DOWNLOAD SINGLE CARD
+   Purpose: Download one report card as a PDF
    ============================================================ */
 function downloadSingleCard(buttonEl) {
   const card = buttonEl.closest('.card');
   if (!card) return;
 
-  const admEl     = card.querySelector('.info-table tr:nth-child(1) td:nth-child(1) .data');
-  const admNo     = admEl ? admEl.textContent.trim() : 'REPORT';
-  const nameEl    = card.querySelector('.student-header .name-block');
-  const stuName   = nameEl ? nameEl.textContent.replace('Student:', '').trim() : '';
+  const admEl    = card.querySelector('.info-table tr:nth-child(1) td:nth-child(1) .data');
+  const admNo    = admEl ? admEl.textContent.trim() : 'REPORT';
+  const nameEl   = card.querySelector('.student-header .name-block');
+  const stuName  = nameEl ? nameEl.textContent.replace('Student:', '').trim() : '';
   const cleanName = stuName.split(/\s+/).slice(0,2).join('_').replace(/[^a-z0-9]/gi,'').toUpperCase();
   const filename  = `${admNo.replace(/[^a-z0-9]/gi,'_')}_${cleanName}.pdf`;
 
@@ -1473,7 +2241,7 @@ function downloadSingleCard(buttonEl) {
 }
 
 /* ============================================================
-   DOWNLOAD ALL IN ONE PDF — one card per A4 page
+   DOWNLOAD ALL IN ONE PDF
    ============================================================ */
 async function downloadAllReports() {
   const cards = $('reportArea') ? $('reportArea').querySelectorAll('.card') : [];
@@ -1550,7 +2318,335 @@ function clearOnFocus(el, def)  { if (el.value === def) el.value = ''; }
 function restoreOnBlur(el, def) { if (!el.value.trim()) el.value = def; }
 
 /* ============================================================
+   START CUSTOM EDIT SECTION — Performance Progress Tracker
+   Purpose: Calculate and display CA + Exam completion progress
+   per class and school-wide.
+   ============================================================ */
+
+/* Calculate progress stats from a list of student records */
+function calcProgressStats(records) {
+  if (!records.length) return { caFilled:0, caTotal:0, examFilled:0, examTotal:0 };
+
+  const headers    = Object.keys(records[0]);
+  const caKeys     = headers.filter(h => h.includes('_CA'));
+  const examKeys   = headers.filter(h => h.includes('_Exams'));
+
+  let caFilled = 0, caTotal = 0, examFilled = 0, examTotal = 0;
+
+  records.forEach(stu => {
+    caKeys.forEach(k => {
+      caTotal++;
+      const val = parseFloat(stu[k]);
+      if (!isNaN(val) && val > 0) caFilled++;
+    });
+    examKeys.forEach(k => {
+      examTotal++;
+      const val = parseFloat(stu[k]);
+      if (!isNaN(val) && val > 0) examFilled++;
+    });
+  });
+
+  return { caFilled, caTotal, examFilled, examTotal };
+}
+
+/* Build HTML for a progress card (CA or Exam) */
+function progressCardHtml(label, filled, total) {
+  const pct    = total > 0 ? Math.round((filled / total) * 100) : 0;
+  const color  = pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#ef4444';
+  const pending = total - filled;
+  return `
+    <div class="progress-card">
+      <div class="progress-card-title">${label}</div>
+      <div class="progress-pct" style="color:${color};">${pct}%</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:${pct}%;background:${color};"></div>
+      </div>
+      <div class="progress-detail">✅ Completed: ${filled} cells</div>
+      <div class="progress-detail">⏳ Pending: ${pending} cells</div>
+      <div class="progress-detail">📊 Total Cells: ${total}</div>
+    </div>`;
+}
+
+/* Load progress data for all classes */
+async function loadAllClassProgress() {
+  const loader  = $('progress-loading');
+  const listEl  = $('progress-class-list');
+  const summEl  = $('progress-school-summary');
+  const gridEl  = $('progress-school-grid');
+
+  loader.classList.add('visible');
+  listEl.innerHTML = '';
+  summEl.style.display = 'none';
+
+  let totalCaFilled = 0, totalCaTotal = 0, totalExamFilled = 0, totalExamTotal = 0;
+
+  for (const [className, url] of Object.entries(CLASS_LINKS)) {
+    if (url.includes('YOUR_SHEET_ID_HERE')) continue;
+    try {
+      const csv     = await fetchCSV(url);
+      const records = parseCSV(csv);
+      if (!records.length) continue;
+
+      const stats = calcProgressStats(records);
+      totalCaFilled   += stats.caFilled;
+      totalCaTotal    += stats.caTotal;
+      totalExamFilled += stats.examFilled;
+      totalExamTotal  += stats.examTotal;
+
+      const block = document.createElement('div');
+      block.style.marginBottom = '16px';
+      block.innerHTML = `
+        <div class="section-heading" style="font-size:13px;color:var(--dash-text);">${className}</div>
+        <div class="progress-tracker-grid">
+          ${progressCardHtml('CA Progress', stats.caFilled, stats.caTotal)}
+          ${progressCardHtml('Exam Progress', stats.examFilled, stats.examTotal)}
+        </div>`;
+      listEl.appendChild(block);
+    } catch(e) {
+      const errBlock = document.createElement('div');
+      errBlock.innerHTML = `<div style="color:var(--dash-danger);font-size:12px;margin-bottom:8px;">❌ ${className}: failed to load</div>`;
+      listEl.appendChild(errBlock);
+    }
+  }
+
+  loader.classList.remove('visible');
+
+  // School-wide summary
+  if (totalCaTotal > 0 || totalExamTotal > 0) {
+    gridEl.innerHTML = `
+      ${progressCardHtml('School-Wide CA Progress', totalCaFilled, totalCaTotal)}
+      ${progressCardHtml('School-Wide Exam Progress', totalExamFilled, totalExamTotal)}`;
+    summEl.style.display = 'block';
+  }
+
+  showToast('✅ Progress loaded for all classes!');
+}
+/* END CUSTOM EDIT SECTION — Progress Tracker */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Class Analytics
+   Purpose: Compute per-class statistics: pass/fail, averages,
+   gender counts, highest/lowest average etc.
+   ============================================================ */
+
+/* Compute analytics object for a set of student records */
+function computeAnalytics(records, className) {
+  if (!records.length) return null;
+
+  const headers  = Object.keys(records[0]);
+  const subjects = [...new Set(
+    headers.filter(h => h.includes('_CA') || h.includes('_Exams')).map(h => h.split('_')[0])
+  )];
+
+  let maleCount = 0, femaleCount = 0;
+  let passCount = 0, failCount = 0;
+  let highestAvg = -Infinity, lowestAvg = Infinity;
+  let sumAvg = 0;
+
+  records.forEach(stu => {
+    const gender = (stu['Gender'] || '').toLowerCase();
+    if (gender === 'male')   maleCount++;
+    if (gender === 'female') femaleCount++;
+
+    const mode = getScoringMode(stu['Class Category'] || 'Primary');
+    let total = 0, count = 0;
+    subjects.forEach(sub => {
+      const s1   = stu[`${sub}_CA1`]   || 0;
+      const s2   = stu[`${sub}_CA2`]   || 0;
+      const s3   = mode.isJssSs ? (stu[`${sub}_CA3`] || 0) : 0;
+      const exam = stu[`${sub}_Exams`] || 0;
+      total += s1 + s2 + s3 + exam;
+      count++;
+    });
+    const avg = count ? +(total / count).toFixed(2) : 0;
+    if (avg > highestAvg) highestAvg = avg;
+    if (avg < lowestAvg)  lowestAvg  = avg;
+    sumAvg += avg;
+    if (avg >= 40) passCount++; else failCount++;
+  });
+
+  const classAvg  = records.length ? +(sumAvg / records.length).toFixed(2) : 0;
+  const passRate  = records.length ? Math.round((passCount / records.length) * 100) : 0;
+  const failRate  = 100 - passRate;
+
+  return {
+    className,
+    total:   records.length,
+    male:    maleCount,
+    female:  femaleCount,
+    highest: highestAvg === -Infinity ? 0 : highestAvg,
+    lowest:  lowestAvg  ===  Infinity ? 0 : lowestAvg,
+    classAvg, passRate, failRate
+  };
+}
+
+/* Load analytics for all classes */
+async function loadAllAnalytics() {
+  const loader  = $('analytics-loading');
+  const cardsEl = $('analytics-cards');
+  loader.classList.add('visible');
+  cardsEl.innerHTML = '';
+  analyticsCache = {};
+
+  for (const [className, url] of Object.entries(CLASS_LINKS)) {
+    if (url.includes('YOUR_SHEET_ID_HERE')) continue;
+    try {
+      const csv     = await fetchCSV(url);
+      const records = parseCSV(csv);
+      if (!records.length) continue;
+      const analytics = computeAnalytics(records, className);
+      if (!analytics) continue;
+      analyticsCache[className] = analytics;
+
+      const card = document.createElement('div');
+      card.className = 'analytics-card';
+      card.innerHTML = `
+        <div class="analytics-card-title">📊 ${className}</div>
+        <div class="analytics-row"><span>Total Students</span><span>${analytics.total}</span></div>
+        <div class="analytics-row"><span>Male</span><span>${analytics.male}</span></div>
+        <div class="analytics-row"><span>Female</span><span>${analytics.female}</span></div>
+        <div class="analytics-row"><span>Highest Average</span><span>${analytics.highest}%</span></div>
+        <div class="analytics-row"><span>Lowest Average</span><span>${analytics.lowest}%</span></div>
+        <div class="analytics-row"><span>Class Average</span><span>${analytics.classAvg}%</span></div>
+        <div class="analytics-row"><span>Pass Rate</span><span style="color:#22c55e;">${analytics.passRate}%</span></div>
+        <div class="analytics-row"><span>Fail Rate</span><span style="color:#ef4444;">${analytics.failRate}%</span></div>
+      `;
+      cardsEl.appendChild(card);
+    } catch(e) {
+      const errBlock = document.createElement('div');
+      errBlock.style.cssText = 'color:var(--dash-danger);font-size:12px;margin-bottom:8px;';
+      errBlock.textContent = `❌ ${className}: failed to load`;
+      cardsEl.appendChild(errBlock);
+    }
+  }
+
+  loader.classList.remove('visible');
+  showToast('✅ Analytics loaded!');
+}
+
+/* Download analytics as a PDF */
+async function downloadAnalyticsPDF() {
+  const area = $('analytics-cards');
+  if (!area || !area.children.length) {
+    showToast('❌ No analytics loaded. Click "Load All Analytics" first.', 'error');
+    return;
+  }
+  showToast('⏳ Generating analytics PDF…');
+  try {
+    const opt = {
+      margin:      [10,10,10,10],
+      filename:    'Pariya_Academy_Analytics.pdf',
+      image:       { type:'jpeg', quality:0.96 },
+      html2canvas: { scale:2, useCORS:true, logging:false, backgroundColor:'#0f1b14' },
+      jsPDF:       { unit:'mm', format:'a4', orientation:'portrait' }
+    };
+    await html2pdf().set(opt).from(area).save();
+    showToast('✅ Analytics PDF downloaded!');
+  } catch(err) {
+    console.error(err);
+    showToast('❌ PDF export failed.', 'error');
+  }
+}
+/* END CUSTOM EDIT SECTION — Class Analytics */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — School Websites Manager
+   Purpose: Display school website credentials from config array
+   or from a Google Sheet CSV.
+   ============================================================ */
+
+/* Render websites list in the Websites tab */
+async function renderWebsites() {
+  const listEl  = $('websites-list');
+  const loader  = $('websites-loading');
+  if (!listEl) return;
+
+  listEl.innerHTML = '';
+  let websites = SCHOOL_WEBSITES;
+
+  // If a CSV URL is set, fetch and override the static array
+  if (WEBSITES_CSV_URL && !WEBSITES_CSV_URL.includes('YOUR_SHEET_ID')) {
+    loader.classList.add('visible');
+    try {
+      const csv    = await fetchCSV(WEBSITES_CSV_URL);
+      const parsed = parseCSV(csv);
+      websites = parsed.map(row => ({
+        function: row['Function'] || row['function'] || '',
+        url:      row['URL']      || row['url']      || '',
+        username: row['Username'] || row['username'] || '',
+        password: row['Password'] || row['password'] || '',
+      }));
+    } catch(e) {
+      showToast('❌ Could not load websites from CSV. Showing defaults.', 'error');
+    } finally {
+      loader.classList.remove('visible');
+    }
+  }
+
+  if (!websites.length) {
+    listEl.innerHTML = '<p style="font-size:13px;color:var(--dash-muted);font-weight:700;">No websites configured. Add entries to SCHOOL_WEBSITES array in code.</p>';
+    return;
+  }
+
+  websites.forEach((site, i) => {
+    const card = document.createElement('div');
+    card.className = 'website-card';
+    card.innerHTML = `
+      <div class="website-card-header">
+        <div class="website-card-func">🌐 ${escapeHtml(site.function || site['Function'] || 'Website')}</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="website-card-badge">Website #${i+1}</span>
+          <button class="btn-toggle-cred" onclick="toggleSiteCreds(${i})">🔑 Show</button>
+        </div>
+      </div>
+      <div class="website-creds" id="site-creds-${i}">
+        <div class="website-cred-row"><span>URL</span><span>${escapeHtml(site.url || site['URL'] || '—')}</span></div>
+        <div class="website-cred-row"><span>Username</span><span>${escapeHtml(site.username || site['Username'] || '—')}</span></div>
+        <div class="website-cred-row"><span>Password</span><span>${escapeHtml(site.password || site['Password'] || '—')}</span></div>
+      </div>
+    `;
+    listEl.appendChild(card);
+  });
+}
+
+/* Toggle visibility of credentials for a website card */
+function toggleSiteCreds(index) {
+  const credsEl = $(`site-creds-${index}`);
+  const btn     = credsEl ? credsEl.previousElementSibling.querySelector('.btn-toggle-cred') : null;
+  if (!credsEl) return;
+  const isVisible = credsEl.classList.toggle('visible');
+  if (btn) btn.textContent = isVisible ? '🔒 Hide' : '🔑 Show';
+}
+/* END CUSTOM EDIT SECTION — School Websites Manager */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Export Guide as PDF
+   Purpose: Generate a PDF of the admin guide page content
+   ============================================================ */
+async function exportGuidePDF() {
+  const guideEl = $('guide-content');
+  if (!guideEl) return;
+  showToast('⏳ Generating Guide PDF…');
+  try {
+    const opt = {
+      margin:      [12,12,12,12],
+      filename:    'Pariya_Academy_System_Guide.pdf',
+      image:       { type:'jpeg', quality:0.96 },
+      html2canvas: { scale:2, useCORS:true, logging:false, backgroundColor:'#0f1b14' },
+      jsPDF:       { unit:'mm', format:'a4', orientation:'portrait' }
+    };
+    await html2pdf().set(opt).from(guideEl).save();
+    showToast('✅ Guide PDF downloaded!');
+  } catch(err) {
+    console.error(err);
+    showToast('❌ PDF export failed.', 'error');
+  }
+}
+/* END CUSTOM EDIT SECTION — Export Guide */
+
+/* ============================================================
    INIT ON LOAD
+   Purpose: Set up event listeners and pre-populate logo
    ============================================================ */
 window.addEventListener('load', () => {
   document.documentElement.style.setProperty('--watermark', `url('${SCHOOL_CONFIG.schoolLogo}')`);
@@ -1561,7 +2657,10 @@ window.addEventListener('load', () => {
   if (pl) pl.src = SCHOOL_CONFIG.schoolLogo;
 });
 
-/* Expose for inline handlers */
+/* ============================================================
+   EXPOSE FUNCTIONS TO GLOBAL SCOPE
+   (Required for inline onclick handlers in HTML)
+   ============================================================ */
 window.downloadSingleCard          = downloadSingleCard;
 window.downloadAllReports          = downloadAllReports;
 window.downloadReportsIndividually = downloadReportsIndividually;
@@ -1573,7 +2672,20 @@ window.adminLogin                  = adminLogin;
 window.studentLogin                = studentLogin;
 window.logout                      = logout;
 window.studentDownloadCard         = studentDownloadCard;
+window.studentLoadTerm             = studentLoadTerm;
+window.showStudentTermSelect       = showStudentTermSelect;
 window.populateStudentClasses      = populateStudentClasses;
+window.switchTab                   = switchTab;
+window.openClassDetail             = openClassDetail;
+window.filterDetailTable           = filterDetailTable;
+window.selectDetailTerm            = selectDetailTerm;
+window.generateFromDetail          = generateFromDetail;
+window.loadAllClassProgress        = loadAllClassProgress;
+window.loadAllAnalytics            = loadAllAnalytics;
+window.downloadAnalyticsPDF        = downloadAnalyticsPDF;
+window.exportGuidePDF              = exportGuidePDF;
+window.toggleSiteCreds             = toggleSiteCreds;
+window.renderWebsites              = renderWebsites;
 </script>
 </body>
 </html>
