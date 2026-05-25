@@ -6,13 +6,15 @@
 <title>Pariya Academy — Report Card System</title>
 
 <!-- ============================================================
-     PARIYA ACADEMY REPORT CARD SYSTEM
-     Version: 2.0 (Upgraded)
-     - Admin + Student login
-     - Hardcoded Google Sheet CSV sources
-     - Mobile-first dashboard
-     - Fixed PDF generation (one student = one page)
-     - Hardcoded school info & logos
+     PARIYA ACADEMY REPORT CARD SYSTEM  — Version 2.1
+     Changes in this version:
+       • All names, signatures, session & resumption hardcoded
+       • Separate Headmaster (Nursery/Primary) & Principal (JSS/SS)
+       • Separate Form Master for Primary and Secondary
+       • Primary classes: 1–5 only (no Primary 6)
+       • Score progress bar column added to subject table
+       • School logo shown above school name on all login pages
+       • Copyright footer on all screens
      ============================================================ -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,39 +22,36 @@
 
 <style>
 /* ============================================================
-   GLOBAL RESETS & VARIABLES
+   GLOBAL RESETS & CSS VARIABLES
    ============================================================ */
 :root {
-  /* Dashboard palette */
-  --dash-bg: #0f1b14;
-  --dash-surface: #162118;
-  --dash-card: #1c2b20;
-  --dash-border: #2a3d2d;
-  --dash-green: #22c55e;
+  --dash-bg:         #0f1b14;
+  --dash-surface:    #162118;
+  --dash-card:       #1c2b20;
+  --dash-border:     #2a3d2d;
+  --dash-green:      #22c55e;
   --dash-green-soft: rgba(34,197,94,0.12);
   --dash-green-glow: rgba(34,197,94,0.25);
-  --dash-text: #e8f5ea;
-  --dash-muted: #7ca882;
-  --dash-accent: #4ade80;
-  --dash-danger: #ef4444;
-  --dash-warning: #f59e0b;
-  --dash-purple: #a855f7;
-  --dash-blue: #3b82f6;
+  --dash-text:       #e8f5ea;
+  --dash-muted:      #7ca882;
+  --dash-accent:     #4ade80;
+  --dash-danger:     #ef4444;
+  --dash-blue:       #3b82f6;
 
-  /* Report Card palette (unchanged from original) */
+  /* Report card colours — NEVER change these */
   --primary: #228B2A;
-  --soft: #C8E6C9;
-  --accent: #1f6b3b;
-  --muted: #6b7a73;
-  --border: #1f6b3b;
-  --text: #222;
+  --soft:    #C8E6C9;
+  --accent:  #1f6b3b;
+  --muted:   #6b7a73;
+  --border:  #1f6b3b;
+  --text:    #222;
 
-  --font-ui: 'Nunito', sans-serif;
+  --font-ui:      'Nunito', sans-serif;
   --font-display: 'Playfair Display', serif;
-  --radius: 14px;
-  --radius-sm: 8px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.35);
-  --transition: all 0.22s cubic-bezier(.4,0,.2,1);
+  --radius:       14px;
+  --radius-sm:    8px;
+  --shadow:       0 4px 24px rgba(0,0,0,0.35);
+  --transition:   all 0.22s cubic-bezier(.4,0,.2,1);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -67,22 +66,22 @@ body {
 }
 
 /* ============================================================
-   SCREEN ROUTING — show/hide screens
+   SCREEN ROUTING
    ============================================================ */
-.screen { display: none; min-height: 100vh; }
-.screen.active { display: block; }
+.screen { display: none; min-height: 100vh; flex-direction: column; }
+.screen.active { display: flex; }
 
 /* ============================================================
-   LOGIN SCREENS
+   LOGIN / PORTAL SCREENS
    ============================================================ */
 .login-wrap {
-  min-height: 100vh;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 16px;
-  background: radial-gradient(ellipse at 60% 0%, rgba(34,197,94,0.15) 0%, transparent 65%),
-              radial-gradient(ellipse at 0% 100%, rgba(74,222,128,0.08) 0%, transparent 60%),
+  padding: 24px 16px 8px;
+  background: radial-gradient(ellipse at 60% 0%,  rgba(34,197,94,0.15) 0%, transparent 65%),
+              radial-gradient(ellipse at 0%  100%, rgba(74,222,128,0.08) 0%, transparent 60%),
               var(--dash-bg);
 }
 
@@ -92,7 +91,7 @@ body {
   background: var(--dash-surface);
   border: 1px solid var(--dash-border);
   border-radius: var(--radius);
-  padding: 40px 32px 36px;
+  padding: 32px 28px 28px;
   box-shadow: var(--shadow);
   position: relative;
   overflow: hidden;
@@ -107,34 +106,33 @@ body {
   border-radius: var(--radius) var(--radius) 0 0;
 }
 
-.login-logo {
-  width: 70px;
-  height: 70px;
+/* School logo above school name on login */
+.login-logo-wrap {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.login-logo-wrap img {
+  width: 72px;
+  height: 72px;
   object-fit: contain;
-  border-radius: 12px;
-  display: block;
-  margin: 0 auto 16px;
+  border-radius: 14px;
   background: var(--dash-card);
+  border: 1px solid var(--dash-border);
+  display: inline-block;
 }
 
 .login-school {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
-
 .login-school h1 {
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 18px;
   color: var(--dash-accent);
   line-height: 1.2;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
-
-.login-school p {
-  font-size: 12px;
-  color: var(--dash-muted);
-  font-weight: 600;
-}
+.login-school p { font-size: 12px; color: var(--dash-muted); font-weight: 600; }
 
 .login-badge {
   display: inline-flex;
@@ -149,7 +147,7 @@ body {
   color: var(--dash-accent);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .form-label {
@@ -164,7 +162,7 @@ body {
 
 .form-input {
   width: 100%;
-  padding: 12px 14px;
+  padding: 11px 13px;
   background: var(--dash-card);
   border: 1px solid var(--dash-border);
   border-radius: var(--radius-sm);
@@ -174,19 +172,14 @@ body {
   font-weight: 700;
   outline: none;
   transition: var(--transition);
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
-
-.form-input:focus {
-  border-color: var(--dash-green);
-  box-shadow: 0 0 0 3px var(--dash-green-glow);
-}
-
+.form-input:focus { border-color: var(--dash-green); box-shadow: 0 0 0 3px var(--dash-green-glow); }
 .form-input option { background: var(--dash-card); color: var(--dash-text); }
 
 .btn-login {
   width: 100%;
-  padding: 14px;
+  padding: 13px;
   background: linear-gradient(135deg, var(--dash-green), #16a34a);
   color: #fff;
   border: none;
@@ -199,27 +192,10 @@ body {
   box-shadow: 0 4px 16px rgba(34,197,94,0.3);
   margin-top: 4px;
 }
+.btn-login:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(34,197,94,0.4); }
 
-.btn-login:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(34,197,94,0.4);
-}
-
-.btn-login:active { transform: translateY(0); }
-
-.login-switch {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 13px;
-  color: var(--dash-muted);
-}
-
-.login-switch a {
-  color: var(--dash-accent);
-  font-weight: 800;
-  text-decoration: none;
-  cursor: pointer;
-}
+.login-switch { text-align: center; margin-top: 18px; font-size: 13px; color: var(--dash-muted); }
+.login-switch a { color: var(--dash-accent); font-weight: 800; text-decoration: none; cursor: pointer; }
 
 .login-error {
   background: rgba(239,68,68,0.12);
@@ -233,12 +209,24 @@ body {
   display: none;
 }
 
+/* Copyright footer */
+.copyright-footer {
+  text-align: center;
+  padding: 14px 16px;
+  font-size: 11px;
+  color: var(--dash-muted);
+  font-weight: 700;
+  border-top: 1px solid var(--dash-border);
+  line-height: 1.6;
+  flex-shrink: 0;
+}
+.copyright-footer span { color: var(--dash-accent); }
+
 /* ============================================================
    ADMIN DASHBOARD
    ============================================================ */
 .dash-layout { display: flex; flex-direction: column; min-height: 100vh; }
 
-/* Top Nav */
 .dash-nav {
   background: var(--dash-surface);
   border-bottom: 1px solid var(--dash-border);
@@ -246,61 +234,31 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 60px;
+  height: 58px;
   position: sticky;
   top: 0;
   z-index: 100;
+  flex-shrink: 0;
 }
-
-.dash-nav-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.dash-nav-brand img {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
-  border-radius: 8px;
-}
-
-.dash-nav-brand span {
-  font-family: var(--font-display);
-  font-size: 15px;
-  color: var(--dash-accent);
-  font-weight: 700;
-}
-
-.dash-nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.dash-nav-brand { display: flex; align-items: center; gap: 10px; }
+.dash-nav-brand img { width: 34px; height: 34px; object-fit: contain; border-radius: 8px; }
+.dash-nav-brand span { font-family: var(--font-display); font-size: 14px; color: var(--dash-accent); font-weight: 700; }
+.dash-nav-actions { display: flex; align-items: center; gap: 10px; }
 
 .nav-user-chip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: flex; align-items: center; gap: 8px;
   background: var(--dash-card);
   border: 1px solid var(--dash-border);
   border-radius: 999px;
   padding: 5px 12px 5px 6px;
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--dash-muted);
+  font-size: 12px; font-weight: 800; color: var(--dash-muted);
 }
-
 .nav-user-chip .avatar {
-  width: 24px;
-  height: 24px;
+  width: 24px; height: 24px;
   background: var(--dash-green-soft);
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  color: var(--dash-accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--dash-accent);
 }
 
 .btn-logout {
@@ -310,172 +268,83 @@ body {
   padding: 6px 12px;
   border-radius: var(--radius-sm);
   font-family: var(--font-ui);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 12px; font-weight: 700;
   cursor: pointer;
   transition: var(--transition);
 }
-
 .btn-logout:hover { color: var(--dash-danger); border-color: var(--dash-danger); }
 
-/* Dashboard main */
-.dash-main { flex: 1; padding: 20px 16px 40px; }
+.dash-main { flex: 1; padding: 20px 16px 16px; overflow-y: auto; }
 
-/* Stats row */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 24px;
-}
-
-.stat-card {
-  background: var(--dash-card);
-  border: 1px solid var(--dash-border);
-  border-radius: var(--radius);
-  padding: 16px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.stat-label {
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--dash-muted);
-}
-
-.stat-value {
-  font-size: 22px;
-  font-weight: 900;
-  color: var(--dash-accent);
-  line-height: 1;
-}
-
-.stat-sub {
-  font-size: 10px;
-  color: var(--dash-muted);
-  font-weight: 600;
-}
+/* Stats */
+.stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 22px; }
+.stat-card { background: var(--dash-card); border: 1px solid var(--dash-border); border-radius: var(--radius); padding: 14px 12px; }
+.stat-label { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dash-muted); }
+.stat-value { font-size: 20px; font-weight: 900; color: var(--dash-accent); line-height: 1.1; margin: 3px 0; }
+.stat-sub   { font-size: 10px; color: var(--dash-muted); font-weight: 600; }
 
 /* Section headings */
 .section-heading {
-  font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--dash-muted);
+  font-size: 12px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--dash-muted);
   margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: flex; align-items: center; gap: 8px;
 }
+.section-heading::after { content:''; flex:1; height:1px; background:var(--dash-border); }
 
-.section-heading::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--dash-border);
-}
-
-/* Class cards grid */
-.class-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 28px;
-}
+/* Class grid */
+.class-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 26px; }
 
 .class-card {
   background: var(--dash-card);
   border: 1px solid var(--dash-border);
   border-radius: var(--radius);
-  padding: 18px 16px;
+  padding: 16px 14px;
   cursor: pointer;
   transition: var(--transition);
   position: relative;
   overflow: hidden;
 }
-
 .class-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  opacity: 0;
-  transition: var(--transition);
+  content:''; position:absolute; top:0; left:0; right:0; height:3px; opacity:0; transition:var(--transition);
 }
+.class-card:hover { border-color: var(--dash-green); background: rgba(34,197,94,0.06); transform: translateY(-2px); }
+.class-card:hover::before { opacity:1; }
 
-.class-card:hover {
-  border-color: var(--dash-green);
-  background: rgba(34,197,94,0.06);
-  transform: translateY(-2px);
-}
+.class-card.cat-nursery::before { background: linear-gradient(90deg,#A52A2A,#ef4444); }
+.class-card.cat-primary::before { background: linear-gradient(90deg,#228B2A,#22c55e); }
+.class-card.cat-jss::before     { background: linear-gradient(90deg,#6A0DAD,#a855f7); }
+.class-card.cat-ss::before      { background: linear-gradient(90deg,#000080,#3b82f6); }
 
-.class-card:hover::before { opacity: 1; }
+.class-card.cat-nursery:hover { border-color:#A52A2A; background:rgba(165,42,42,0.08); }
+.class-card.cat-jss:hover     { border-color:#6A0DAD; background:rgba(106,13,173,0.08); }
+.class-card.cat-ss:hover      { border-color:#000080; background:rgba(0,0,128,0.08); }
 
-.class-card.cat-nursery::before { background: linear-gradient(90deg, #A52A2A, #ef4444); }
-.class-card.cat-primary::before { background: linear-gradient(90deg, #228B2A, #22c55e); }
-.class-card.cat-jss::before     { background: linear-gradient(90deg, #6A0DAD, #a855f7); }
-.class-card.cat-ss::before      { background: linear-gradient(90deg, #000080, #3b82f6); }
-
-.class-card.cat-nursery:hover { border-color: #A52A2A; background: rgba(165,42,42,0.08); }
-.class-card.cat-jss:hover     { border-color: #6A0DAD; background: rgba(106,13,173,0.08); }
-.class-card.cat-ss:hover      { border-color: #000080; background: rgba(0,0,128,0.08); }
-
-.class-card-icon {
-  font-size: 22px;
-  margin-bottom: 8px;
-}
-
-.class-card-name {
-  font-size: 16px;
-  font-weight: 900;
-  color: var(--dash-text);
-  margin-bottom: 2px;
-}
-
-.class-card-sub {
-  font-size: 11px;
-  color: var(--dash-muted);
-  font-weight: 600;
-}
+.class-card-icon  { font-size:22px; margin-bottom:6px; }
+.class-card-name  { font-size:15px; font-weight:900; color:var(--dash-text); margin-bottom:2px; }
+.class-card-sub   { font-size:11px; color:var(--dash-muted); font-weight:600; }
 
 .class-card-badge {
-  position: absolute;
-  top: 12px; right: 12px;
-  font-size: 9px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 3px 8px;
-  border-radius: 999px;
+  position:absolute; top:10px; right:10px;
+  font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:0.05em;
+  padding:3px 8px; border-radius:999px;
 }
-
-.badge-nursery { background: rgba(165,42,42,0.2); color: #fca5a5; }
-.badge-primary { background: var(--dash-green-soft); color: var(--dash-accent); }
-.badge-jss     { background: rgba(168,85,247,0.18); color: #d8b4fe; }
-.badge-ss      { background: rgba(59,130,246,0.18); color: #93c5fd; }
+.badge-nursery { background:rgba(165,42,42,0.2);  color:#fca5a5; }
+.badge-primary { background:var(--dash-green-soft); color:var(--dash-accent); }
+.badge-jss     { background:rgba(168,85,247,0.18); color:#d8b4fe; }
+.badge-ss      { background:rgba(59,130,246,0.18); color:#93c5fd; }
 
 /* Settings panel */
 .settings-panel {
   background: var(--dash-card);
   border: 1px solid var(--dash-border);
   border-radius: var(--radius);
-  padding: 20px 16px;
+  padding: 18px 16px;
   margin-bottom: 20px;
 }
-
-.settings-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .input-group { display: flex; flex-direction: column; gap: 5px; }
-.input-group.full { grid-column: 1 / -1; }
+.input-group.full { grid-column: 1/-1; }
 
 .dash-input {
   padding: 10px 12px;
@@ -484,211 +353,69 @@ body {
   border-radius: var(--radius-sm);
   color: var(--dash-text);
   font-family: var(--font-ui);
-  font-size: 13px;
-  font-weight: 700;
-  outline: none;
-  transition: var(--transition);
-  width: 100%;
+  font-size: 13px; font-weight: 700;
+  outline: none; transition: var(--transition); width: 100%;
 }
+.dash-input:focus { border-color: var(--dash-green); box-shadow: 0 0 0 3px var(--dash-green-glow); }
 
-.dash-input:focus {
-  border-color: var(--dash-green);
-  box-shadow: 0 0 0 3px var(--dash-green-glow);
-}
-
-/* Signature upload buttons */
-.sig-upload-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 4px;
-}
-
-.sig-upload-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  background: var(--dash-bg);
-  border: 1px dashed var(--dash-border);
-  border-radius: var(--radius-sm);
-  padding: 12px 8px;
-  cursor: pointer;
-  transition: var(--transition);
-  position: relative;
-  overflow: hidden;
-}
-
-.sig-upload-btn:hover { border-color: var(--dash-green); background: var(--dash-green-soft); }
-
-.sig-upload-btn img.sig-preview {
-  height: 30px;
-  object-fit: contain;
-  max-width: 100%;
-}
-
-.sig-upload-btn span {
-  font-size: 10px;
-  font-weight: 800;
-  color: var(--dash-muted);
-  text-align: center;
-  line-height: 1.3;
-}
-
-.sig-upload-btn input { display: none; }
-
-/* Action buttons */
-.action-row {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 4px;
-}
-
-.btn-action {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 14px 16px;
-  border-radius: var(--radius-sm);
-  border: none;
-  font-family: var(--font-ui);
-  font-size: 14px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: var(--transition);
-  width: 100%;
-}
-
-.btn-primary-action {
-  background: linear-gradient(135deg, var(--dash-green), #16a34a);
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(34,197,94,0.3);
-}
-
-.btn-primary-action:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(34,197,94,0.4); }
-
-.btn-ghost-action {
-  background: var(--dash-card);
-  border: 1px solid var(--dash-border);
-  color: var(--dash-text);
-}
-
-.btn-ghost-action:hover { border-color: var(--dash-green); color: var(--dash-accent); background: var(--dash-green-soft); }
-
-/* Loading indicator */
+/* Loading */
 .loading-bar {
   display: none;
   background: var(--dash-card);
   border: 1px solid var(--dash-border);
   border-radius: var(--radius-sm);
-  padding: 14px 16px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--dash-accent);
-  gap: 10px;
-  align-items: center;
+  padding: 13px 16px;
+  font-size: 13px; font-weight: 700; color: var(--dash-accent);
+  gap: 10px; align-items: center; margin-bottom: 12px;
 }
-
 .loading-bar.visible { display: flex; }
-
 .spinner {
-  width: 18px; height: 18px;
-  border: 2px solid var(--dash-border);
-  border-top-color: var(--dash-accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  flex-shrink: 0;
+  width:18px; height:18px;
+  border:2px solid var(--dash-border);
+  border-top-color:var(--dash-accent);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite; flex-shrink:0;
 }
+@keyframes spin { to { transform:rotate(360deg); } }
 
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ============================================================
-   REPORT AREA WRAPPER (visible over dark bg)
-   ============================================================ */
-.report-wrapper {
-  background: #f6fff6;
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-top: 8px;
-}
-
-.report-area-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
+/* Report wrapper */
+.report-wrapper { background:#f6fff6; border-radius:var(--radius); padding:14px; margin-top:6px; }
+.report-area-toolbar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
 .btn-report {
-  flex: 1;
-  min-width: 120px;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  border: none;
-  font-family: var(--font-ui);
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+  flex:1; min-width:110px; padding:10px 10px;
+  border-radius:var(--radius-sm); border:none;
+  font-family:var(--font-ui); font-size:12px; font-weight:800;
+  cursor:pointer; transition:var(--transition);
+  display:flex; align-items:center; justify-content:center; gap:5px;
 }
-
-.btn-report-primary { background: var(--primary); color: #fff; }
-.btn-report-primary:hover { opacity: 0.9; }
-.btn-report-outline { background: #fff; border: 1px solid var(--primary); color: var(--primary); }
-.btn-report-outline:hover { background: #f0fdf0; }
+.btn-report-primary { background:var(--primary); color:#fff; }
+.btn-report-primary:hover { opacity:0.9; }
+.btn-report-outline { background:#fff; border:1px solid var(--primary); color:var(--primary); }
+.btn-report-outline:hover { background:#f0fdf0; }
 
 /* ============================================================
-   REPORT CARD STYLES (UNCHANGED FROM ORIGINAL)
+   REPORT CARD — CLASS-SPECIFIC COLOURS (unchanged)
    ============================================================ */
-.card.category-nursery {
-  --primary: #A52A2A !important;
-  --soft: #FFDCDC !important;
-  --accent: #800000 !important;
-  --border: #A52A2A !important;
-}
-
-.card.category-jss {
-  --primary: #6A0DAD !important;
-  --soft: #E6D9F5 !important;
-  --accent: #4B0082 !important;
-  --border: #6A0DAD !important;
-}
-
-.card.category-ss {
-  --primary: #000080 !important;
-  --soft: #CCE5FF !important;
-  --accent: #003366 !important;
-  --border: #000080 !important;
-}
+.card.category-nursery { --primary:#A52A2A !important; --soft:#FFDCDC !important; --accent:#800000 !important; --border:#A52A2A !important; }
+.card.category-jss     { --primary:#6A0DAD !important; --soft:#E6D9F5 !important; --accent:#4B0082 !important; --border:#6A0DAD !important; }
+.card.category-ss      { --primary:#000080 !important; --soft:#CCE5FF !important; --accent:#003366 !important; --border:#000080 !important; }
 
 /* Report card base */
 .card {
-  background: #fff;
-  border-radius: 10px;
-  padding: 14px;
-  border: 2px solid var(--border);
-  margin-bottom: 20px;
-  position: relative;
-  color: #222;
-  font-family: 'Inter', system-ui, sans-serif;
+  background:#fff; border-radius:10px; padding:14px;
+  border:2px solid var(--border); margin-bottom:20px;
+  position:relative; color:#222;
+  font-family:'Inter',system-ui,sans-serif;
 }
-
-.card *  { font-family: 'Inter', system-ui, sans-serif; }
+.card * { font-family:'Inter',system-ui,sans-serif; }
 
 .card .card-top { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
 .card .card-top .logo-container { flex:0 0 86px; text-align:center; }
 .card .card-top .logo-container img { width:86px; height:86px; object-fit:contain; border-radius:10px; border:1px solid rgba(0,0,0,0.04); }
 .school-logo-img { width:86px; height:86px; object-fit:contain; border-radius:10px; }
-
-.school-title { flex: 1; }
+.school-title { flex:1; }
 .card .school-title h2 { color:var(--primary); font-size:18px; font-weight:900; margin-bottom:4px; text-align:center; }
-.card .school-title p { color:var(--muted); font-size:11px; margin:0; text-align:center; }
+.card .school-title p  { color:var(--muted); font-size:11px; margin:0; text-align:center; }
 .card .school-title .muted { font-size:10px; }
 .card .contact-info { font-size:10px; color:var(--accent); text-align:center; margin-top:4px; font-weight:700; }
 
@@ -698,7 +425,6 @@ body {
   border-bottom:2px solid var(--soft);
   font-size:14px; font-weight:800;
 }
-
 .student-header .name-block { font-size:18px; font-weight:900; color:var(--primary); }
 .student-header .report-term { flex-grow:1; text-align:center; color:var(--accent); font-size:14px; font-weight:900; }
 .student-header .session-info { color:var(--accent); white-space:nowrap; font-weight:900; }
@@ -712,11 +438,29 @@ body {
 .info-table td strong { color:var(--accent); font-weight:900; margin-right:4px; }
 .info-table .data { font-weight:900; color:#222; }
 
+/* Subject table */
 .card-subjects { margin-top:6px; }
 .card-subjects table { width:100%; border-collapse:collapse; font-size:13px; }
-.card-subjects th, .card-subjects td { border:1px solid var(--border); padding:3px 4px !important; font-size:12px; font-weight:800; color:#222; }
+.card-subjects th, .card-subjects td { border:1px solid var(--border); padding:3px 4px !important; font-size:11px; font-weight:800; color:#222; }
 .card-subjects thead th { background:var(--primary); color:#fff; }
 .card-subjects tbody td { background:var(--soft); }
+
+/* Score progress bar inside subject table */
+.score-bar-wrap {
+  width: 100%;
+  min-width: 40px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+  height: 8px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.score-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
 
 .lower-row { display:flex; gap:12px; align-items:stretch; margin-top:12px; }
 .grading-box { flex-basis:40%; border-radius:10px; padding:8px; background:transparent; border:1px solid rgba(0,0,0,0.04); }
@@ -730,184 +474,131 @@ body {
 .total-summary tbody td { background:var(--soft); border:2px solid var(--border); vertical-align:middle; text-align:center; font-weight:800; padding:6px; color:#222; }
 
 .pos-plain { font-weight:900; color:var(--primary); font-size:15px; display:block; }
-
-.remarks { margin-top:12px; font-weight:900; color:#222; font-size:13px; }
+.remarks   { margin-top:12px; font-weight:900; color:#222; font-size:13px; }
 .bottom-row { display:flex; justify-content:space-between; align-items:center; margin-top:18px; gap:8px; }
 .signature-block { width:30%; text-align:center; display:flex; flex-direction:column; justify-content:flex-end; }
-.signature-block img { max-width:100%; height:30px; object-fit:contain; margin-bottom:-5px; opacity:0.9; }
-.sig-line { border-top:1.5px solid #000; margin:4px auto 2px; width:75%; }
+.signature-block img.sig-img { max-width:100%; height:30px; object-fit:contain; margin-bottom:-5px; opacity:0.9; }
+.sig-line    { border-top:1.5px solid #000; margin:4px auto 2px; width:75%; }
 .sig-caption { font-size:11px; color:var(--muted); margin-top:2px; }
 
 .qr-code-container {
-  width:105px; height:105px;
-  background:#fff;
-  padding:1px;
+  width:105px; height:105px; background:#fff; padding:1px;
   border:1px solid var(--border);
-  display:flex; align-items:center; justify-content:center;
-  margin-top:2px;
+  display:flex; align-items:center; justify-content:center; margin-top:2px;
 }
 .qr-code-container img { max-width:100%; }
 
-/* Individual download btn inside card */
 .card-dl-btn {
-  background: var(--primary);
-  color: #fff;
-  border: 0;
-  padding: 4px 8px;
-  border-radius: 8px;
-  font-weight: 900;
-  cursor: pointer;
-  font-size: 10px;
+  background:var(--primary); color:#fff; border:0;
+  padding:4px 8px; border-radius:8px;
+  font-weight:900; cursor:pointer; font-size:10px;
 }
 
 /* ============================================================
-   STUDENT DASHBOARD (after student login)
+   STUDENT DASHBOARD
    ============================================================ */
-.student-dash {
-  min-height: 100vh;
-  padding: 0 0 40px;
-  background: radial-gradient(ellipse at 50% 0%, rgba(34,197,94,0.1) 0%, transparent 60%), var(--dash-bg);
-}
-
+.student-dash { display:flex; flex-direction:column; min-height:100vh; background:radial-gradient(ellipse at 50% 0%,rgba(34,197,94,0.1) 0%,transparent 60%), var(--dash-bg); }
 .student-nav {
-  background: var(--dash-surface);
-  border-bottom: 1px solid var(--dash-border);
-  padding: 0 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 56px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  background:var(--dash-surface); border-bottom:1px solid var(--dash-border);
+  padding:0 16px; display:flex; align-items:center; justify-content:space-between;
+  height:56px; position:sticky; top:0; z-index:100; flex-shrink:0;
 }
+.student-nav span { font-size:13px; font-weight:800; color:var(--dash-accent); }
+.student-welcome { padding:26px 16px 16px; text-align:center; }
+.student-welcome h2 { font-family:var(--font-display); font-size:22px; color:var(--dash-accent); margin-bottom:4px; }
+.student-welcome p { font-size:13px; color:var(--dash-muted); font-weight:600; }
+.student-card-area { padding:0 16px; flex:1; }
+.student-report-card { background:#f6fff6; border-radius:var(--radius); padding:16px; }
 
-.student-nav span {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--dash-accent);
+.btn-action {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:14px 16px; border-radius:var(--radius-sm); border:none;
+  font-family:var(--font-ui); font-size:14px; font-weight:800;
+  cursor:pointer; transition:var(--transition); width:100%;
+  margin-bottom:16px;
 }
-
-.student-welcome {
-  padding: 28px 16px 20px;
-  text-align: center;
+.btn-student-dl {
+  background:linear-gradient(135deg,#3b82f6,#1d4ed8);
+  color:#fff; box-shadow:0 4px 16px rgba(59,130,246,0.3);
 }
-
-.student-welcome h2 {
-  font-family: var(--font-display);
-  font-size: 22px;
-  color: var(--dash-accent);
-  margin-bottom: 4px;
-}
-
-.student-welcome p { font-size: 13px; color: var(--dash-muted); font-weight: 600; }
-
-.student-card-area {
-  padding: 0 16px;
-}
-
-.student-report-card {
-  background: #f6fff6;
-  border-radius: var(--radius);
-  padding: 16px;
-}
+.btn-student-dl:hover { transform:translateY(-1px); }
 
 /* ============================================================
-   PRINT STYLES (UNCHANGED / IMPROVED)
+   PRINT STYLES
    ============================================================ */
 @media print {
-  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-
-  /* Hide everything except the report cards */
-  body > * { display: none !important; }
-  body > #printContainer { display: block !important; }
+  * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  body > * { display:none !important; }
+  body > #printContainer { display:block !important; }
 
   .card {
-    margin: 0 !important;
-    padding: 6mm !important;
-    page-break-after: always !important;
-    page-break-inside: avoid !important;
-    height: 280mm !important;
-    border: 2px solid var(--border) !important;
-    position: relative;
-    transform: scale(0.97);
-    transform-origin: top center;
-    background: #fff !important;
-    color: #222 !important;
-    font-family: 'Inter', system-ui, sans-serif !important;
+    margin:0 !important; padding:6mm !important;
+    page-break-after:always !important;
+    page-break-inside:avoid !important;
+    height:280mm !important;
+    border:2px solid var(--border) !important;
+    position:relative;
+    transform:scale(0.97); transform-origin:top center;
+    background:#fff !important; color:#222 !important;
   }
-
-  .card:last-child { page-break-after: avoid !important; }
-
-  .card-dl-btn { display: none !important; }
-  .qr-wrap > button { display: none !important; }
-
-  thead th { background: var(--primary) !important; color: #fff !important; }
-  tbody td { background: var(--soft) !important; }
-
+  .card:last-child { page-break-after:avoid !important; }
+  .card-dl-btn, .qr-wrap > button { display:none !important; }
+  .score-bar-wrap { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  thead th { background:var(--primary) !important; color:#fff !important; }
+  tbody td  { background:var(--soft) !important; }
   .card::after {
-    content: "";
-    position: absolute; inset: 0; opacity: 0.05; pointer-events: none;
-    background-image: var(--watermark);
-    background-size: 280px;
-    background-position: center center;
-    background-repeat: no-repeat;
+    content:""; position:absolute; inset:0; opacity:0.05; pointer-events:none;
+    background-image:var(--watermark); background-size:280px;
+    background-position:center; background-repeat:no-repeat;
   }
-  .card * { position: relative; z-index: 1; }
-
-  @page { size: A4; margin: 4mm; }
+  .card * { position:relative; z-index:1; }
+  @page { size:A4; margin:4mm; }
 }
 
 /* ============================================================
-   TOAST NOTIFICATION
+   TOAST
    ============================================================ */
 .toast {
-  position: fixed;
-  bottom: 24px; left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: var(--dash-card);
-  border: 1px solid var(--dash-border);
-  border-radius: 999px;
-  padding: 10px 20px;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--dash-text);
-  z-index: 9999;
-  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
-  white-space: nowrap;
-  pointer-events: none;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  position:fixed; bottom:24px; left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--dash-card); border:1px solid var(--dash-border);
+  border-radius:999px; padding:10px 20px;
+  font-size:13px; font-weight:800; color:var(--dash-text);
+  z-index:9999; transition:transform 0.3s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap; pointer-events:none;
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
 }
-
-.toast.show { transform: translateX(-50%) translateY(0); }
-.toast.success { border-color: rgba(34,197,94,0.5); color: var(--dash-accent); }
-.toast.error { border-color: rgba(239,68,68,0.4); color: #fca5a5; }
-
+.toast.show { transform:translateX(-50%) translateY(0); }
+.toast.success { border-color:rgba(34,197,94,0.5); color:var(--dash-accent); }
+.toast.error   { border-color:rgba(239,68,68,0.4);  color:#fca5a5; }
 </style>
 </head>
 <body>
 
 <!-- ============================================================
-     SCREEN 1: PORTAL SELECTION (entry point)
+     SCREEN 1: PORTAL SELECTION
      ============================================================ -->
 <div id="screen-portal" class="screen active">
   <div class="login-wrap">
     <div class="login-card" style="max-width:380px; text-align:center;">
-      <img id="portalLogo" class="login-logo" src="https://i.postimg.cc/FKF9wccT/school.png" alt="School Logo" onerror="this.style.display='none'">
+      <div class="login-logo-wrap">
+        <img id="portalLogoImg" src="https://i.postimg.cc/VvMcYqbb/LOGO.png" alt="School Logo" onerror="this.style.opacity='0'">
+      </div>
       <div class="login-school">
         <h1>Pariya Academy</h1>
         <p>For Modern Science and Quran</p>
       </div>
-
-      <p style="font-size:12px; color:var(--dash-muted); font-weight:700; margin-bottom:20px;">Select your portal to continue</p>
-
-      <button class="btn-login" onclick="showScreen('screen-admin-login')" style="margin-bottom:12px;">
-        🔐 Admin Portal
-      </button>
-      <button class="btn-login" onclick="showScreen('screen-student-login')" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); box-shadow: 0 4px 16px rgba(59,130,246,0.3);">
+      <p style="font-size:12px;color:var(--dash-muted);font-weight:700;margin-bottom:20px;">Select your portal to continue</p>
+      <button class="btn-login" onclick="showScreen('screen-admin-login')" style="margin-bottom:12px;">🔐 Admin Portal</button>
+      <button class="btn-login" onclick="populateStudentClasses(); showScreen('screen-student-login')"
+        style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);box-shadow:0 4px 16px rgba(59,130,246,0.3);">
         🎓 Student Portal
       </button>
     </div>
+  </div>
+  <div class="copyright-footer">
+    © <span>2026 Pariya Academy</span>. All Rights Reserved.<br>
+    Designed by <span>Arabo Modibbo</span>
   </div>
 </div>
 
@@ -917,29 +608,27 @@ body {
 <div id="screen-admin-login" class="screen">
   <div class="login-wrap">
     <div class="login-card">
-      <img class="login-logo" src="https://i.postimg.cc/FKF9wccT/school.png" alt="School Logo" onerror="this.style.display='none'">
+      <div class="login-logo-wrap">
+        <img src="https://i.postimg.cc/VvMcYqbb/LOGO.png" alt="School Logo" onerror="this.style.opacity='0'">
+      </div>
       <div class="login-school">
         <h1>Admin Portal</h1>
         <p>Pariya Academy Report Card System</p>
       </div>
-      <div style="display:flex; justify-content:center; margin-bottom:20px;">
+      <div style="display:flex;justify-content:center;margin-bottom:18px;">
         <span class="login-badge">🔐 Administrator Access</span>
       </div>
-
       <div id="admin-error" class="login-error">❌ Invalid credentials. Please try again.</div>
-
       <label class="form-label">Username</label>
       <input id="admin-username" class="form-input" type="text" placeholder="Enter username" autocomplete="off">
-
       <label class="form-label">Password</label>
       <input id="admin-password" class="form-input" type="password" placeholder="Enter password">
-
       <button class="btn-login" onclick="adminLogin()">Sign In →</button>
-
-      <div class="login-switch">
-        <a onclick="showScreen('screen-portal')">← Back to portal</a>
-      </div>
+      <div class="login-switch"><a onclick="showScreen('screen-portal')">← Back to portal</a></div>
     </div>
+  </div>
+  <div class="copyright-footer">
+    © <span>2026 Pariya Academy</span>. All Rights Reserved. Designed by <span>Arabo Modibbo</span>
   </div>
 </div>
 
@@ -949,40 +638,35 @@ body {
 <div id="screen-student-login" class="screen">
   <div class="login-wrap">
     <div class="login-card">
-      <img class="login-logo" src="https://i.postimg.cc/FKF9wccT/school.png" alt="School Logo" onerror="this.style.display='none'">
+      <div class="login-logo-wrap">
+        <img src="https://i.postimg.cc/VvMcYqbb/LOGO.png" alt="School Logo" onerror="this.style.opacity='0'">
+      </div>
       <div class="login-school">
         <h1>Student Portal</h1>
         <p>Access Your Report Card</p>
       </div>
-      <div style="display:flex; justify-content:center; margin-bottom:20px;">
-        <span class="login-badge" style="background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.3); color: #93c5fd;">🎓 Student Access</span>
+      <div style="display:flex;justify-content:center;margin-bottom:18px;">
+        <span class="login-badge" style="background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.3);color:#93c5fd;">🎓 Student Access</span>
       </div>
-
-      <div id="student-error" class="login-error">❌ Student not found. Check your admission number and class.</div>
-
-      <label class="form-label">Select Class</label>
+      <div id="student-error" class="login-error">❌ Student not found. Check your admission number.</div>
+      <label class="form-label">Select Your Class</label>
       <select id="student-class" class="form-input">
         <option value="">-- Select your class --</option>
-        <!-- Populated dynamically from classLinks -->
       </select>
-
       <label class="form-label">Admission Number</label>
       <input id="student-admission" class="form-input" type="text" placeholder="e.g. PA/2024/001" autocomplete="off">
-
       <label class="form-label">Password</label>
       <input id="student-password" class="form-input" type="password" placeholder="Enter your password">
-
       <div id="student-loading" class="loading-bar" style="margin-bottom:12px;">
         <div class="spinner"></div>
-        <span>Fetching your record...</span>
+        <span>Fetching your record…</span>
       </div>
-
-      <button class="btn-login" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); box-shadow: 0 4px 16px rgba(59,130,246,0.3);" onclick="studentLogin()">View My Report Card →</button>
-
-      <div class="login-switch">
-        <a onclick="showScreen('screen-portal')">← Back to portal</a>
-      </div>
+      <button class="btn-login" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);box-shadow:0 4px 16px rgba(59,130,246,0.3);" onclick="studentLogin()">View My Report Card →</button>
+      <div class="login-switch"><a onclick="showScreen('screen-portal')">← Back to portal</a></div>
     </div>
+  </div>
+  <div class="copyright-footer">
+    © <span>2026 Pariya Academy</span>. All Rights Reserved. Designed by <span>Arabo Modibbo</span>
   </div>
 </div>
 
@@ -990,27 +674,21 @@ body {
      SCREEN 4: ADMIN DASHBOARD
      ============================================================ -->
 <div id="screen-admin-dash" class="screen">
-  <div class="dash-layout">
+  <div class="dash-layout" style="flex:1;">
 
-    <!-- Nav -->
     <nav class="dash-nav">
       <div class="dash-nav-brand">
-        <img src="https://i.postimg.cc/FKF9wccT/school.png" alt="Logo" onerror="this.style.display='none'">
+        <img src="https://i.postimg.cc/VvMcYqbb/LOGO.png" alt="Logo" onerror="this.style.display='none'">
         <span>Pariya Academy</span>
       </div>
       <div class="dash-nav-actions">
-        <div class="nav-user-chip">
-          <div class="avatar">A</div>
-          Admin
-        </div>
+        <div class="nav-user-chip"><div class="avatar">A</div>Admin</div>
         <button class="btn-logout" onclick="logout()">Sign Out</button>
       </div>
     </nav>
 
-    <!-- Main content -->
     <main class="dash-main">
 
-      <!-- Stats -->
       <div class="stats-row">
         <div class="stat-card">
           <div class="stat-label">Classes</div>
@@ -1024,64 +702,20 @@ body {
         </div>
         <div class="stat-card">
           <div class="stat-label">Session</div>
-          <div class="stat-value" style="font-size:14px; padding-top:2px;" id="stat-session">2025/26</div>
+          <div class="stat-value" style="font-size:13px;padding-top:3px;" id="stat-session">2025/26</div>
           <div class="stat-sub">Academic</div>
         </div>
       </div>
 
-      <!-- Class selection -->
       <div class="section-heading">Select Class to Generate</div>
-      <div class="class-grid" id="classGrid">
-        <!-- Populated by JS -->
-      </div>
+      <div class="class-grid" id="classGrid"></div>
 
-      <!-- Loading bar -->
-      <div id="admin-loading" class="loading-bar" style="margin-bottom:12px;">
+      <div id="admin-loading" class="loading-bar">
         <div class="spinner"></div>
-        <span id="admin-loading-text">Fetching student data...</span>
+        <span id="admin-loading-text">Fetching student data…</span>
       </div>
 
-      <!-- Settings -->
-      <div class="section-heading">Report Settings</div>
-      <div class="settings-panel">
-        <div class="settings-grid">
-          <div class="input-group">
-            <label class="form-label">Principal Name</label>
-            <input id="principalName" class="dash-input" type="text" value="Principal Name" onfocus="clearOnFocus(this,'Principal Name')" onblur="restoreOnBlur(this,'Principal Name')">
-          </div>
-          <div class="input-group">
-            <label class="form-label">Form Master / Headmaster</label>
-            <input id="formMasterName" class="dash-input" type="text" value="Form Master Name" onfocus="clearOnFocus(this,'Form Master Name')" onblur="restoreOnBlur(this,'Form Master Name')">
-          </div>
-          <div class="input-group">
-            <label class="form-label">Academic Session</label>
-            <input id="session" class="dash-input" type="text" value="2025/2026">
-          </div>
-          <div class="input-group">
-            <label class="form-label">Resumption Date</label>
-            <input id="resumption" class="dash-input" type="text" value="2 Jan. 2026">
-          </div>
-        </div>
-
-        <!-- Signature uploads -->
-        <div style="margin-top:14px;">
-          <div class="form-label" style="margin-bottom:8px;">Signatures</div>
-          <div class="sig-upload-row">
-            <label class="sig-upload-btn" onclick="document.getElementById('principalSigUpload').click()">
-              <img id="principalSigPreview" class="sig-preview" src="" alt="" style="display:none;">
-              <span>📝 Upload Principal<br>Signature</span>
-              <input id="principalSigUpload" type="file" accept="image/*" onchange="onSignatureUpload(event,'principal')">
-            </label>
-            <label class="sig-upload-btn" onclick="document.getElementById('formMasterSigUpload').click()">
-              <img id="formMasterSigPreview" class="sig-preview" src="" alt="" style="display:none;">
-              <span>📝 Upload Form Master<br>Signature</span>
-              <input id="formMasterSigUpload" type="file" accept="image/*" onchange="onSignatureUpload(event,'formMaster')">
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <!-- Report area (shown after generation) -->
+      <!-- Report area -->
       <div id="reportWrapper" style="display:none;">
         <div class="section-heading" id="reportSectionLabel">Generated Reports</div>
         <div class="report-wrapper">
@@ -1095,6 +729,10 @@ body {
       </div>
 
     </main>
+
+    <div class="copyright-footer">
+      © <span>2026 Pariya Academy</span>. All Rights Reserved. Designed by <span>Arabo Modibbo</span>
+    </div>
   </div>
 </div>
 
@@ -1107,20 +745,18 @@ body {
       <span>🎓 Student Portal</span>
       <button class="btn-logout" onclick="logout()">Sign Out</button>
     </nav>
-
     <div class="student-welcome">
       <h2 id="studentWelcomeName">Welcome!</h2>
       <p id="studentWelcomeSub">Your report card is ready</p>
     </div>
-
     <div class="student-card-area">
-      <button class="btn-action btn-primary-action" style="margin-bottom:16px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); box-shadow: 0 4px 16px rgba(59,130,246,0.3);" onclick="studentDownloadCard()">
-        📥 Download My Report Card
-      </button>
-
+      <button class="btn-action btn-student-dl" onclick="studentDownloadCard()">📥 Download My Report Card</button>
       <div class="student-report-card">
         <div id="studentReportArea"></div>
       </div>
+    </div>
+    <div class="copyright-footer">
+      © <span>2026 Pariya Academy</span>. All Rights Reserved. Designed by <span>Arabo Modibbo</span>
     </div>
   </div>
 </div>
@@ -1137,39 +773,55 @@ body {
 
 <script>
 /* ============================================================
-   HARDCODED CONFIGURATION
+   HARDCODED SCHOOL CONFIGURATION
+   — Edit this block to update school details system-wide —
    ============================================================ */
-
-/**
- * SCHOOL INFO — hardcoded, not shown in dashboard UI
- * Update these values to change school details everywhere.
- */
 const SCHOOL_CONFIG = {
-  name:           "Pariya Academy For Modern Science and Quran",
-  motto:          "Do not be sad",
-  address:        "Near PHCC Pariya & Pariya Main Football Field",
-  primaryWebsite: "https://pariyaacademy-primary-portal.netlify.app",
-  secondaryWebsite:"https://pariyaacademy-secondary-portal.netlify.app",
-  // PostImage direct links for logos — replace with your actual links
-  schoolLogo:     "https://i.postimg.cc/FKF9wccT/school.png",
-  jibwisLogo:     "https://i.postimg.cc/KYcZCLLQ/jibwis.jpg",
+  name:             "Pariya Academy For Modern Science and Quran",
+  motto:            "Do not be sad",
+  address:          "Near PHCC Pariya & Pariya Main Football Field",
+  primaryWebsite:   "https://pariyaacademy-primary-portal.netlify.app",
+  secondaryWebsite: "https://pariyaacademy-secondary-portal.netlify.app",
+
+  // Replace with your actual PostImage direct links
+  schoolLogo:  "https://i.postimg.cc/VvMcYqbb/LOGO.png",
+  jibwisLogo:  "https://i.postimg.cc/KYcZCLLQ/jibwis.jpg",
+
+  // ── Academic info (replaces manual dashboard inputs) ──
+  session:     "2025/2026",
+  resumption:  "12 Sept. 2026",
+
+  // ── Primary / Nursery authority ──
+  headmasterName: "Mal. Hddabi Bayahya",          // shown on Nursery & Primary cards
+  headmasterSig:  "https://i.postimg.cc/mgHMhv5f/20251204-232335.jpg", // PostImage link
+
+  // ── Secondary (JSS / SS) authority ──
+  principalName:  "Mal. Abubakar Bello",            // shown on JSS & SS cards
+  principalSig:   "https://i.postimg.cc/mgHMhv5f/20251204-232335.jpg", // PostImage link
+
+  // ── Form Masters ──
+  // Primary form master (shown on Nursery / Primary cards)
+  primaryFormMasterName: "Pariya Academy AI",
+  primaryFormMasterSig:  "https://i.postimg.cc/RZHfqkDr/IMG-20251209-170119.png",
+
+  // Secondary form master (shown on JSS / SS cards)
+  secondaryFormMasterName: "Pariya Academy AI",
+  secondaryFormMasterSig:  "https://i.postimg.cc/RZHfqkDr/IMG-20251209-170119.png",
 };
 
-/**
- * CREDENTIALS — hardcoded
- */
+/* ============================================================
+   CREDENTIALS
+   ============================================================ */
 const CREDENTIALS = {
-  admin:   { username: "admin",   password: "admin123" },
+  admin:   { username: "admin", password: "pas2017" },
   student: { password: "student123" }
 };
 
-/**
- * GOOGLE SHEET CSV LINKS — hardcoded per class
- * Format: Export URL from Google Sheets as CSV
- * Example: https://docs.google.com/spreadsheets/d/SHEET_ID/export?format=csv&gid=0
- *
- * REPLACE the placeholder URLs with your actual Google Sheet CSV export links.
- */
+/* ============================================================
+   GOOGLE SHEET CSV LINKS — one per class
+   Replace YOUR_SHEET_ID_HERE with the actual Google Sheet ID.
+   Make sure the sheet is published: File → Share → Publish to web → CSV
+   ============================================================ */
 const CLASS_LINKS = {
   "Nursery 1":  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQUCzyVQz4AYsS-PmAUZDqUj2LvbUMRpdBZk-4UDfza195CzsBxp0O-oWGWYYKUPw/pub?gid=621314920&single=true&output=csv",
   "Nursery 2":  "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
@@ -1178,7 +830,6 @@ const CLASS_LINKS = {
   "Primary 3":  "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
   "Primary 4":  "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
   "Primary 5":  "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
-  "Primary 6":  "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
   "JSS 1":      "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
   "JSS 2":      "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7KCoen0Wu3Pc5gxNVGF1abBYAL78QHbaBGd8Cp5Efh4YhkJ5h17E0yLtL1wn_SQ/pub?gid=38773167&single=true&output=csv",
   "JSS 3":      "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
@@ -1187,60 +838,63 @@ const CLASS_LINKS = {
   "SS 3":       "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/export?format=csv&gid=0",
 };
 
-/**
- * CLASS METADATA — display info for each class card
- */
+/* Display metadata for class grid cards */
 const CLASS_META = {
-  "Nursery 1":  { icon:"🌱", category:"nursery",  badge:"nursery"  },
-  "Nursery 2":  { icon:"🌱", category:"nursery",  badge:"nursery"  },
-  "Primary 1":  { icon:"📚", category:"primary",  badge:"primary"  },
-  "Primary 2":  { icon:"📚", category:"primary",  badge:"primary"  },
-  "Primary 3":  { icon:"📚", category:"primary",  badge:"primary"  },
-  "Primary 4":  { icon:"📚", category:"primary",  badge:"primary"  },
-  "Primary 5":  { icon:"📚", category:"primary",  badge:"primary"  },
-  "Primary 6":  { icon:"📚", category:"primary",  badge:"primary"  },
-  "JSS 1":      { icon:"🔬", category:"jss",       badge:"jss"      },
-  "JSS 2":      { icon:"🔬", category:"jss",       badge:"jss"      },
-  "JSS 3":      { icon:"🔬", category:"jss",       badge:"jss"      },
-  "SS 1":       { icon:"🎓", category:"ss",        badge:"ss"       },
-  "SS 2":       { icon:"🎓", category:"ss",        badge:"ss"       },
-  "SS 3":       { icon:"🎓", category:"ss",        badge:"ss"       },
+  "Nursery 1": { icon:"🌱", category:"nursery", badge:"nursery" },
+  "Nursery 2": { icon:"🌱", category:"nursery", badge:"nursery" },
+  "Primary 1": { icon:"📚", category:"primary", badge:"primary" },
+  "Primary 2": { icon:"📚", category:"primary", badge:"primary" },
+  "Primary 3": { icon:"📚", category:"primary", badge:"primary" },
+  "Primary 4": { icon:"📚", category:"primary", badge:"primary" },
+  "Primary 5": { icon:"📚", category:"primary", badge:"primary" },
+  "JSS 1":     { icon:"🔬", category:"jss",     badge:"jss"     },
+  "JSS 2":     { icon:"🔬", category:"jss",     badge:"jss"     },
+  "JSS 3":     { icon:"🔬", category:"jss",     badge:"jss"     },
+  "SS 1":      { icon:"🎓", category:"ss",      badge:"ss"      },
+  "SS 2":      { icon:"🎓", category:"ss",      badge:"ss"      },
+  "SS 3":      { icon:"🎓", category:"ss",      badge:"ss"      },
 };
 
 /* ============================================================
    APP STATE
    ============================================================ */
 let students = [];
-let storedPrincipalSigUrl  = 'https://i.postimg.cc/mgHMhv5f/20251204-232335.jpg';
-let storedFormMasterSigUrl = 'https://i.postimg.cc/RZHfqkDr/IMG-20251209-170119.png';
+const $ = id => document.getElementById(id);
 
 /* ============================================================
    SCREEN NAVIGATION
    ============================================================ */
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const el = document.getElementById(id);
+  const el = $(id);
   if (el) el.classList.add('active');
 }
 
 /* ============================================================
-   TOAST NOTIFICATION
+   TOAST
    ============================================================ */
 function showToast(msg, type = 'success') {
-  const t = document.getElementById('toast');
+  const t = $('toast');
   t.textContent = msg;
   t.className = `toast ${type} show`;
-  setTimeout(() => t.classList.remove('show'), 3200);
+  setTimeout(() => t.classList.remove('show'), 3400);
+}
+
+/* ============================================================
+   HTML ESCAPE
+   ============================================================ */
+function escapeHtml(s) {
+  if (s === undefined || s === null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 /* ============================================================
    ADMIN LOGIN
    ============================================================ */
 function adminLogin() {
-  const u = document.getElementById('admin-username').value.trim();
-  const p = document.getElementById('admin-password').value;
-  const err = document.getElementById('admin-error');
-
+  const u   = $('admin-username').value.trim();
+  const p   = $('admin-password').value;
+  const err = $('admin-error');
   if (u === CREDENTIALS.admin.username && p === CREDENTIALS.admin.password) {
     err.style.display = 'none';
     initAdminDashboard();
@@ -1248,19 +902,32 @@ function adminLogin() {
     showToast('✅ Welcome, Admin!');
   } else {
     err.style.display = 'block';
-    document.getElementById('admin-password').value = '';
+    $('admin-password').value = '';
   }
+}
+
+/* ============================================================
+   STUDENT CLASS DROPDOWN — populate from CLASS_LINKS keys
+   ============================================================ */
+function populateStudentClasses() {
+  const sel = $('student-class');
+  sel.innerHTML = '<option value="">-- Select your class --</option>';
+  Object.keys(CLASS_LINKS).forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name; opt.textContent = name;
+    sel.appendChild(opt);
+  });
 }
 
 /* ============================================================
    STUDENT LOGIN
    ============================================================ */
 function studentLogin() {
-  const cls       = document.getElementById('student-class').value;
-  const admission = document.getElementById('student-admission').value.trim();
-  const password  = document.getElementById('student-password').value;
-  const err       = document.getElementById('student-error');
-  const loader    = document.getElementById('student-loading');
+  const cls       = $('student-class').value;
+  const admission = $('student-admission').value.trim();
+  const password  = $('student-password').value;
+  const err       = $('student-error');
+  const loader    = $('student-loading');
 
   err.style.display = 'none';
 
@@ -1269,13 +936,11 @@ function studentLogin() {
     err.style.display = 'block';
     return;
   }
-
   if (password !== CREDENTIALS.student.password) {
     err.textContent = '❌ Incorrect password.';
     err.style.display = 'block';
     return;
   }
-
   const url = CLASS_LINKS[cls];
   if (!url || url.includes('YOUR_SHEET_ID_HERE')) {
     err.textContent = '❌ This class has no data connected yet. Contact admin.';
@@ -1284,7 +949,6 @@ function studentLogin() {
   }
 
   loader.classList.add('visible');
-
   fetchCSV(url)
     .then(csv => {
       const all = parseCSV(csv);
@@ -1292,32 +956,27 @@ function studentLogin() {
         (s['Admission No'] || '').trim().toLowerCase() === admission.toLowerCase()
       );
       loader.classList.remove('visible');
-
       if (!stu) {
         err.textContent = '❌ Admission number not found in this class.';
         err.style.display = 'block';
         return;
       }
-
-      // Generate only that student's card
       students = [stu];
-      const area = document.getElementById('studentReportArea');
+      const area = $('studentReportArea');
       area.innerHTML = '';
-      renderCards(area, students, false /* hideDownloadBtn = false for student */);
-
-      document.getElementById('studentWelcomeName').textContent = `Welcome, ${stu['Name']}!`;
-      document.getElementById('studentWelcomeSub').textContent = `${stu['Class Type']} — ${stu['Term'] || 'Report Card'}`;
+      renderCards(area, students);
+      $('studentWelcomeName').textContent = `Welcome, ${stu['Name']}!`;
+      $('studentWelcomeSub').textContent  = `${stu['Class Type']} — ${stu['Term'] || 'Report Card'}`;
       showScreen('screen-student-dash');
       showToast('✅ Report card loaded!');
     })
     .catch(() => {
       loader.classList.remove('visible');
-      err.textContent = '❌ Could not fetch class data. Check your connection or contact admin.';
+      err.textContent = '❌ Could not fetch class data. Check connection or contact admin.';
       err.style.display = 'block';
     });
 }
 
-/* Student downloads their own card */
 function studentDownloadCard() {
   const card = document.querySelector('#studentReportArea .card');
   if (!card) return;
@@ -1331,11 +990,11 @@ function studentDownloadCard() {
    ============================================================ */
 function logout() {
   students = [];
-  document.getElementById('reportArea').innerHTML = '';
-  document.getElementById('reportWrapper').style.display = 'none';
-  document.getElementById('studentReportArea').innerHTML = '';
+  $('reportArea').innerHTML = '';
+  $('reportWrapper').style.display = 'none';
+  $('studentReportArea').innerHTML = '';
   showScreen('screen-portal');
-  showToast('👋 Signed out.', 'success');
+  showToast('👋 Signed out.');
 }
 
 /* ============================================================
@@ -1343,24 +1002,13 @@ function logout() {
    ============================================================ */
 function initAdminDashboard() {
   const classNames = Object.keys(CLASS_LINKS);
-  document.getElementById('stat-classes').textContent = classNames.length;
-  document.getElementById('stat-session').textContent = document.getElementById('session').value || '2025/26';
+  $('stat-classes').textContent = classNames.length;
+  $('stat-session').textContent = SCHOOL_CONFIG.session;
 
-  // Populate student login class select
-  const sel = document.getElementById('student-class');
-  sel.innerHTML = '<option value="">-- Select your class --</option>';
-  classNames.forEach(name => {
-    const opt = document.createElement('option');
-    opt.value = name;
-    opt.textContent = name;
-    sel.appendChild(opt);
-  });
-
-  // Build class grid
-  const grid = document.getElementById('classGrid');
+  const grid = $('classGrid');
   grid.innerHTML = '';
   classNames.forEach(name => {
-    const meta = CLASS_META[name] || { icon: '📋', category: 'primary', badge: 'primary' };
+    const meta = CLASS_META[name] || { icon:'📋', category:'primary', badge:'primary' };
     const card = document.createElement('div');
     card.className = `class-card cat-${meta.badge}`;
     card.innerHTML = `
@@ -1375,7 +1023,7 @@ function initAdminDashboard() {
 }
 
 /* ============================================================
-   LOAD CLASS DATA FROM GOOGLE SHEET & GENERATE
+   LOAD CLASS & GENERATE
    ============================================================ */
 function loadClassAndGenerate(className) {
   const url = CLASS_LINKS[className];
@@ -1383,9 +1031,8 @@ function loadClassAndGenerate(className) {
     showToast(`❌ No data source set for ${className}`, 'error');
     return;
   }
-
-  const loader     = document.getElementById('admin-loading');
-  const loaderText = document.getElementById('admin-loading-text');
+  const loader     = $('admin-loading');
+  const loaderText = $('admin-loading-text');
   loader.classList.add('visible');
   loaderText.textContent = `Fetching ${className} data…`;
 
@@ -1393,89 +1040,54 @@ function loadClassAndGenerate(className) {
     .then(csv => {
       loader.classList.remove('visible');
       students = parseCSV(csv);
-
-      if (students.length === 0) {
-        showToast('❌ No student records found in sheet.', 'error');
-        return;
-      }
-
-      document.getElementById('stat-students').textContent = students.length;
-      document.getElementById('reportSectionLabel').textContent = `${className} — ${students.length} Students`;
-      document.getElementById('reportWrapper').style.display = 'block';
-
-      const area = document.getElementById('reportArea');
+      if (!students.length) { showToast('❌ No student records found.', 'error'); return; }
+      $('stat-students').textContent = students.length;
+      $('reportSectionLabel').textContent = `${className} — ${students.length} Students`;
+      $('reportWrapper').style.display = 'block';
+      const area = $('reportArea');
       area.innerHTML = '';
-      renderCards(area, students, true);
-
-      // Scroll to reports
-      document.getElementById('reportWrapper').scrollIntoView({ behavior: 'smooth' });
-      showToast(`✅ ${students.length} report cards generated for ${className}`);
+      renderCards(area, students);
+      $('reportWrapper').scrollIntoView({ behavior:'smooth' });
+      showToast(`✅ ${students.length} cards generated for ${className}`);
     })
     .catch(() => {
       loader.classList.remove('visible');
-      showToast('❌ Failed to fetch data. Check network / Sheet permissions.', 'error');
+      showToast('❌ Failed to fetch. Check network / Sheet permissions.', 'error');
     });
 }
 
 /* ============================================================
-   FETCH CSV FROM URL (handles CORS via proxy if needed)
+   FETCH CSV
    ============================================================ */
 async function fetchCSV(url) {
-  // Google Sheets published CSV — try direct first
-  try {
-    const res = await fetch(url, { mode: 'cors' });
-    if (!res.ok) throw new Error('Non-OK response');
-    return await res.text();
-  } catch(e) {
-    // Fallback: try with no-cors won't work for reading body, so alert instead
-    throw new Error('Cannot fetch CSV. Ensure the Google Sheet is published publicly as CSV.');
-  }
+  const res = await fetch(url, { mode:'cors' });
+  if (!res.ok) throw new Error('Non-OK response');
+  return res.text();
 }
 
 /* ============================================================
-   CSV PARSING (unchanged logic)
+   PARSE CSV
    ============================================================ */
 function parseCSV(csv) {
-  const lines = csv.split(/\r?\n/).filter(line => line.trim() !== '');
+  const lines = csv.split(/\r?\n/).filter(l => l.trim() !== '');
   if (lines.length < 2) return [];
-
   const headers = lines[0].split(',').map(h => h.trim());
   const records = [];
-
   for (let i = 1; i < lines.length; i++) {
     const obj = {};
-    const currentLine = lines[i].split(',');
-
-    headers.forEach((header, index) => {
-      let value = currentLine[index] ? currentLine[index].trim() : '';
-      if (header.includes('_CA') || header.includes('_Exams')) {
-        obj[header] = parseFloat(value) || 0;
-      } else {
-        obj[header] = value;
-      }
+    const cols = lines[i].split(',');
+    headers.forEach((h, idx) => {
+      const val = cols[idx] ? cols[idx].trim() : '';
+      obj[h] = (h.includes('_CA') || h.includes('_Exams')) ? (parseFloat(val) || 0) : val;
     });
-
-    if (obj['Name'] && obj['Class Category'] && obj['Class Type']) {
-      records.push(obj);
-    }
+    if (obj['Name'] && obj['Class Category'] && obj['Class Type']) records.push(obj);
   }
-
   return records;
 }
 
 /* ============================================================
-   GRADING LOGIC (unchanged)
+   GRADING HELPERS (unchanged logic)
    ============================================================ */
-const $ = id => document.getElementById(id);
-
-function escapeHtml(s) {
-  if (s === undefined || s === null) return '';
-  return String(s)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;');
-}
-
 function calculateGrade(score) {
   if (score === undefined || score === null || score === '') return '';
   score = parseFloat(score);
@@ -1487,17 +1099,14 @@ function calculateGrade(score) {
   if (score >= 40) return 'E';
   return 'F';
 }
-
 function gradeRemark(g) {
   return { A:'Excellent', B:'Very Good', C:'Good', D:'Fair', E:'Pass', F:'Fail' }[g] || '';
 }
-
 function displayScore(value) {
   return value === 0
     ? '<span style="border-bottom:1px dashed #000;display:inline-block;width:20px"></span>'
     : value;
 }
-
 function getRemark(avg) {
   avg = parseFloat(avg);
   if (avg >= 70) return 'Excellent result, keep the flag flying!';
@@ -1507,74 +1116,87 @@ function getRemark(avg) {
   if (avg >= 40) return 'Can do better with guidance and determination.';
   return 'A disappointing result, but not the end. You can still turn things around.';
 }
-
 function getScoringMode(category) {
   const cat = (category || '').toLowerCase();
   const isJssSs = cat.includes('junior') || cat.includes('senior') || cat.includes('jss') || cat.includes('ss');
-  if (isJssSs) return { s1:10, s2:10, s3:10, exam:70, total:100, isJssSs:true };
-  return { s1:20, s2:20, s3:0, exam:60, total:100, isJssSs:false };
+  return isJssSs
+    ? { s1:10, s2:10, s3:10, exam:70, total:100, isJssSs:true  }
+    : { s1:20, s2:20, s3:0,  exam:60, total:100, isJssSs:false };
 }
-
 function getCardCategoryClass(category) {
-  if (category && category.toLowerCase().includes('nursery')) return 'category-nursery';
-  if (category && (category.toLowerCase().includes('junior') || category.toLowerCase().includes('jss'))) return 'category-jss';
-  if (category && (category.toLowerCase().includes('senior') || category.toLowerCase().includes('ss'))) return 'category-ss';
+  const c = (category || '').toLowerCase();
+  if (c.includes('nursery'))                          return 'category-nursery';
+  if (c.includes('junior') || c.includes('jss'))     return 'category-jss';
+  if (c.includes('senior') || c.includes('ss'))      return 'category-ss';
   return 'category-primary';
 }
 
+/* ─── Determine if a category is Primary/Nursery ─── */
+function isPrimaryOrNursery(catClass) {
+  return catClass === 'category-nursery' || catClass === 'category-primary';
+}
+
+/* ─── Score progress bar HTML ─── */
+function scoreProgressBar(value, max) {
+  if (!max || max === 0) return '';
+  const pct   = Math.min(100, Math.round((value / max) * 100));
+  // colour: green ≥70%, amber 40–69%, red <40%
+  const color = pct >= 70 ? '#22c55e' : pct >= 40 ? '#f59e0b' : '#ef4444';
+  return `
+    <div style="display:flex;align-items:center;gap:4px;min-width:60px;">
+      <div class="score-bar-wrap">
+        <div class="score-bar-fill" style="width:${pct}%;background:${color};"></div>
+      </div>
+      <span style="font-size:9px;font-weight:800;color:#555;">${pct}%</span>
+    </div>`;
+}
+
 /* ============================================================
-   RENDER CARDS (core report card generation — unchanged layout)
+   RENDER CARDS  — core function (layout unchanged)
    ============================================================ */
-function renderCards(container, rawStudents, showBulkButtons = true) {
+function renderCards(container, rawStudents) {
   container.innerHTML = '';
 
   const allHeaders = Object.keys(rawStudents[0]);
-  const subjects = [...new Set(
+  const subjects   = [...new Set(
     allHeaders
       .filter(h => h.includes('_CA') || h.includes('_Exams'))
       .map(h => h.split('_')[0])
   )];
 
-  if (subjects.length === 0) {
+  if (!subjects.length) {
     showToast('❌ No subject columns found (e.g. Math_CA1, Math_Exams)', 'error');
     return;
   }
 
-  // 1. Process scores
+  /* 1. Process scores ─────────────────────────────────────── */
   const groups = {};
   const processedStudents = rawStudents.map((stu, idx) => {
     const category = stu['Class Category'] || 'Primary';
     const mode     = getScoringMode(category);
-
-    let totalMarks   = 0;
-    let subjectCount = 0;
+    let totalMarks = 0, subjectCount = 0;
     const processedSubjects = [];
 
     subjects.forEach(sub => {
-      const s1   = stu[`${sub}_CA1`]  || 0;
-      const s2   = stu[`${sub}_CA2`]  || 0;
+      const s1   = stu[`${sub}_CA1`]   || 0;
+      const s2   = stu[`${sub}_CA2`]   || 0;
       const s3   = mode.isJssSs ? (stu[`${sub}_CA3`] || 0) : 0;
       const exam = stu[`${sub}_Exams`] || 0;
       const total = s1 + s2 + s3 + exam;
       const grade = calculateGrade(total);
-
-      totalMarks += total;
-      subjectCount++;
-
+      totalMarks += total; subjectCount++;
       const isAbsent = s1===0 && s2===0 && s3===0 && exam===0;
-
       processedSubjects.push({
-        no:     processedSubjects.length + 1,
-        subj:   sub,
-        s1, s2, s3, exam, total,
+        no: processedSubjects.length + 1,
+        subj: sub, s1, s2, s3, exam, total,
         grade:  isAbsent ? '' : grade,
-        remark: isAbsent ? 'ABSENT' : gradeRemark(grade)
+        remark: isAbsent ? 'ABSENT' : gradeRemark(grade),
+        mode
       });
     });
 
     const avg          = subjectCount ? +(totalMarks / subjectCount).toFixed(2) : 0;
     const overallGrade = calculateGrade(avg);
-    const teacherRemark = getRemark(avg);
 
     const studentData = {
       ...stu,
@@ -1585,15 +1207,14 @@ function renderCards(container, rawStudents, showBulkButtons = true) {
       daysTerm:     stu['Total Term Days']   || 0,
       daysPresent:  stu['Days Present']      || 0,
       daysAbsent:   stu['Days Absent']       || 0,
-      session:      stu['Session']           || $('session').value,
-      resumption:   stu['Resumption Date']   || $('resumption').value,
-      subjects:     processedSubjects,
-      totalMarks,
-      avg,
-      grade:        overallGrade,
-      teacherRemark,
-      scoringMode:  mode,
-      _idx:         idx
+      session:      stu['Session']           || SCHOOL_CONFIG.session,
+      resumption:   stu['Resumption Date']   || SCHOOL_CONFIG.resumption,
+      subjects: processedSubjects,
+      totalMarks, avg,
+      grade:       overallGrade,
+      teacherRemark: getRemark(avg),
+      scoringMode:   mode,
+      _idx: idx
     };
 
     const key = `${studentData.classType}||${studentData.classSection}`;
@@ -1602,7 +1223,7 @@ function renderCards(container, rawStudents, showBulkButtons = true) {
     return studentData;
   });
 
-  // 2. Compute positions
+  /* 2. Compute positions ──────────────────────────────────── */
   for (const key in groups) {
     groups[key].sort((a, b) => b.avg - a.avg);
     let prevAvg = null, prevPos = null;
@@ -1613,41 +1234,43 @@ function renderCards(container, rawStudents, showBulkButtons = true) {
     });
   }
 
-  // 3. Render cards
+  /* 3. Render HTML cards ──────────────────────────────────── */
   const allCards = [];
   Object.keys(groups).sort().forEach(key => {
     const totalInClass = groups[key].length;
     groups[key].forEach(stu => {
-      const card = document.createElement('div');
-      card.className = `card ${getCardCategoryClass(stu.category)}`;
-
-      // Website selection
+      const card     = document.createElement('div');
       const catClass = getCardCategoryClass(stu.category);
-      const website  = (catClass === 'category-nursery' || catClass === 'category-primary')
-        ? SCHOOL_CONFIG.primaryWebsite
-        : SCHOOL_CONFIG.secondaryWebsite;
+      card.className = `card ${catClass}`;
 
-      const principalName  = $('principalName').value;
-      const formMasterName = $('formMasterName').value;
+      /* ─── Authority names & signatures based on school level ─── */
+      const isPrimNurs = isPrimaryOrNursery(catClass);
 
-      // Logo HTML
-      const schoolLogoHtml = SCHOOL_CONFIG.schoolLogo
-        ? `<img src="${SCHOOL_CONFIG.schoolLogo}" class="school-logo-img">`
-        : `<div style="width:86px;height:86px;border-radius:10px;border:1px dashed rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,0.12)">Logo</div>`;
+      const authorityName    = isPrimNurs ? SCHOOL_CONFIG.headmasterName  : SCHOOL_CONFIG.principalName;
+      const authoritySig     = isPrimNurs ? SCHOOL_CONFIG.headmasterSig    : SCHOOL_CONFIG.principalSig;
+      const authorityTitle   = isPrimNurs ? 'Headmaster'                   : 'Principal';
+      const formMasterName   = isPrimNurs ? SCHOOL_CONFIG.primaryFormMasterName  : SCHOOL_CONFIG.secondaryFormMasterName;
+      const formMasterSig    = isPrimNurs ? SCHOOL_CONFIG.primaryFormMasterSig   : SCHOOL_CONFIG.secondaryFormMasterSig;
 
-      const jibwisLogoHtml = SCHOOL_CONFIG.jibwisLogo
-        ? `<img src="${SCHOOL_CONFIG.jibwisLogo}" class="school-logo-img">`
-        : `<div style="width:86px;height:86px;border-radius:10px;border:1px dashed rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;color:rgba(0,0,0,0.12)">Logo</div>`;
+      const website = isPrimNurs ? SCHOOL_CONFIG.primaryWebsite : SCHOOL_CONFIG.secondaryWebsite;
 
-      const principalSigHtml  = storedPrincipalSigUrl  ? `<img src="${storedPrincipalSigUrl}"  alt="Principal Signature">` : '';
-      const formMasterSigHtml = storedFormMasterSigUrl ? `<img src="${storedFormMasterSigUrl}" alt="Form Master Signature">` : '';
+      /* ─── Logo HTML ─── */
+      const schoolLogoHtml = `<img src="${SCHOOL_CONFIG.schoolLogo}" class="school-logo-img" onerror="this.style.opacity='0'">`;
+      const jibwisLogoHtml = `<img src="${SCHOOL_CONFIG.jibwisLogo}"  class="school-logo-img" onerror="this.style.opacity='0'">`;
+
+      /* ─── Signature HTML ─── */
+      const authoritySigHtml  = authoritySig  ? `<img class="sig-img" src="${authoritySig}"  alt="${authorityTitle} Signature">` : '';
+      const formMasterSigHtml = formMasterSig ? `<img class="sig-img" src="${formMasterSig}" alt="Form Master Signature">`       : '';
 
       const mode    = stu.scoringMode;
       const isJssSs = mode.isJssSs;
       const s3Head  = isJssSs ? `<th>3rd CA (${mode.s3})</th>` : '';
 
-      const subjRows = stu.subjects.map(s => `
-        <tr>
+      /* ─── Subject rows with progress bar ─── */
+      const subjRows = stu.subjects.map(s => {
+        // Progress bar is based on total out of 100
+        const bar = scoreProgressBar(s.total, mode.total);
+        return `<tr>
           <td>${s.no}</td>
           <td style="text-align:left">${escapeHtml(s.subj)}</td>
           <td>${displayScore(s.s1)}</td>
@@ -1655,15 +1278,17 @@ function renderCards(container, rawStudents, showBulkButtons = true) {
           ${isJssSs ? `<td>${displayScore(s.s3)}</td>` : ''}
           <td>${displayScore(s.exam)}</td>
           <td>${s.total}</td>
+          <td style="min-width:75px;">${bar}</td>
           <td>${s.grade}</td>
           <td>${escapeHtml(s.remark)}</td>
-        </tr>
-      `).join('');
+        </tr>`;
+      }).join('');
 
       const gradingHtml = `
-        <table><thead><tr><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr></thead>
-        <tbody><tr><td>70-100</td><td>60-69</td><td>50-59</td><td>45-49</td><td>40-44</td><td>0-39</td></tr></tbody></table>
-      `;
+        <table>
+          <thead><tr><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr></thead>
+          <tbody><tr><td>70-100</td><td>60-69</td><td>50-59</td><td>45-49</td><td>40-44</td><td>0-39</td></tr></tbody>
+        </table>`;
 
       card.innerHTML = `
         <div class="card-top">
@@ -1710,11 +1335,16 @@ function renderCards(container, rawStudents, showBulkButtons = true) {
           <table>
             <thead>
               <tr>
-                <th>No</th><th style="text-align:left">Subject</th>
-                <th>1st CA (${mode.s1})</th><th>2nd CA (${mode.s2})</th>
+                <th>No</th>
+                <th style="text-align:left">Subject</th>
+                <th>1st CA (${mode.s1})</th>
+                <th>2nd CA (${mode.s2})</th>
                 ${s3Head}
                 <th>Exam (${mode.exam})</th>
-                <th>Total</th><th>Grade</th><th>Remark</th>
+                <th>Total</th>
+                <th>Progress</th>
+                <th>Grade</th>
+                <th>Remark</th>
               </tr>
             </thead>
             <tbody>${subjRows}</tbody>
@@ -1741,25 +1371,30 @@ function renderCards(container, rawStudents, showBulkButtons = true) {
         <div class="remarks"><strong>Teacher's Remark:</strong> ${escapeHtml(stu.teacherRemark)}</div>
 
         <div class="bottom-row">
+
+          <!-- Authority (Headmaster or Principal) -->
           <div class="signature-block">
-            ${principalSigHtml}
+            ${authoritySigHtml}
             <div class="sig-line"></div>
-            <div style="font-weight:900;text-align:center">${escapeHtml(principalName && principalName !== 'Principal Name' ? principalName : 'Principal Name')}</div>
-            <div class="sig-caption">Principal / Headmaster</div>
+            <div style="font-weight:900;text-align:center;">${escapeHtml(authorityName)}</div>
+            <div class="sig-caption">${authorityTitle}</div>
           </div>
 
+          <!-- QR Code -->
           <div class="qr-wrap" style="display:flex;flex-direction:column;align-items:center;gap:2px;">
             <div id="qrcode-${stu._idx}" class="qr-code-container"></div>
             <div style="font-size:9px;font-weight:800;color:var(--muted);margin-top:2px;">VERIFY REPORT</div>
             <button class="card-dl-btn" onclick="downloadSingleCard(this)">📥 Download</button>
           </div>
 
+          <!-- Form Master -->
           <div class="signature-block">
             ${formMasterSigHtml}
             <div class="sig-line"></div>
-            <div style="font-weight:900;text-align:center">${escapeHtml(formMasterName && formMasterName !== 'Form Master Name' ? formMasterName : 'Form Master Name')}</div>
+            <div style="font-weight:900;text-align:center;">${escapeHtml(formMasterName)}</div>
             <div class="sig-caption">Form Master</div>
           </div>
+
         </div>
       `;
 
@@ -1769,16 +1404,19 @@ function renderCards(container, rawStudents, showBulkButtons = true) {
 
   allCards.forEach(c => container.appendChild(c));
 
-  // 4. Generate QR codes
+  /* 4. Generate QR Codes ──────────────────────────────────── */
   processedStudents.forEach(stu => {
-    const qrContainer = document.getElementById(`qrcode-${stu._idx}`);
+    const qrContainer = $(`qrcode-${stu._idx}`);
     if (!qrContainer) return;
 
-    // Determine website for QR
-    const catClass = getCardCategoryClass(stu.category);
-    const verifyUrl = (catClass === 'category-nursery' || catClass === 'category-primary')
+    const catClass  = getCardCategoryClass(stu.category);
+    const verifyUrl = isPrimaryOrNursery(catClass)
       ? SCHOOL_CONFIG.primaryWebsite
       : SCHOOL_CONFIG.secondaryWebsite;
+
+    const isPrimNurs     = isPrimaryOrNursery(catClass);
+    const authorityName  = isPrimNurs ? SCHOOL_CONFIG.headmasterName : SCHOOL_CONFIG.principalName;
+    const fmName         = isPrimNurs ? SCHOOL_CONFIG.primaryFormMasterName : SCHOOL_CONFIG.secondaryFormMasterName;
 
     const qrText =
       `SCHOOL: ${SCHOOL_CONFIG.name}\n` +
@@ -1787,64 +1425,26 @@ function renderCards(container, rawStudents, showBulkButtons = true) {
       `TOTAL: ${stu.totalMarks}\n` +
       `AVG: ${stu.avg}%\n` +
       `POS: ${stu._pos}\n` +
-      `PRINCIPAL: ${$('principalName').value}\n` +
-      `MASTER: ${$('formMasterName').value}\n` +
+      `SESSION: ${SCHOOL_CONFIG.session}\n` +
+      `AUTHORITY: ${authorityName}\n` +
+      `FORM MASTER: ${fmName}\n` +
       `DATE: ${new Date().toLocaleDateString()}\n` +
       `VERIFY: ${verifyUrl}`;
 
     qrContainer.innerHTML = '';
     new QRCode(qrContainer, {
       text: qrText,
-      width: 100,
-      height: 100,
-      colorDark: '#000000',
-      colorLight: '#ffffff',
+      width: 100, height: 100,
+      colorDark: '#000000', colorLight: '#ffffff',
       correctLevel: QRCode.CorrectLevel.M
     });
   });
 
-  // Update watermark CSS var for print
-  if (SCHOOL_CONFIG.schoolLogo) {
-    document.documentElement.style.setProperty('--watermark', `url('${SCHOOL_CONFIG.schoolLogo}')`);
-  }
+  /* Set watermark CSS var for print */
+  document.documentElement.style.setProperty(
+    '--watermark', `url('${SCHOOL_CONFIG.schoolLogo}')`
+  );
 }
-
-/* ============================================================
-   SIGNATURE UPLOAD
-   ============================================================ */
-function onSignatureUpload(e, role) {
-  const file = e.target.files && e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = ev => {
-    const dataUrl = ev.target.result;
-    if (role === 'principal') {
-      storedPrincipalSigUrl = dataUrl;
-      const prev = document.getElementById('principalSigPreview');
-      prev.src = dataUrl;
-      prev.style.display = 'block';
-    } else {
-      storedFormMasterSigUrl = dataUrl;
-      const prev = document.getElementById('formMasterSigPreview');
-      prev.src = dataUrl;
-      prev.style.display = 'block';
-    }
-    // Re-render if cards exist
-    const area = document.getElementById('reportArea');
-    if (area && area.querySelector('.card') && students.length > 0) {
-      renderCards(area, students, true);
-    }
-    showToast('✅ Signature uploaded!');
-  };
-  reader.readAsDataURL(file);
-}
-
-/* ============================================================
-   INPUT HELPERS
-   ============================================================ */
-function clearOnFocus(el, defaultText)  { if (el.value === defaultText) el.value = ''; }
-function restoreOnBlur(el, defaultText) { if (!el.value.trim()) el.value = defaultText; }
 
 /* ============================================================
    DOWNLOAD SINGLE CARD
@@ -1853,92 +1453,59 @@ function downloadSingleCard(buttonEl) {
   const card = buttonEl.closest('.card');
   if (!card) return;
 
-  const admissionNoEl = card.querySelector('.info-table tr:nth-child(1) td:nth-child(1) .data');
-  let admissionNo = admissionNoEl ? admissionNoEl.textContent.trim() : 'REPORT';
-
-  const studentNameEl = card.querySelector('.student-header .name-block');
-  const studentName   = studentNameEl ? studentNameEl.textContent.replace('Student:', '').trim() : '';
-  const cleanName     = studentName.split(/\s+/).slice(0, 2).join('_').replace(/[^a-z0-9]/gi, '').toUpperCase();
-  const filename      = `${admissionNo.replace(/[^a-z0-9]/gi, '_')}_${cleanName}.pdf`;
+  const admEl     = card.querySelector('.info-table tr:nth-child(1) td:nth-child(1) .data');
+  const admNo     = admEl ? admEl.textContent.trim() : 'REPORT';
+  const nameEl    = card.querySelector('.student-header .name-block');
+  const stuName   = nameEl ? nameEl.textContent.replace('Student:', '').trim() : '';
+  const cleanName = stuName.split(/\s+/).slice(0,2).join('_').replace(/[^a-z0-9]/gi,'').toUpperCase();
+  const filename  = `${admNo.replace(/[^a-z0-9]/gi,'_')}_${cleanName}.pdf`;
 
   buttonEl.style.visibility = 'hidden';
-
   const opt = {
-    margin:     [6, 6, 6, 6],
-    filename:   filename,
-    image:      { type: 'jpeg', quality: 0.98 },
-    html2canvas:{ scale: 2, useCORS: true, logging: false },
-    jsPDF:      { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    margin:      [6,6,6,6],
+    filename,
+    image:       { type:'jpeg', quality:0.98 },
+    html2canvas: { scale:2, useCORS:true, logging:false },
+    jsPDF:       { unit:'mm', format:'a4', orientation:'portrait' }
   };
-
-  return html2pdf().set(opt).from(card).save().then(() => {
-    buttonEl.style.visibility = 'visible';
-  });
+  return html2pdf().set(opt).from(card).save()
+    .then(() => { buttonEl.style.visibility = 'visible'; });
 }
 
 /* ============================================================
-   DOWNLOAD ALL IN ONE PDF — FIXED (one card per page)
+   DOWNLOAD ALL IN ONE PDF — one card per A4 page
    ============================================================ */
 async function downloadAllReports() {
-  const reportArea  = document.getElementById('reportArea');
-  const reportCards = reportArea ? reportArea.querySelectorAll('.card') : [];
-
-  if (!reportCards.length) {
-    showToast('❌ No report cards to download.', 'error');
-    return;
-  }
-
-  showToast(`⏳ Preparing ${reportCards.length} cards…`);
-
-  // We generate one PDF per student and merge conceptually by generating
-  // individual pages into a single jsPDF document.
+  const cards = $('reportArea') ? $('reportArea').querySelectorAll('.card') : [];
+  if (!cards.length) { showToast('❌ No report cards to download.', 'error'); return; }
+  showToast(`⏳ Preparing ${cards.length} cards…`);
   try {
-    const { jsPDF }    = window.jspdf;
-    const doc          = new jsPDF({ unit:'mm', format:'a4', orientation:'portrait' });
-    const pageW        = 210;
-    const pageH        = 297;
-    const margin       = 8;
-    const contentW     = pageW - margin * 2;
-    const contentH     = pageH - margin * 2;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:'mm', format:'a4', orientation:'portrait' });
+    const margin = 8, pageW = 210, pageH = 297;
+    const cW = pageW - margin*2, cH = pageH - margin*2;
 
-    for (let i = 0; i < reportCards.length; i++) {
-      const card = reportCards[i];
-
-      // Hide action buttons temporarily
-      card.querySelectorAll('button').forEach(b => b.style.visibility = 'hidden');
-
+    for (let i = 0; i < cards.length; i++) {
+      const card = cards[i];
+      card.querySelectorAll('button').forEach(b => b.style.visibility='hidden');
       const canvas = await html2canvas(card, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-        width:  card.scrollWidth,
-        height: card.scrollHeight
+        scale:2, useCORS:true, logging:false,
+        backgroundColor:'#ffffff',
+        width:card.scrollWidth, height:card.scrollHeight
       });
-
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
-      const imgW    = canvas.width;
-      const imgH    = canvas.height;
-
-      // Scale to fit A4 content area
-      const ratio    = Math.min(contentW / (imgW / 3.78), contentH / (imgH / 3.78));
-      const drawW    = (imgW / 3.78) * ratio;
-      const drawH    = (imgH / 3.78) * ratio;
-      const offsetX  = margin + (contentW - drawW) / 2;
-      const offsetY  = margin;
-
+      const ratio   = Math.min(cW / (canvas.width/3.78), cH / (canvas.height/3.78));
+      const drawW   = (canvas.width/3.78)*ratio;
+      const drawH   = (canvas.height/3.78)*ratio;
       if (i > 0) doc.addPage();
-      doc.addImage(imgData, 'JPEG', offsetX, offsetY, drawW, drawH);
-
-      // Restore buttons
-      card.querySelectorAll('button').forEach(b => b.style.visibility = 'visible');
+      doc.addImage(imgData,'JPEG', margin+(cW-drawW)/2, margin, drawW, drawH);
+      card.querySelectorAll('button').forEach(b => b.style.visibility='visible');
     }
-
     doc.save('Pariya_Academy_All_Reports.pdf');
-    showToast('✅ PDF downloaded successfully!');
+    showToast('✅ PDF downloaded!');
   } catch(err) {
-    console.error('PDF Error:', err);
-    showToast('❌ PDF generation failed. Try downloading individually.', 'error');
+    console.error(err);
+    showToast('❌ PDF failed. Try downloading individually.', 'error');
   }
 }
 
@@ -1947,92 +1514,66 @@ async function downloadAllReports() {
    ============================================================ */
 async function downloadReportsIndividually() {
   const cards = document.querySelectorAll('#reportArea .card');
-  if (!cards.length) {
-    showToast('❌ No report cards found.', 'error');
-    return;
-  }
-
+  if (!cards.length) { showToast('❌ No report cards found.', 'error'); return; }
   showToast(`⏳ Downloading ${cards.length} cards…`);
-
   for (let i = 0; i < cards.length; i++) {
     const tempBtn = document.createElement('button');
     cards[i].appendChild(tempBtn);
     await downloadSingleCard(tempBtn);
     tempBtn.remove();
-    // Small delay to prevent browser from throttling downloads
     await new Promise(r => setTimeout(r, 400));
   }
-
   showToast('✅ All cards downloaded!');
 }
 
 /* ============================================================
-   PRINT ALL — FIXED
+   PRINT ALL
    ============================================================ */
 function safePrint() {
   const reportCards = document.querySelectorAll('#reportArea .card, #studentReportArea .card');
-  if (!reportCards.length) {
-    showToast('❌ No report cards to print.', 'error');
-    return;
-  }
-
+  if (!reportCards.length) { showToast('❌ No report cards to print.', 'error'); return; }
   showToast('⏳ Preparing print view…');
-
-  // Clone all cards into the dedicated print container
-  const printContainer = document.getElementById('printContainer');
-  printContainer.innerHTML = '';
-
+  const pc = $('printContainer');
+  pc.innerHTML = '';
   reportCards.forEach(card => {
     const clone = card.cloneNode(true);
-    // Remove action buttons
-    clone.querySelectorAll('button').forEach(btn => btn.remove());
-    printContainer.appendChild(clone);
+    clone.querySelectorAll('button').forEach(b => b.remove());
+    pc.appendChild(clone);
   });
-
-  // Small delay for QR codes to settle, then print
-  setTimeout(() => {
-    window.print();
-  }, 1800);
+  setTimeout(() => window.print(), 1800);
 }
 
 /* ============================================================
-   INITIALISE ON LOAD
+   INPUT HELPERS
+   ============================================================ */
+function clearOnFocus(el, def)  { if (el.value === def) el.value = ''; }
+function restoreOnBlur(el, def) { if (!el.value.trim()) el.value = def; }
+
+/* ============================================================
+   INIT ON LOAD
    ============================================================ */
 window.addEventListener('load', () => {
-  // Apply watermark if logo is set
-  if (SCHOOL_CONFIG.schoolLogo) {
-    document.documentElement.style.setProperty('--watermark', `url('${SCHOOL_CONFIG.schoolLogo}')`);
-  }
-
-  // Initialise stat session label from input default
-  const sessionEl = document.getElementById('stat-session');
-  if (sessionEl) {
-    const sInput = document.getElementById('session');
-    if (sInput) sessionEl.textContent = sInput.value;
-  }
-
-  // Enter key support on login forms
-  document.getElementById('admin-password').addEventListener('keydown', e => {
-    if (e.key === 'Enter') adminLogin();
-  });
-  document.getElementById('student-password').addEventListener('keydown', e => {
-    if (e.key === 'Enter') studentLogin();
-  });
+  document.documentElement.style.setProperty('--watermark', `url('${SCHOOL_CONFIG.schoolLogo}')`);
+  $('admin-password').addEventListener('keydown', e => { if (e.key==='Enter') adminLogin(); });
+  $('student-password').addEventListener('keydown', e => { if (e.key==='Enter') studentLogin(); });
+  // Pre-populate logo in portal screen
+  const pl = $('portalLogoImg');
+  if (pl) pl.src = SCHOOL_CONFIG.schoolLogo;
 });
 
-/* Expose globals for inline event handlers */
-window.downloadSingleCard         = downloadSingleCard;
-window.downloadAllReports         = downloadAllReports;
+/* Expose for inline handlers */
+window.downloadSingleCard          = downloadSingleCard;
+window.downloadAllReports          = downloadAllReports;
 window.downloadReportsIndividually = downloadReportsIndividually;
-window.safePrint                  = safePrint;
-window.onSignatureUpload          = onSignatureUpload;
-window.clearOnFocus               = clearOnFocus;
-window.restoreOnBlur              = restoreOnBlur;
-window.showScreen                 = showScreen;
-window.adminLogin                 = adminLogin;
-window.studentLogin               = studentLogin;
-window.logout                     = logout;
-window.studentDownloadCard        = studentDownloadCard;
+window.safePrint                   = safePrint;
+window.clearOnFocus                = clearOnFocus;
+window.restoreOnBlur               = restoreOnBlur;
+window.showScreen                  = showScreen;
+window.adminLogin                  = adminLogin;
+window.studentLogin                = studentLogin;
+window.logout                      = logout;
+window.studentDownloadCard         = studentDownloadCard;
+window.populateStudentClasses      = populateStudentClasses;
 </script>
 </body>
 </html>
