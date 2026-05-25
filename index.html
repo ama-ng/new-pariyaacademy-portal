@@ -1571,6 +1571,47 @@ function studentLogin() {
    START CUSTOM EDIT SECTION — Term-specific result loading
    Purpose: Load the report card for the selected term
    Usage: Called when student clicks a term button
+
+   ── WHY THE OLD CODE SHOWED "1/1" (THE BUG) ──
+   The original code did this:
+       renderCards(area, [recordWithTerm]);
+                          ^^^^^^^^^^^^^^
+   It wrapped the single logged-in student in an array of length 1.
+   Inside renderCards(), positions are calculated from whoever is
+   passed in. With only 1 student in the array, that student is
+   always ranked 1st out of 1 — giving the wrong "1/1" display.
+
+   ── WHY WE MUST LOAD THE FULL CLASS FIRST ──
+   To correctly calculate a student's position (e.g. 5/42), the
+   system needs ALL students in that class for the same term.
+   Only then can it:
+     1. Sort everyone by average score (highest → lowest).
+     2. Assign positions with proper tie handling.
+     3. Know the TOTAL number of students in the class.
+     4. Find where the logged-in student lands in that ranking.
+
+   ── HOW THE FIX WORKS ──
+   1. Fetch the full term CSV (same as before — no extra request).
+   2. Find the logged-in student inside the full list.
+   3. Stamp the correct Term value onto EVERY student record in the
+      class (not just the one student) so renderCards() uses the
+      right term label and scoring mode for all of them.
+   4. Filter the class list down to only students who share the
+      same classType + classSection as the logged-in student.
+      This mirrors how the admin report groups students, ensuring
+      the position is calculated within the correct class group.
+   5. Pass this FULL same-class list to renderCards() — which will
+      sort, rank, and count all of them properly.
+   6. After rendering, HIDE every card except the logged-in
+      student's card, so the student only sees their own result
+      while the position (e.g. 5/42) is still calculated correctly.
+
+   ── HOW TOTAL STUDENTS IS COUNTED ──
+   Inside renderCards(), students are grouped by:
+       key = classType + "||" + classSection
+   The variable `totalInClass` = groups[key].length, which is now
+   the full class count. This value is used in every position
+   display: ${student._pos}/${totalInClass}.
    ============================================================ */
 function studentLoadTerm(term) {
   if (!studentLoginData) {
@@ -1597,8 +1638,14 @@ function studentLoadTerm(term) {
   // Fetch the correct term CSV from Google Sheets
   fetchCSV(url)
     .then(csv => {
-      const allStudents = parseCSV(csv);
-      const stuRecord = allStudents.find(s =>
+      // ── STEP 1: Parse FULL class CSV (all students in this class/term) ──
+      // We need ALL students so we can calculate positions correctly.
+      // Previously only [singleStudent] was passed to renderCards(), which
+      // always produced position "1/1". Now we pass the whole class.
+      const allStudentsInSheet = parseCSV(csv);
+
+      // ── STEP 2: Find the logged-in student inside the full list ──
+      const stuRecord = allStudentsInSheet.find(s =>
         (s['Admission No'] || '').trim().toLowerCase() === studentLoginData.admissionNo.toLowerCase()
       );
 
@@ -1611,10 +1658,63 @@ function studentLoadTerm(term) {
         return;
       }
 
-      // Ensure term field is set correctly
-      const recordWithTerm = { ...stuRecord, Term: term };
-      renderCards(area, [recordWithTerm]);
-      showToast(`✅ ${term} result loaded!`);
+      // ── STEP 3: Determine the logged-in student's class group ──
+      // Students are grouped by classType + classSection inside renderCards().
+      // We must match exactly the same grouping key to get an accurate total.
+      // For example: classType="JSS 1", classSection="A" → only JSS 1A students
+      // are compared against each other for ranking.
+      const studentClassType    = (stuRecord['Class Type']    || '').trim();
+      const studentClassSection = (stuRecord['Class Section'] || '').trim();
+
+      // ── STEP 4: Filter to only the same class section ──
+      // If the CSV contains multiple sections (e.g. JSS 1A and JSS 1B), we only
+      // pass the students in the SAME section as the logged-in student.
+      // This matches how the admin report calculates positions per group.
+      const classStudents = allStudentsInSheet.filter(s =>
+        (s['Class Type']    || '').trim() === studentClassType &&
+        (s['Class Section'] || '').trim() === studentClassSection
+      );
+
+      // Total students in this class section — used for "X/totalStudents" display
+      const totalStudents = classStudents.length;
+
+      // ── STEP 5: Stamp the correct Term onto every student in the class ──
+      // renderCards() reads stu.term (set from stu['Term']) to decide:
+      //   • which scoring mode to use (CA weights differ by term)
+      //   • whether to show the Annual Summary box (Third Term only)
+      //   • what label to print on the report card
+      // Every student in the class must have the same Term value so the
+      // positions and rendering are consistent across the whole group.
+      const classStudentsWithTerm = classStudents.map(s => ({ ...s, Term: term }));
+
+      // ── STEP 6: Render ALL class students (needed for correct ranking) ──
+      // renderCards() will:
+      //   a. Process scores for all students
+      //   b. Group them by classType||classSection
+      //   c. Sort by average descending
+      //   d. Assign _pos (with tie handling) — e.g. two students at 88% both get pos 1
+      //   e. Count totalInClass = classStudentsWithTerm.length  (the real class total)
+      //   f. Build one .card element per student, each showing "${_pos}/${totalInClass}"
+      renderCards(area, classStudentsWithTerm);
+
+      // ── STEP 7: Hide all cards EXCEPT the logged-in student's card ──
+      // renderCards() rendered one .card per student so positions are correct.
+      // We now hide every card that does NOT belong to the logged-in student,
+      // so the student only sees their own report card.
+      // We identify the student's card by matching the Admission No shown in
+      // the first info-table cell (same element used by downloadSingleCard).
+      const admissionNo = studentLoginData.admissionNo.toLowerCase();
+      area.querySelectorAll('.card').forEach(card => {
+        const admEl = card.querySelector('.info-table tr:nth-child(1) td:nth-child(1) .data');
+        const cardAdm = admEl ? admEl.textContent.trim().toLowerCase() : '';
+        if (cardAdm !== admissionNo) {
+          // Hide this card — it belongs to a classmate, not the logged-in student.
+          // The card was needed for ranking calculation but should not be displayed.
+          card.style.display = 'none';
+        }
+      });
+
+      showToast(`✅ ${term} result loaded! Position calculated from ${totalStudents} students.`);
     })
     .catch(() => {
       loader.classList.remove('visible');
