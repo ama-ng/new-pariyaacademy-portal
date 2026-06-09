@@ -4456,35 +4456,59 @@ function openFeesSection() {
    START CUSTOM EDIT SECTION — Teachers Feature
    ============================================================ */
 
-/* Load all teachers from CSV or use demo data */
-async function loadAllTeachers() {
-  if (TEACHERS_CSV_URL && !TEACHERS_CSV_URL.includes('PASTE_')) {
-    const loader = document.getElementById('teachers-loading');
-    loader.classList.add('visible');
-    try {
-      const csv = await fetchCSV(TEACHERS_CSV_URL);
-      teachersData = parseCSV(csv);
-    } catch(e) {
-      showToast('⚠️ Could not load teachers CSV. Showing demo data.', 'error');
-      teachersData = getDemoTeachers();
-    } finally {
-      loader.classList.remove('visible');
-    }
-  } else {
-    teachersData = getDemoTeachers();
-  }
+/* ── Section abbreviation ↔ full name map ──────────────────── */
+const SECTION_ABBREV_MAP = {
+  'n': 'Nursery',
+  'p': 'Primary',
+  'j': 'Junior Secondary',
+  's': 'Senior Secondary',
+};
+
+/**
+ * Expands a raw Section cell value (which may contain abbreviations or full
+ * names, comma-separated) into an array of full section name strings.
+ * e.g. "P, J, S" → ["Primary", "Junior Secondary", "Senior Secondary"]
+ * e.g. "Primary"  → ["Primary"]
+ * e.g. "N, P"     → ["Nursery", "Primary"]
+ */
+function expandSections(rawSection) {
+  if (!rawSection) return [];
+  return rawSection
+    .split(',')
+    .map(part => {
+      const trimmed = part.trim();
+      const lower   = trimmed.toLowerCase();
+      // If it's a known abbreviation, expand it; otherwise treat as-is
+      return SECTION_ABBREV_MAP[lower] || trimmed;
+    })
+    .filter(Boolean);
 }
 
-function getDemoTeachers() {
-  return [
-    { 'Teacher Name':'Mal. Hassan Usman',   'Section':'Nursery',          'Subjects':'English, Quran',        'Classes':'Nursery 1, Nursery 2', 'First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Paid','Second Term Month 1':'Paid','Second Term Month 2':'Unpaid','Second Term Month 3':'Unpaid','Third Term Month 1':'Unpaid','Third Term Month 2':'Unpaid','Third Term Month 3':'Unpaid' },
-    { 'Teacher Name':'Mal. Abdullahi Sani', 'Section':'Primary',          'Subjects':'Mathematics, Science',  'Classes':'Primary 1, Primary 2', 'First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Unpaid','Second Term Month 1':'Unpaid','Second Term Month 2':'Unpaid','Second Term Month 3':'Unpaid','Third Term Month 1':'Unpaid','Third Term Month 2':'Unpaid','Third Term Month 3':'Unpaid' },
-    { 'Teacher Name':'Mr. Yusuf Bello',     'Section':'Primary',          'Subjects':'English, Social Studies','Classes':'Primary 3, Primary 4', 'First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Paid','Second Term Month 1':'Paid','Second Term Month 2':'Paid','Second Term Month 3':'Unpaid','Third Term Month 1':'Unpaid','Third Term Month 2':'Unpaid','Third Term Month 3':'Unpaid' },
-    { 'Teacher Name':'Mr. Ibrahim Musa',    'Section':'Junior Secondary', 'Subjects':'Physics, Chemistry, Biology','Classes':'JSS 1, JSS 2',  'First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Paid','Second Term Month 1':'Paid','Second Term Month 2':'Paid','Second Term Month 3':'Paid','Third Term Month 1':'Unpaid','Third Term Month 2':'Unpaid','Third Term Month 3':'Unpaid' },
-    { 'Teacher Name':'Mal. Usman Garba',    'Section':'Junior Secondary', 'Subjects':'Mathematics, Further Math','Classes':'JSS 1, JSS 2, JSS 3','First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Paid','Second Term Month 1':'Unpaid','Second Term Month 2':'Unpaid','Second Term Month 3':'Unpaid','Third Term Month 1':'Unpaid','Third Term Month 2':'Unpaid','Third Term Month 3':'Unpaid' },
-    { 'Teacher Name':'Mr. Ahmad Suleiman',  'Section':'Senior Secondary', 'Subjects':'English Language, Literature','Classes':'SS 1, SS 2',  'First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Paid','Second Term Month 1':'Paid','Second Term Month 2':'Paid','Second Term Month 3':'Paid','Third Term Month 1':'Paid','Third Term Month 2':'Paid','Third Term Month 3':'Unpaid' },
-    { 'Teacher Name':'Mrs. Fatima Aliyu',   'Section':'Senior Secondary', 'Subjects':'Biology, Agricultural Science','Classes':'SS 1, SS 2, SS 3','First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Paid','Second Term Month 1':'Paid','Second Term Month 2':'Paid','Second Term Month 3':'Paid','Third Term Month 1':'Paid','Third Term Month 2':'Unpaid','Third Term Month 3':'Unpaid' },
-  ];
+/**
+ * Returns true if the teacher belongs to the given section (full name).
+ * Handles comma-separated abbreviations AND full names in the Section column.
+ */
+function teacherBelongsToSection(teacher, section) {
+  const sections = expandSections(teacher['Section'] || '');
+  return sections.some(s => s.toLowerCase() === section.toLowerCase());
+}
+
+/* ── Load all teachers from live CSV (no demo fallback) ─────── */
+async function loadAllTeachers() {
+  const loader = document.getElementById('teachers-loading');
+  loader.classList.add('visible');
+  try {
+    const csv = await fetchCSV(TEACHERS_CSV_URL);
+    teachersData = parseCSV(csv);
+    if (!teachersData.length) {
+      showToast('⚠️ Teachers sheet loaded but appears empty.', 'error');
+    }
+  } catch (e) {
+    showToast('⚠️ Could not load teachers data. Check the CSV URL or connection.', 'error');
+    teachersData = [];
+  } finally {
+    loader.classList.remove('visible');
+  }
 }
 
 function showTeachersSectionPicker() {
@@ -4503,17 +4527,26 @@ function loadTeachersBySection(section) {
   currentTeacherSection = section;
   document.getElementById('teachers-list-heading').textContent = '👨‍🏫 ' + section + ' Teachers';
 
-  const filtered = teachersData.filter(t =>
-    (t['Section'] || '').trim().toLowerCase() === section.toLowerCase()
-  );
+  // Match teachers whose Section column includes this section
+  // (supports abbreviations like "P, J, S" as well as full names)
+  const filtered = teachersData.filter(t => teacherBelongsToSection(t, section));
 
   const container = document.getElementById('teachers-list-container');
   container.innerHTML = '';
 
   if (!filtered.length) {
-    container.innerHTML = '<p style="font-size:12px;color:var(--dash-muted);font-weight:700;">No teachers found for this section.</p>';
+    container.innerHTML = `
+      <p style="font-size:12px;color:var(--dash-muted);font-weight:700;padding:12px 0;">
+        No teachers found for ${escapeHtml(section)}.
+      </p>`;
   } else {
-    filtered.forEach((teacher, i) => {
+    filtered.forEach(teacher => {
+      // Build a display subtitle: all sections this teacher teaches (full names)
+      const allSections = expandSections(teacher['Section'] || '');
+      const sectionLabel = allSections.length > 1
+        ? allSections.join(' · ')   // e.g. "Primary · Junior Secondary"
+        : (allSections[0] || '—');
+
       const item = document.createElement('div');
       item.className = 'teacher-item';
       item.innerHTML = `
@@ -4521,6 +4554,9 @@ function loadTeachersBySection(section) {
         <div>
           <div class="teacher-item-name">${escapeHtml(teacher['Teacher Name'] || 'Unknown')}</div>
           <div class="teacher-item-meta">${escapeHtml(teacher['Subjects'] || '—')}</div>
+          ${allSections.length > 1
+            ? `<div class="teacher-item-meta" style="color:var(--dash-accent);margin-top:2px;">📍 Also: ${escapeHtml(allSections.filter(s => s.toLowerCase() !== section.toLowerCase()).join(', '))}</div>`
+            : ''}
         </div>
       `;
       item.addEventListener('click', () => showTeacherProfile(teacher));
@@ -4534,11 +4570,29 @@ function loadTeachersBySection(section) {
 function showTeacherProfile(teacher) {
   const container = document.getElementById('teacher-profile-container');
 
-  const subjects = (teacher['Subjects'] || '').split(',').map(s => s.trim()).filter(Boolean);
-  const classes  = (teacher['Classes']  || '').split(',').map(s => s.trim()).filter(Boolean);
+  const subjects    = (teacher['Subjects'] || '').split(',').map(s => s.trim()).filter(Boolean);
+  const classes     = (teacher['Classes']  || '').split(',').map(s => s.trim()).filter(Boolean);
+  const allSections = expandSections(teacher['Section'] || '');
 
-  const subjectBadges = subjects.map(s => `<span class="badge-tag">${escapeHtml(s)}</span>`).join('');
-  const classBadges   = classes.map(c  => `<span class="badge-tag blue">${escapeHtml(c)}</span>`).join('');
+  const subjectBadges = subjects.map(s =>
+    `<span class="badge-tag">${escapeHtml(s)}</span>`
+  ).join('');
+
+  const classBadges = classes.map(c =>
+    `<span class="badge-tag blue">${escapeHtml(c)}</span>`
+  ).join('');
+
+  // Section badges — one per full section name
+  const sectionBadgeColors = {
+    'Nursery':          'background:rgba(251,191,36,0.18);color:#fbbf24;border-color:rgba(251,191,36,0.35);',
+    'Primary':          'background:rgba(59,130,246,0.15);color:#60a5fa;border-color:rgba(59,130,246,0.35);',
+    'Junior Secondary': 'background:rgba(168,85,247,0.15);color:#c084fc;border-color:rgba(168,85,247,0.35);',
+    'Senior Secondary': 'background:rgba(34,197,94,0.15);color:#4ade80;border-color:rgba(34,197,94,0.35);',
+  };
+  const sectionBadges = allSections.map(sec => {
+    const style = sectionBadgeColors[sec] || '';
+    return `<span class="badge-tag" style="${style}">${escapeHtml(sec)}</span>`;
+  }).join('');
 
   const paymentRows = renderTeacherPaymentTable(teacher);
 
@@ -4548,11 +4602,16 @@ function showTeacherProfile(teacher) {
         <div class="teacher-profile-avatar">👨‍🏫</div>
         <div>
           <div class="teacher-profile-name">${escapeHtml(teacher['Teacher Name'] || 'Unknown')}</div>
-          <div class="teacher-profile-section">📍 ${escapeHtml(teacher['Section'] || '—')}</div>
+          <div class="teacher-profile-section">📍 ${escapeHtml(allSections.join(' · ') || '—')}</div>
         </div>
       </div>
+
+      <div class="teacher-profile-label">Section(s)</div>
+      <div class="badges-row">${sectionBadges || '<span style="color:var(--dash-muted);font-size:12px;">None listed</span>'}</div>
+
       <div class="teacher-profile-label">Subjects Teaching</div>
       <div class="badges-row">${subjectBadges || '<span style="color:var(--dash-muted);font-size:12px;">None listed</span>'}</div>
+
       <div class="teacher-profile-label">Classes Teaching</div>
       <div class="badges-row">${classBadges || '<span style="color:var(--dash-muted);font-size:12px;">None listed</span>'}</div>
     </div>
@@ -4574,7 +4633,9 @@ function showTeacherProfile(teacher) {
 }
 
 function renderTeacherPaymentTable(teacher) {
-  const teacherKey = 'teacher_pay_' + (teacher['Teacher Name'] || '').replace(/\s/g,'_');
+  const teacherKey    = 'teacher_pay_' + (teacher['Teacher Name'] || '').replace(/\s/g,'_');
+  // Unique prefix per teacher so checkbox IDs never clash across profiles
+  const teacherPrefix = teacherKey;
   const saved = JSON.parse(localStorage.getItem(teacherKey) || '{}');
 
   const TERMS = [
@@ -4585,17 +4646,20 @@ function renderTeacherPaymentTable(teacher) {
   let html = '';
   TERMS.forEach(term => {
     term.months.forEach((col, idx) => {
-      const raw    = (teacher[col] || '').trim().toLowerCase();
+      const raw     = (teacher[col] || '').trim().toLowerCase();
       const csvPaid = raw === 'paid' || raw === '1' || raw === 'true' || raw === 'yes';
       const isPaid  = col in saved ? saved[col] : csvPaid;
-      const cbId    = `pay_cb_${col.replace(/\s/g,'_')}`;
+      // ID is scoped to this specific teacher to avoid duplicate-ID collisions
+      const cbId    = `${teacherPrefix}_${col.replace(/\s/g,'_')}`;
+      // Escape single quotes in teacher name for the inline onchange handler
+      const safeName = (teacher['Teacher Name'] || '').replace(/'/g, "\\'");
       html += `<tr class="${term.cls}">
         <td>${idx === 0 ? escapeHtml(term.label) : ''}</td>
         <td>Month ${idx + 1}</td>
         <td>
           <label class="pay-checkbox-wrap">
             <input type="checkbox" id="${cbId}" ${isPaid ? 'checked' : ''}
-              onchange="saveTeacherPaymentStatus('${escapeHtml(teacher['Teacher Name'] || '')}','${col}',this.checked)">
+              onchange="saveTeacherPaymentStatus('${safeName}','${col}',this.checked)">
             <label for="${cbId}" style="color:${isPaid ? 'var(--dash-accent)' : '#fca5a5'};">${isPaid ? '✔ Paid' : '✘ Unpaid'}</label>
           </label>
         </td>
@@ -4912,6 +4976,8 @@ window.showTeacherProfile          = showTeacherProfile;
 window.showTeachersSectionPicker   = showTeachersSectionPicker;
 window.showTeachersList            = showTeachersList;
 window.renderTeacherPaymentTable   = renderTeacherPaymentTable;
+window.expandSections              = expandSections;
+window.teacherBelongsToSection     = teacherBelongsToSection;
 window.openFeesSection             = openFeesSection;
 window.calculateSchoolFeesSummary  = calculateSchoolFeesSummary;
 window.openFeesClassView           = openFeesClassView;
@@ -5610,8 +5676,8 @@ function saveTeacherPaymentStatus(teacherName, col, checked) {
   saved[col]  = checked;
   localStorage.setItem(key, JSON.stringify(saved));
 
-  // Update label text next to checkbox
-  const cbId  = 'pay_cb_' + col.replace(/\s/g,'_');
+  // IDs are now scoped per teacher: teacher_pay_<name>_<col>
+  const cbId  = `${key}_${col.replace(/\s/g,'_')}`;
   const label = document.querySelector(`label[for="${cbId}"]`);
   if (label) {
     label.textContent = checked ? '✔ Paid' : '✘ Unpaid';
