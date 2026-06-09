@@ -610,9 +610,9 @@ body {
 .info-separator { border:0; border-top:1px solid var(--border); margin:8px 0; }
 
 .info-table { width:100%; border-collapse:collapse; margin-top:4px; font-size:12px; font-weight:900; }
-.info-table td { text-align:left; color:#222; border:1px dashed rgba(0,0,0,0.1); font-weight:900; flex-basis:33.33%; padding:3px 8px !important; }
+.info-table td { text-align:left; color:#222; border:1px solid rgba(31,107,59,0.25); font-weight:800; flex-basis:33.33%; padding:4px 8px !important; vertical-align:middle; }
 .info-table tr { display:flex; }
-.info-table td strong { color:var(--accent); font-weight:900; margin-right:4px; }
+.info-table td strong { color:var(--accent); font-weight:900; margin-right:4px; display:inline-block; min-width:80px; }
 .info-table .data { font-weight:900; color:#222; }
 
 /* Subject table */
@@ -723,7 +723,7 @@ body {
    PRINT STYLES
    ============================================================ */
 @media print {
-  * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; color-adjust:exact !important; }
   body > * { display:none !important; }
   body > #printContainer { display:block !important; }
 
@@ -732,15 +732,52 @@ body {
     page-break-after:always !important;
     page-break-inside:avoid !important;
     height:280mm !important;
-    border:2px solid var(--border) !important;
+    border:2.5px solid var(--border) !important;
+    outline:2.5px solid var(--border) !important;
     position:relative;
     transform:scale(0.97); transform-origin:top center;
     background:#fff !important; color:#222 !important;
+    box-sizing:border-box !important;
   }
   .card:last-child { page-break-after:avoid !important; }
   .card-dl-btn, .qr-wrap > button { display:none !important; }
+
+  /* Preserve subject table borders */
+  .card-subjects table { border-collapse:collapse !important; }
+  .card-subjects th,
+  .card-subjects td { border:1px solid var(--border) !important; }
+  .card-subjects thead th { background:var(--primary) !important; color:#fff !important; }
+  .card-subjects tbody td { background:var(--soft) !important; }
+
+  /* Preserve info table borders */
+  .info-table td { border:1px solid rgba(0,0,0,0.2) !important; }
+
+  /* Preserve grading/summary table borders */
+  .grading-box table { border-collapse:collapse !important; }
+  .grading-box th, .grading-box td { border:1px solid rgba(0,0,0,0.18) !important; }
+  .grading-box thead th { background:var(--primary) !important; color:#fff !important; }
+  .grading-box tbody td { background:var(--soft) !important; }
+
+  /* Preserve total summary table borders */
+  .total-summary table { border-collapse:collapse !important; }
+  .total-summary thead th { background:var(--primary) !important; color:#fff !important; border:2px solid var(--border) !important; }
+  .total-summary tbody td { background:var(--soft) !important; border:2px solid var(--border) !important; }
+
+  /* Preserve annual summary box borders */
+  .annual-summary-box { border:1px solid var(--border) !important; background:var(--soft) !important; }
+  .annual-summary-box table { border-collapse:collapse !important; }
+  .annual-summary-box th { background:var(--primary) !important; color:#fff !important; border:1px solid var(--border) !important; }
+  .annual-summary-box td { background:#fff !important; border:1px solid var(--border) !important; }
+
+  /* Preserve remarks and signature section borders */
+  .remarks { border:1px solid rgba(0,0,0,0.12) !important; padding:6px 8px !important; border-radius:4px !important; }
+  .sig-line { border-top:1.5px solid #000 !important; }
+  .bottom-row { border-top:1px solid rgba(0,0,0,0.1) !important; padding-top:8px !important; }
+
+  /* Preserve general thead/tbody */
   thead th { background:var(--primary) !important; color:#fff !important; }
   tbody td  { background:var(--soft) !important; }
+
   .card::after {
     content:""; position:absolute; inset:0; opacity:0.05; pointer-events:none;
     background-image:var(--watermark); background-size:280px;
@@ -1356,6 +1393,66 @@ canvas.pa-chart {
   .dl-btn-row { flex-direction: column; }
 }
 /* END CUSTOM EDIT SECTION — Charts, PDF Letter Header & Downloads */
+
+/* ============================================================
+   ADVANCED ANALYTICS STYLES
+   ============================================================ */
+.analytics-perf-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.analytics-perf-card {
+  background: var(--dash-card);
+  border: 1px solid var(--dash-border);
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  text-align: center;
+}
+.analytics-perf-card .apc-icon { font-size: 22px; margin-bottom: 6px; }
+.analytics-perf-card .apc-label { font-size: 10px; font-weight: 800; color: var(--dash-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.analytics-perf-card .apc-value { font-size: 18px; font-weight: 900; color: var(--dash-accent); }
+.analytics-perf-card .apc-sub { font-size: 10px; color: var(--dash-muted); font-weight: 700; margin-top: 2px; }
+
+.analytics-insight-card {
+  background: var(--dash-card);
+  border: 1px solid var(--dash-border);
+  border-left: 4px solid var(--dash-green);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dash-text);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.analytics-insight-card.declining { border-left-color: var(--dash-danger); }
+.analytics-insight-card.stable    { border-left-color: #f59e0b; }
+.analytics-insight-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+.trend-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 999px;
+  font-size: 11px; font-weight: 900;
+}
+.trend-badge.up     { background: rgba(34,197,94,0.15);  color: #22c55e; }
+.trend-badge.down   { background: rgba(239,68,68,0.15);  color: #ef4444; }
+.trend-badge.stable { background: rgba(245,158,11,0.15); color: #f59e0b; }
+
+/* pay-badge for teacher payment table */
+.pay-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 900;
+}
+.pay-badge.paid   { background: rgba(34,197,94,0.15);  color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+.pay-badge.unpaid { background: rgba(239,68,68,0.12);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
+
+@media (max-width: 480px) {
+  .analytics-perf-grid { grid-template-columns: repeat(2, 1fr); }
+}
 </style>
 </head>
 <body>
@@ -1535,6 +1632,7 @@ canvas.pa-chart {
         <button class="sidebar-item" onclick="switchTab('tab-progress');toggleSidebar()"><span class="si-icon">📊</span> Progress</button>
         <button class="sidebar-item" onclick="switchTab('tab-analytics');toggleSidebar()"><span class="si-icon">📈</span> Analytics</button>
         <button class="sidebar-item" onclick="switchTab('tab-websites');toggleSidebar()"><span class="si-icon">🌐</span> Websites</button>
+        <button class="sidebar-item" onclick="switchTab('tab-awards');toggleSidebar()"><span class="si-icon">🏆</span> Awards</button>
         <button class="sidebar-item" onclick="switchTab('tab-guide');toggleSidebar()"><span class="si-icon">📖</span> Guide</button>
         <button class="sidebar-item" onclick="switchTab('tab-settings');toggleSidebar()"><span class="si-icon">⚙️</span> Settings</button>
         <button class="sidebar-item" onclick="logout()"><span class="si-icon">🚪</span> Sign Out</button>
@@ -1579,13 +1677,13 @@ canvas.pa-chart {
 
       <!-- START CUSTOM EDIT SECTION — Dashboard Tabs -->
       <div class="dash-tabs">
-        <button class="dash-tab" onclick="toggleSidebar()">☰</button>
         <button class="dash-tab active" onclick="switchTab('tab-classes')">🏫 Classes</button>
         <button class="dash-tab" onclick="switchTab('tab-progress')">📊 Progress</button>
         <button class="dash-tab" onclick="switchTab('tab-analytics')">📈 Analytics</button>
         <button class="dash-tab" onclick="openTeachersSection()">👨‍🏫 Teachers</button>
         <button class="dash-tab" onclick="openFeesSection()">💰 School Fees</button>
         <button class="dash-tab" onclick="switchTab('tab-websites')">🌐 Websites</button>
+        <button class="dash-tab" onclick="switchTab('tab-awards')">🏆 Awards</button>
         <button class="dash-tab" onclick="switchTab('tab-guide')">📖 Guide</button>
         <button class="dash-tab" onclick="switchTab('tab-settings')">⚙️ Settings</button>
       </div>
@@ -1818,9 +1916,9 @@ canvas.pa-chart {
       <!-- TAB: Class Analytics -->
       <!-- START CUSTOM EDIT SECTION — Analytics Tab -->
       <div id="tab-analytics" class="tab-panel">
-        <div class="section-heading">Class Analytics</div>
+        <div class="section-heading">📈 Advanced Analytics</div>
         <p style="font-size:12px;color:var(--dash-muted);font-weight:600;margin-bottom:14px;">
-          Detailed statistics for each class. Click "Load" to fetch data.
+          School-wide performance statistics, term comparisons, and intelligent insights.
         </p>
 
         <div id="analytics-loading" class="loading-bar">
@@ -1828,27 +1926,66 @@ canvas.pa-chart {
           <span>Computing analytics…</span>
         </div>
 
+        <!-- ── Export Buttons ── -->
+        <div class="dl-btn-row" style="margin-bottom:16px;">
+          <button class="btn-export-pdf" onclick="loadAllAnalytics()">
+            🔄 Load All Analytics
+          </button>
+          <button class="btn-dl-pdf" onclick="downloadAnalyticsPDF()" style="margin-left:8px;">
+            📄 Export Analytics PDF
+          </button>
+          <button class="btn-dl-pdf green" onclick="downloadAnalyticsWord()" style="margin-left:8px;">
+            📝 Export Analytics Word
+          </button>
+        </div>
+
+        <!-- ── A. Student Performance Overview ── -->
+        <div id="analytics-overview-section" style="display:none;">
+          <div class="section-heading" style="font-size:13px;">A. Student Performance Overview</div>
+          <div class="analytics-perf-grid" id="analytics-perf-grid"></div>
+        </div>
+
+        <!-- ── B. Term Comparison ── -->
+        <div id="analytics-term-section" style="display:none;">
+          <div class="section-heading" style="font-size:13px;margin-top:4px;">B. Term Comparison Analytics</div>
+          <div style="overflow-x:auto;margin-bottom:16px;">
+            <table class="salary-table" id="analytics-term-table" style="width:100%;min-width:400px;">
+              <thead><tr>
+                <th>Class</th>
+                <th>1st Term Avg</th>
+                <th>2nd Term Avg</th>
+                <th>3rd Term Avg</th>
+                <th>Trend</th>
+              </tr></thead>
+              <tbody id="analytics-term-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── C. Performance Trend Summary (Insights) ── -->
+        <div id="analytics-insights-section" style="display:none;">
+          <div class="section-heading" style="font-size:13px;margin-top:4px;">C. Performance Trend Summary</div>
+          <div id="analytics-insights-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;"></div>
+        </div>
+
         <!-- ── Chart Section ── -->
         <div id="analytics-charts-section" style="display:none;">
           <div class="analytics-charts-row">
-            <!-- Bar Chart: Class averages -->
             <div class="analytics-chart-card">
-              <div class="analytics-chart-title">📊 Class Average Scores (Bar)</div>
+              <div class="analytics-chart-title">📊 Class Average Scores</div>
               <div class="chart-canvas-wrap">
                 <canvas id="chart-bar-avg" class="pa-chart"></canvas>
               </div>
             </div>
-            <!-- Pie Chart: Pass vs Fail distribution -->
             <div class="analytics-chart-card">
-              <div class="analytics-chart-title">🥧 Pass / Fail Distribution (Pie)</div>
+              <div class="analytics-chart-title">🥧 Pass / Fail Distribution</div>
               <div class="chart-canvas-wrap">
                 <canvas id="chart-pie-pass" class="pa-chart"></canvas>
               </div>
             </div>
           </div>
-          <!-- Educational Chart: Gender distribution bar -->
           <div class="edu-chart-card">
-            <div class="analytics-chart-title">🎓 Gender Distribution Per Class (Educational Chart)</div>
+            <div class="analytics-chart-title">🎓 Gender Distribution Per Class</div>
             <div class="chart-canvas-wrap" style="min-height:180px;">
               <canvas id="chart-edu-gender" class="pa-chart" style="max-height:180px;"></canvas>
             </div>
@@ -1859,14 +1996,8 @@ canvas.pa-chart {
           </div>
         </div>
 
+        <!-- ── D. Per-class analytics cards ── -->
         <div id="analytics-cards"></div>
-
-        <button class="btn-export-pdf" onclick="loadAllAnalytics()">
-          🔄 Load All Analytics
-        </button>
-        <button class="btn-export-pdf" onclick="downloadAnalyticsPDF()" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);margin-left:8px;">
-          📄 Download Analytics PDF
-        </button>
       </div>
       <!-- END CUSTOM EDIT SECTION — Analytics Tab -->
 
@@ -1915,30 +2046,6 @@ canvas.pa-chart {
             </div>
           </div>
 
-          <div class="settings-card">
-            <div class="settings-card-title">💾 Local Data</div>
-            <div class="settings-row">
-              <div>
-                <div class="settings-row-label">Teacher Payment Overrides</div>
-                <div class="settings-row-sub">Locally saved payment states for teachers</div>
-              </div>
-              <button class="btn-settings-danger" onclick="clearTeacherPaymentData()">🗑 Clear</button>
-            </div>
-            <div class="settings-row">
-              <div>
-                <div class="settings-row-label">Student Fee Overrides</div>
-                <div class="settings-row-sub">Locally saved admin fee marking data</div>
-              </div>
-              <button class="btn-settings-danger" onclick="clearFeeOverrideData()">🗑 Clear</button>
-            </div>
-            <div class="settings-row">
-              <div>
-                <div class="settings-row-label">Reset All Local Data</div>
-                <div class="settings-row-sub">Clears all portal localStorage (theme, payments, fees)</div>
-              </div>
-              <button class="btn-settings-danger" onclick="resetAllLocalData()">⚠ Reset All</button>
-            </div>
-          </div>
 
           <div class="settings-card">
             <div class="settings-card-title">🏫 Portal Information</div>
@@ -1955,6 +2062,53 @@ canvas.pa-chart {
         </div>
       </div>
       <!-- END Settings Tab -->
+      <!-- TAB: Awards / Certificates -->
+      <div id="tab-awards" class="tab-panel">
+        <div class="section-heading">🏆 Awards &amp; Certificates</div>
+        <div style="display:flex;justify-content:center;margin-top:24px;">
+          <div style="
+            background:var(--dash-card);
+            border:2px solid var(--dash-border);
+            border-radius:var(--radius);
+            padding:48px 40px;
+            text-align:center;
+            max-width:520px;
+            width:100%;
+            box-shadow:var(--shadow);
+            position:relative;
+            overflow:hidden;
+          ">
+            <!-- Decorative glow -->
+            <div style="position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:200px;height:200px;background:radial-gradient(circle,rgba(34,197,94,0.18) 0%,transparent 70%);pointer-events:none;"></div>
+            <!-- Trophy icon -->
+            <div style="font-size:72px;margin-bottom:16px;line-height:1;position:relative;">🏆</div>
+            <h2 style="font-family:var(--font-display);font-size:24px;color:var(--dash-accent);margin-bottom:10px;">Awards &amp; Certificates</h2>
+            <p style="font-size:14px;color:var(--dash-muted);font-weight:600;margin-bottom:24px;line-height:1.6;">
+              This module is under development and will be available in a future update.
+            </p>
+            <!-- Coming Soon badge -->
+            <div style="
+              display:inline-flex;align-items:center;gap:8px;
+              background:linear-gradient(135deg,rgba(34,197,94,0.15),rgba(74,222,128,0.1));
+              border:1.5px solid rgba(34,197,94,0.4);
+              border-radius:999px;
+              padding:10px 28px;
+              font-size:14px;font-weight:900;
+              color:var(--dash-accent);
+              letter-spacing:0.06em;
+            ">
+              ⏳ Coming Soon
+            </div>
+            <div style="margin-top:28px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;">
+              <div style="background:var(--dash-green-soft);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:10px 16px;font-size:12px;font-weight:700;color:var(--dash-muted);">🎖 Student Awards</div>
+              <div style="background:var(--dash-green-soft);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:10px 16px;font-size:12px;font-weight:700;color:var(--dash-muted);">📜 Certificates</div>
+              <div style="background:var(--dash-green-soft);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:10px 16px;font-size:12px;font-weight:700;color:var(--dash-muted);">🥇 Academic Honours</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END Awards Tab -->
+
       <!-- START CUSTOM EDIT SECTION — Guide Tab -->
       <div id="tab-guide" class="tab-panel">
         <div class="section-heading">System Administrator Guide</div>
@@ -4081,7 +4235,7 @@ async function loadAllClassProgress() {
 
 /* Compute analytics object for a set of student records */
 function computeAnalytics(records, className) {
-  if (!records.length) return null;
+  if (!records || !records.length) return null;
 
   const headers  = Object.keys(records[0]);
   const subjects = [...new Set(
@@ -4091,6 +4245,7 @@ function computeAnalytics(records, className) {
   let maleCount = 0, femaleCount = 0;
   let passCount = 0, failCount = 0;
   let highestAvg = -Infinity, lowestAvg = Infinity;
+  let highestName = '', lowestName = '';
   let sumAvg = 0;
 
   records.forEach(stu => {
@@ -4101,16 +4256,15 @@ function computeAnalytics(records, className) {
     const mode = getScoringMode(stu['Class Category'] || 'Primary');
     let total = 0, count = 0;
     subjects.forEach(sub => {
-      const s1   = stu[`${sub}_CA1`]   || 0;
-      const s2   = stu[`${sub}_CA2`]   || 0;
-      const s3   = mode.isJssSs ? (stu[`${sub}_CA3`] || 0) : 0;
-      const exam = stu[`${sub}_Exams`] || 0;
-      total += s1 + s2 + s3 + exam;
+      total += (+stu[sub + '_CA1']   || 0) +
+               (+stu[sub + '_CA2']   || 0) +
+               (mode.isJssSs ? (+stu[sub + '_CA3'] || 0) : 0) +
+               (+stu[sub + '_Exams'] || 0);
       count++;
     });
     const avg = count ? +(total / count).toFixed(2) : 0;
-    if (avg > highestAvg) highestAvg = avg;
-    if (avg < lowestAvg)  lowestAvg  = avg;
+    if (avg > highestAvg) { highestAvg = avg; highestName = stu['Name'] || ''; }
+    if (avg < lowestAvg)  { lowestAvg  = avg; lowestName  = stu['Name'] || ''; }
     sumAvg += avg;
     if (avg >= 40) passCount++; else failCount++;
   });
@@ -4121,83 +4275,338 @@ function computeAnalytics(records, className) {
 
   return {
     className,
-    total:   records.length,
-    male:    maleCount,
-    female:  femaleCount,
-    highest: highestAvg === -Infinity ? 0 : highestAvg,
-    lowest:  lowestAvg  ===  Infinity ? 0 : lowestAvg,
+    total:       records.length,
+    male:        maleCount,
+    female:      femaleCount,
+    highest:     highestAvg === -Infinity ? 0 : +highestAvg.toFixed(2),
+    lowest:      lowestAvg  ===  Infinity ? 0 : +lowestAvg.toFixed(2),
+    highestName,
+    lowestName,
+    passCount,
+    subjectCount: subjects.length,
     classAvg, passRate, failRate
   };
 }
 
-/* Load analytics for all classes */
+/* Load analytics for all classes (advanced: multi-term comparison + insights) */
 async function loadAllAnalytics() {
-  const loader  = $('analytics-loading');
-  const cardsEl = $('analytics-cards');
+  const loader   = $('analytics-loading');
+  const cardsEl  = $('analytics-cards');
   loader.classList.add('visible');
   cardsEl.innerHTML = '';
   analyticsCache = {};
 
-  for (const className of Object.keys(CLASS_LINKS)) {
-    if (!classHasAnyUrl(className)) continue;
-    const url = getTermUrl(className, 'First Term');
-    if (!url) continue;
-    try {
-      const csv     = await fetchCSV(url);
-      const records = parseCSV(csv);
-      if (!records.length) continue;
-      const analytics = computeAnalytics(records, className);
-      if (!analytics) continue;
-      analyticsCache[className] = analytics;
+  const classNames = Object.keys(CLASS_LINKS).filter(n => classHasAnyUrl(n));
+  let   totalStudents = 0, totalSubjects = 0;
+  let   allPassCount  = 0, allTotal = 0;
+  let   bestName = '', bestAvg = -Infinity;
+  let   worstName= '', worstAvg = Infinity;
+  let   schoolSumAvg = 0, schoolCount = 0;
+  const termDataByClass = {}; // { className: { first, second, third } } each is avg or null
 
-      const card = document.createElement('div');
-      card.className = 'analytics-card';
-      card.innerHTML = `
-        <div class="analytics-card-title">📊 ${className}</div>
-        <div class="analytics-row"><span>Total Students</span><span>${analytics.total}</span></div>
-        <div class="analytics-row"><span>Male</span><span>${analytics.male}</span></div>
-        <div class="analytics-row"><span>Female</span><span>${analytics.female}</span></div>
-        <div class="analytics-row"><span>Highest Average</span><span>${analytics.highest}%</span></div>
-        <div class="analytics-row"><span>Lowest Average</span><span>${analytics.lowest}%</span></div>
-        <div class="analytics-row"><span>Class Average</span><span>${analytics.classAvg}%</span></div>
-        <div class="analytics-row"><span>Pass Rate</span><span style="color:#22c55e;">${analytics.passRate}%</span></div>
-        <div class="analytics-row"><span>Fail Rate</span><span style="color:#ef4444;">${analytics.failRate}%</span></div>
-      `;
-      cardsEl.appendChild(card);
-    } catch(e) {
-      const errBlock = document.createElement('div');
-      errBlock.style.cssText = 'color:var(--dash-danger);font-size:12px;margin-bottom:8px;';
-      errBlock.textContent = `❌ ${className}: failed to load`;
-      cardsEl.appendChild(errBlock);
+  // ── Fetch all term data per class ────────────────────────────
+  for (const className of classNames) {
+    const termAvgs = { first: null, second: null, third: null };
+    for (const [term, key] of [['First Term','first'],['Second Term','second'],['Third Term','third']]) {
+      const url = getTermUrl(className, term);
+      if (!url) continue;
+      try {
+        const csv     = await fetchCSV(url);
+        const records = parseCSV(csv);
+        if (!records.length) continue;
+        if (key === 'first') {
+          const analytics = computeAnalytics(records, className);
+          if (!analytics) continue;
+          analyticsCache[className] = analytics;
+
+          totalStudents += analytics.total;
+          totalSubjects  = Math.max(totalSubjects, analytics.subjectCount || 0);
+          allPassCount  += analytics.passCount;
+          allTotal      += analytics.total;
+          schoolSumAvg  += analytics.classAvg;
+          schoolCount++;
+
+          if (analytics.highestName && analytics.highest > bestAvg)  { bestAvg = analytics.highest;  bestName  = analytics.highestName + ' (' + className + ')'; }
+          if (analytics.lowestName  && analytics.lowest  < worstAvg) { worstAvg = analytics.lowest;  worstName = analytics.lowestName  + ' (' + className + ')'; }
+
+          const card = document.createElement('div');
+          card.className = 'analytics-card';
+          card.innerHTML =
+            '<div class="analytics-card-title">\u{1F4CA} ' + className + '</div>' +
+            '<div class="analytics-row"><span>Total Students</span><span>' + analytics.total + '</span></div>' +
+            '<div class="analytics-row"><span>Male / Female</span><span>' + analytics.male + ' / ' + analytics.female + '</span></div>' +
+            '<div class="analytics-row"><span>Highest Average</span><span>' + analytics.highest + '%</span></div>' +
+            '<div class="analytics-row"><span>Lowest Average</span><span>' + analytics.lowest + '%</span></div>' +
+            '<div class="analytics-row"><span>Class Average</span><span>' + analytics.classAvg + '%</span></div>' +
+            '<div class="analytics-row"><span>Pass Rate</span><span style="color:#22c55e;">' + analytics.passRate + '%</span></div>' +
+            '<div class="analytics-row"><span>Fail Rate</span><span style="color:#ef4444;">' + analytics.failRate + '%</span></div>';
+          cardsEl.appendChild(card);
+        }
+        // Calculate average for this term
+        const recs2 = key === 'first' ? (analyticsCache[className] ? [] : await (async()=>{const c=await fetchCSV(url);return parseCSV(c);})()) : await (async()=>{try{const c=await fetchCSV(url);return parseCSV(c);}catch{return [];}})();
+        const termRecs = key === 'first' ? Object.values(analyticsCache).find(a=>a.className===className) ? [] : recs2 : recs2;
+        // Simpler: just re-compute avg from already-fetched records
+        const tRecords = key === 'first' ? (analyticsCache[className] ? null : null) : null;
+        termAvgs[key] = await computeTermAvg(url);
+      } catch(e) {
+        // skip failed terms
+      }
     }
+    // First term avg from cache
+    if (analyticsCache[className]) termAvgs.first = analyticsCache[className].classAvg;
+    termDataByClass[className] = termAvgs;
+  }
+
+  // ── A. Performance Overview ──────────────────────────────────
+  const schoolAvg   = schoolCount ? +(schoolSumAvg / schoolCount).toFixed(2) : 0;
+  const passRate     = allTotal   ? Math.round((allPassCount / allTotal) * 100) : 0;
+  const failRate     = 100 - passRate;
+  const overviewEl   = $('analytics-overview-section');
+  const perfGrid     = $('analytics-perf-grid');
+  if (overviewEl && perfGrid) {
+    const perfItems = [
+      { icon: '\u{1F31F}', label: 'Best Student',    value: bestName  || '\u2014', sub: bestAvg  !== -Infinity ? bestAvg + '%'  : '' },
+      { icon: '\u{1F4C9}', label: 'Lowest Performer',value: worstName || '\u2014', sub: worstAvg !==  Infinity ? worstAvg + '%' : '' },
+      { icon: '\u{1F3EB}', label: 'School Average',  value: schoolAvg + '%', sub: 'All classes' },
+      { icon: '\u{1F465}', label: 'Total Students',  value: totalStudents,   sub: 'Enrolled' },
+      { icon: '\u2705',    label: 'Pass Rate',        value: passRate + '%',  sub: '\u2265 40 marks' },
+      { icon: '\u274C',    label: 'Fail Rate',        value: failRate + '%',  sub: '< 40 marks' },
+      { icon: '\u{1F4DA}', label: 'Total Subjects',  value: totalSubjects || '\u2014', sub: 'Detected' },
+      { icon: '\u{1F3C1}', label: 'Classes Loaded',  value: schoolCount,     sub: 'Active classes' },
+    ];
+    perfGrid.innerHTML = perfItems.map(item =>
+      '<div class="analytics-perf-card">' +
+        '<div class="apc-icon">' + item.icon + '</div>' +
+        '<div class="apc-label">' + item.label + '</div>' +
+        '<div class="apc-value">' + escapeHtml(String(item.value)) + '</div>' +
+        (item.sub ? '<div class="apc-sub">' + escapeHtml(String(item.sub)) + '</div>' : '') +
+      '</div>'
+    ).join('');
+    overviewEl.style.display = '';
+  }
+
+  // ── B. Term Comparison ───────────────────────────────────────
+  const termSection = $('analytics-term-section');
+  const termTbody   = $('analytics-term-tbody');
+  if (termSection && termTbody) {
+    const rows = Object.entries(termDataByClass).map(([cls, avgs]) => {
+      const f = avgs.first  !== null ? avgs.first  + '%' : '\u2014';
+      const s = avgs.second !== null ? avgs.second + '%' : '\u2014';
+      const t = avgs.third  !== null ? avgs.third  + '%' : '\u2014';
+      let trend = '\u2192 Stable', tClass = 'stable';
+      const vals = [avgs.first, avgs.second, avgs.third].filter(v => v !== null);
+      if (vals.length >= 2) {
+        const diff = vals[vals.length-1] - vals[0];
+        if (diff > 2)       { trend = '\u2191 Improving (' + diff.toFixed(1) + '%)'; tClass = 'up'; }
+        else if (diff < -2) { trend = '\u2193 Declining (' + Math.abs(diff).toFixed(1) + '%)'; tClass = 'down'; }
+      }
+      return '<tr>' +
+        '<td style="font-weight:800;">' + escapeHtml(cls) + '</td>' +
+        '<td>' + f + '</td><td>' + s + '</td><td>' + t + '</td>' +
+        '<td><span class="trend-badge ' + tClass + '">' + trend + '</span></td>' +
+      '</tr>';
+    }).join('');
+    termTbody.innerHTML = rows || '<tr><td colspan="5" style="text-align:center;color:var(--dash-muted);">No data</td></tr>';
+    termSection.style.display = '';
+  }
+
+  // ── C. Insights ───────────────────────────────────────────────
+  const insightsSection = $('analytics-insights-section');
+  const insightsList    = $('analytics-insights-list');
+  if (insightsSection && insightsList) {
+    const insights = [];
+    let mostImproved = '', mostImprovedDiff = -Infinity;
+    let mostDeclined = '', mostDeclinedDiff =  Infinity;
+    let highestSection = '', highestSectionAvg = -Infinity;
+
+    Object.entries(termDataByClass).forEach(([cls, avgs]) => {
+      const vals = [avgs.first, avgs.second, avgs.third].filter(v => v !== null);
+      if (vals.length >= 2) {
+        const diff = vals[vals.length-1] - vals[0];
+        if (diff > mostImprovedDiff) { mostImprovedDiff = diff; mostImproved = cls; }
+        if (diff < mostDeclinedDiff) { mostDeclinedDiff = diff; mostDeclined = cls; }
+      }
+    });
+
+    // Determine highest section avg
+    const sectionAvgs = { Nursery:[], Primary:[], 'Junior Secondary':[], 'Senior Secondary':[] };
+    Object.entries(analyticsCache).forEach(([cls, a]) => {
+      const cat = getClassCategory(cls);
+      if (sectionAvgs[cat]) sectionAvgs[cat].push(a.classAvg);
+    });
+    Object.entries(sectionAvgs).forEach(([sec, avgs]) => {
+      if (!avgs.length) return;
+      const avg = avgs.reduce((a,b)=>a+b,0) / avgs.length;
+      if (avg > highestSectionAvg) { highestSectionAvg = avg; highestSection = sec; }
+    });
+
+    if (mostImproved && mostImprovedDiff > 2)
+      insights.push({ icon: '\u{1F4C8}', text: mostImproved + ' showed the most improvement (' + mostImprovedDiff.toFixed(1) + '%) across terms.', type: 'up' });
+    if (mostDeclined && mostDeclinedDiff < -2)
+      insights.push({ icon: '\u{1F4C9}', text: mostDeclined + ' recorded a performance decline of ' + Math.abs(mostDeclinedDiff).toFixed(1) + '% across terms.', type: 'declining' });
+    if (highestSection)
+      insights.push({ icon: '\u{1F3C6}', text: highestSection + ' section showed the highest average performance (' + highestSectionAvg.toFixed(1) + '%).', type: 'up' });
+    if (schoolAvg >= 60)
+      insights.push({ icon: '\u2705', text: 'School average of ' + schoolAvg + '% indicates generally good academic performance.', type: 'up' });
+    else if (schoolAvg < 40)
+      insights.push({ icon: '\u26A0', text: 'School average of ' + schoolAvg + '% is below pass mark. Intervention recommended.', type: 'declining' });
+
+    if (!insights.length) insights.push({ icon: '\u{1F4CA}', text: 'Load multi-term data (2nd and 3rd term CSVs) for detailed trend insights.', type: 'stable' });
+
+    insightsList.innerHTML = insights.map(ins =>
+      '<div class="analytics-insight-card ' + (ins.type !== 'up' ? ins.type : '') + '">' +
+        '<span class="analytics-insight-icon">' + ins.icon + '</span>' +
+        '<span>' + escapeHtml(ins.text) + '</span>' +
+      '</div>'
+    ).join('');
+    insightsSection.style.display = '';
+  }
+
+  // ── Charts ───────────────────────────────────────────────────
+  if (Object.keys(analyticsCache).length > 0) {
+    $('analytics-charts-section').style.display = '';
+    renderAnalyticsCharts(analyticsCache);
   }
 
   loader.classList.remove('visible');
-  showToast('✅ Analytics loaded!');
+  showToast('\u2705 Analytics loaded!');
+}
+
+/* Helper: compute avg score from a CSV URL (returns number or null) */
+async function computeTermAvg(url) {
+  if (!url) return null;
+  try {
+    const csv     = await fetchCSV(url);
+    const records = parseCSV(csv);
+    if (!records.length) return null;
+    const headers  = Object.keys(records[0]);
+    const subjects = [...new Set(
+      headers.filter(h => h.includes('_CA') || h.includes('_Exams')).map(h => h.split('_')[0])
+    )];
+    let sumAvg = 0, count = 0;
+    records.forEach(stu => {
+      const mode  = getScoringMode(stu['Class Category'] || 'Primary');
+      let total = 0, sc = 0;
+      subjects.forEach(sub => {
+        total += (+stu[sub + '_CA1'] || 0) + (+stu[sub + '_CA2'] || 0) +
+                 (mode.isJssSs ? (+stu[sub + '_CA3'] || 0) : 0) + (+stu[sub + '_Exams'] || 0);
+        sc++;
+      });
+      if (sc) { sumAvg += total / sc; count++; }
+    });
+    return count ? +(sumAvg / count).toFixed(2) : null;
+  } catch { return null; }
 }
 
 /* Download analytics as a PDF */
 async function downloadAnalyticsPDF() {
-  const area = $('analytics-cards');
-  if (!area || !area.children.length) {
-    showToast('❌ No analytics loaded. Click "Load All Analytics" first.', 'error');
+  if (!Object.keys(analyticsCache).length) {
+    showToast('\u274C No analytics loaded. Click "Load All Analytics" first.', 'error');
     return;
   }
-  showToast('⏳ Generating analytics PDF…');
+  showToast('\u23F3 Generating analytics PDF\u2026');
   try {
+    // Build a standalone div for PDF export
+    const exportDiv = buildAnalyticsExportHTML('PDF');
+    document.body.appendChild(exportDiv);
     const opt = {
       margin:      [10,10,10,10],
       filename:    'Pariya_Academy_Analytics.pdf',
-      image:       { type:'jpeg', quality:0.96 },
-      html2canvas: { scale:2, useCORS:true, logging:false, backgroundColor:'#0f1b14' },
+      image:       { type:'jpeg', quality:0.97 },
+      html2canvas: { scale:2, useCORS:true, logging:false, backgroundColor:'#ffffff' },
       jsPDF:       { unit:'mm', format:'a4', orientation:'portrait' }
     };
-    await html2pdf().set(opt).from(area).save();
-    showToast('✅ Analytics PDF downloaded!');
+    await html2pdf().set(opt).from(exportDiv).save();
+    document.body.removeChild(exportDiv);
+    showToast('\u2705 Analytics PDF downloaded!');
   } catch(err) {
     console.error(err);
-    showToast('❌ PDF export failed.', 'error');
+    showToast('\u274C PDF export failed.', 'error');
   }
+}
+
+/* Download analytics as a Word (.doc) file */
+function downloadAnalyticsWord() {
+  if (!Object.keys(analyticsCache).length) {
+    showToast('\u274C No analytics loaded. Click "Load All Analytics" first.', 'error');
+    return;
+  }
+  try {
+    const exportDiv  = buildAnalyticsExportHTML('Word');
+    const htmlContent =
+      '<html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
+      'xmlns:w="urn:schemas-microsoft-com:office:word" ' +
+      'xmlns="http://www.w3.org/TR/REC-html40">' +
+      '<head><meta charset="UTF-8"><title>Analytics Report</title>' +
+      '<style>body{font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#222;}' +
+      'h1,h2,h3{color:#228B2A;}table{border-collapse:collapse;width:100%;margin-bottom:14pt;}' +
+      'th{background:#228B2A;color:#fff;padding:6pt 8pt;border:1px solid #1f6b3b;font-weight:bold;}' +
+      'td{padding:5pt 8pt;border:1px solid #C8E6C9;}' +
+      'tr:nth-child(even) td{background:#f0fdf4;}' +
+      '</style></head><body>' + exportDiv.innerHTML + '</body></html>';
+    const blob = new Blob(['\ufeff', htmlContent], { type: 'application/msword' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = 'Pariya_Academy_Analytics.doc';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('\u2705 Analytics Word document downloaded!');
+  } catch(err) {
+    console.error(err);
+    showToast('\u274C Word export failed.', 'error');
+  }
+}
+
+/* Build a standalone HTML element for export (PDF / Word) */
+function buildAnalyticsExportHTML(format) {
+  const now = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
+  const classRows = Object.values(analyticsCache).map((a, i) =>
+    '<tr>' +
+      '<td>' + (i+1) + '</td>' +
+      '<td><strong>' + escapeHtml(a.className) + '</strong></td>' +
+      '<td>' + a.total + '</td>' +
+      '<td>' + a.male + ' / ' + a.female + '</td>' +
+      '<td>' + a.highest + '%</td>' +
+      '<td>' + a.lowest  + '%</td>' +
+      '<td><strong>' + a.classAvg + '%</strong></td>' +
+      '<td style="color:#16a34a;font-weight:bold;">' + a.passRate + '%</td>' +
+      '<td style="color:#dc2626;font-weight:bold;">' + a.failRate + '%</td>' +
+    '</tr>'
+  ).join('');
+
+  const div = document.createElement('div');
+  div.style.cssText = 'position:absolute;left:-9999px;top:0;width:750px;background:#fff;color:#222;font-family:Arial,sans-serif;font-size:12px;padding:30px;';
+  div.innerHTML =
+    '<div style="text-align:center;border-bottom:3px solid #228B2A;padding-bottom:14px;margin-bottom:18px;">' +
+      '<h1 style="color:#228B2A;font-size:20px;margin:0;">' + escapeHtml(SCHOOL_CONFIG.name) + '</h1>' +
+      '<p style="color:#555;margin:4px 0;">' + escapeHtml(SCHOOL_CONFIG.address) + '</p>' +
+      '<h2 style="font-size:15px;color:#228B2A;margin:8px 0 0;">Academic Analytics Report</h2>' +
+      '<p style="color:#555;font-size:11px;margin:4px 0;">Generated: ' + now + ' &mdash; Session: ' + escapeHtml(SCHOOL_CONFIG.session) + '</p>' +
+    '</div>' +
+
+    '<h3 style="color:#228B2A;">A. Student Performance Statistics</h3>' +
+    '<table style="border-collapse:collapse;width:100%;margin-bottom:16px;font-size:11px;">' +
+      '<thead><tr style="background:#228B2A;color:#fff;">' +
+        '<th>#</th><th>Class</th><th>Students</th><th>M/F</th>' +
+        '<th>Highest Avg</th><th>Lowest Avg</th><th>Class Avg</th>' +
+        '<th>Pass Rate</th><th>Fail Rate</th>' +
+      '</tr></thead>' +
+      '<tbody>' + classRows + '</tbody>' +
+    '</table>' +
+
+    '<h3 style="color:#228B2A;">B. School Summary</h3>' +
+    '<table style="border-collapse:collapse;width:50%;margin-bottom:16px;font-size:11px;">' +
+      '<tr><td style="border:1px solid #C8E6C9;padding:5px 8px;font-weight:bold;">Total Students</td>' +
+      '<td style="border:1px solid #C8E6C9;padding:5px 8px;">' + Object.values(analyticsCache).reduce((s,a)=>s+a.total,0) + '</td></tr>' +
+      '<tr><td style="border:1px solid #C8E6C9;padding:5px 8px;font-weight:bold;background:#f0fdf4;">Classes Analysed</td>' +
+      '<td style="border:1px solid #C8E6C9;padding:5px 8px;background:#f0fdf4;">' + Object.keys(analyticsCache).length + '</td></tr>' +
+    '</table>' +
+
+    '<p style="font-size:10px;color:#555;margin-top:24px;border-top:1px solid #C8E6C9;padding-top:8px;">' +
+      'Report generated by Pariya Academy Report Card System. Designed by Arabo Modibbo.' +
+    '</p>';
+  return div;
 }
 /* END CUSTOM EDIT SECTION — Class Analytics */
 
@@ -4340,6 +4749,8 @@ window.generateFromDetail          = generateFromDetail;
 window.loadAllClassProgress        = loadAllClassProgress;
 window.loadAllAnalytics            = loadAllAnalytics;
 window.downloadAnalyticsPDF        = downloadAnalyticsPDF;
+window.downloadAnalyticsPDF        = downloadAnalyticsPDF;
+window.downloadAnalyticsWord       = downloadAnalyticsWord;
 window.exportGuidePDF              = exportGuidePDF;
 window.toggleSiteCreds             = toggleSiteCreds;
 window.renderWebsites              = renderWebsites;
@@ -4465,11 +4876,15 @@ const SECTION_ABBREV_MAP = {
 };
 
 /**
- * Expands a raw Section cell value (which may contain abbreviations or full
+ * Get teacher's ClassCategory value (supports both 'Section' and 'ClassCategory' columns).
+ */
+function getTeacherCategory(teacher) {
+  return (teacher['ClassCategory'] || teacher['Section'] || '').trim();
+}
+
+/**
+ * Expands a raw Section/ClassCategory cell value (which may contain abbreviations or full
  * names, comma-separated) into an array of full section name strings.
- * e.g. "P, J, S" → ["Primary", "Junior Secondary", "Senior Secondary"]
- * e.g. "Primary"  → ["Primary"]
- * e.g. "N, P"     → ["Nursery", "Primary"]
  */
 function expandSections(rawSection) {
   if (!rawSection) return [];
@@ -4478,7 +4893,6 @@ function expandSections(rawSection) {
     .map(part => {
       const trimmed = part.trim();
       const lower   = trimmed.toLowerCase();
-      // If it's a known abbreviation, expand it; otherwise treat as-is
       return SECTION_ABBREV_MAP[lower] || trimmed;
     })
     .filter(Boolean);
@@ -4486,11 +4900,19 @@ function expandSections(rawSection) {
 
 /**
  * Returns true if the teacher belongs to the given section (full name).
- * Handles comma-separated abbreviations AND full names in the Section column.
+ * Reads from ClassCategory (new spec) OR Section (legacy) column.
  */
 function teacherBelongsToSection(teacher, section) {
-  const sections = expandSections(teacher['Section'] || '');
+  const rawCat = getTeacherCategory(teacher);
+  const sections = expandSections(rawCat);
   return sections.some(s => s.toLowerCase() === section.toLowerCase());
+}
+
+/**
+ * Get teacher's display name (supports TeacherName and Teacher Name columns).
+ */
+function getTeacherName(teacher) {
+  return (teacher['TeacherName'] || teacher['Teacher Name'] || '').trim();
 }
 
 /* ── Load all teachers from live CSV (no demo fallback) ─────── */
@@ -4525,40 +4947,39 @@ function showTeachersList() {
 
 function loadTeachersBySection(section) {
   currentTeacherSection = section;
-  document.getElementById('teachers-list-heading').textContent = '👨‍🏫 ' + section + ' Teachers';
+  document.getElementById('teachers-list-heading').textContent = '\u{1F468}\u200D\u{1F3EB} ' + section + ' Teachers';
 
-  // Match teachers whose Section column includes this section
-  // (supports abbreviations like "P, J, S" as well as full names)
   const filtered = teachersData.filter(t => teacherBelongsToSection(t, section));
 
   const container = document.getElementById('teachers-list-container');
   container.innerHTML = '';
 
   if (!filtered.length) {
-    container.innerHTML = `
-      <p style="font-size:12px;color:var(--dash-muted);font-weight:700;padding:12px 0;">
-        No teachers found for ${escapeHtml(section)}.
-      </p>`;
+    container.innerHTML =
+      '<p style="font-size:13px;color:var(--dash-muted);font-weight:700;padding:20px 0;text-align:center;">' +
+      'No teachers found for ' + escapeHtml(section) + '.<br>' +
+      '<span style="font-size:11px;">Ensure CSV has a <code>ClassCategory</code> column with matching values.</span>' +
+      '</p>';
   } else {
     filtered.forEach(teacher => {
-      // Build a display subtitle: all sections this teacher teaches (full names)
-      const allSections = expandSections(teacher['Section'] || '');
-      const sectionLabel = allSections.length > 1
-        ? allSections.join(' · ')   // e.g. "Primary · Junior Secondary"
-        : (allSections[0] || '—');
+      const rawCat   = getTeacherCategory(teacher);
+      const allSections = expandSections(rawCat);
+      const name     = getTeacherName(teacher);
+      const subjects = (teacher['Subjects'] || '').trim() || '\u2014';
+      const classType= (teacher['ClassType'] || teacher['Class Type'] || '').trim();
 
       const item = document.createElement('div');
       item.className = 'teacher-item';
-      item.innerHTML = `
-        <div class="teacher-avatar">👨‍🏫</div>
-        <div>
-          <div class="teacher-item-name">${escapeHtml(teacher['Teacher Name'] || 'Unknown')}</div>
-          <div class="teacher-item-meta">${escapeHtml(teacher['Subjects'] || '—')}</div>
-          ${allSections.length > 1
-            ? `<div class="teacher-item-meta" style="color:var(--dash-accent);margin-top:2px;">📍 Also: ${escapeHtml(allSections.filter(s => s.toLowerCase() !== section.toLowerCase()).join(', '))}</div>`
-            : ''}
-        </div>
-      `;
+      item.innerHTML =
+        '<div class="teacher-avatar">\u{1F468}\u200D\u{1F3EB}</div>' +
+        '<div style="flex:1;">' +
+          '<div class="teacher-item-name">' + escapeHtml(name || 'Unknown') + '</div>' +
+          '<div class="teacher-item-meta">' + escapeHtml(subjects) + '</div>' +
+          (classType ? '<div class="teacher-item-meta" style="color:var(--dash-accent);margin-top:2px;">\u{1F4CB} ' + escapeHtml(classType) + '</div>' : '') +
+          (allSections.length > 1
+            ? '<div class="teacher-item-meta" style="color:var(--dash-accent);margin-top:2px;">\u{1F4CD} Also: ' + escapeHtml(allSections.filter(s => s.toLowerCase() !== section.toLowerCase()).join(', ')) + '</div>'
+            : '') +
+        '</div>';
       item.addEventListener('click', () => showTeacherProfile(teacher));
       container.appendChild(item);
     });
@@ -4570,62 +4991,87 @@ function loadTeachersBySection(section) {
 function showTeacherProfile(teacher) {
   const container = document.getElementById('teacher-profile-container');
 
-  const subjects    = (teacher['Subjects'] || '').split(',').map(s => s.trim()).filter(Boolean);
-  const classes     = (teacher['Classes']  || '').split(',').map(s => s.trim()).filter(Boolean);
-  const allSections = expandSections(teacher['Section'] || '');
+  const name        = getTeacherName(teacher);
+  const rawCat      = getTeacherCategory(teacher);
+  const classType   = (teacher['ClassType']   || teacher['Class Type']   || '').trim();
+  const classSection= (teacher['ClassSection']|| teacher['Class Section']|| '').trim();
+  const phone       = (teacher['Phone']       || '').trim();
+  const qual        = (teacher['Qualification']|| '').trim();
+  const salary      = (teacher['Salary']      || '').trim();
+  const subjects    = (teacher['Subjects']    || '').split(',').map(s => s.trim()).filter(Boolean);
+  const classes     = (teacher['Classes']     || '').split(',').map(s => s.trim()).filter(Boolean);
+  const allSections = expandSections(rawCat);
 
-  const subjectBadges = subjects.map(s =>
-    `<span class="badge-tag">${escapeHtml(s)}</span>`
-  ).join('');
+  const subjectBadges = subjects.length
+    ? subjects.map(s => '<span class="badge-tag">' + escapeHtml(s) + '</span>').join('')
+    : '<span style="color:var(--dash-muted);font-size:12px;">None listed</span>';
 
-  const classBadges = classes.map(c =>
-    `<span class="badge-tag blue">${escapeHtml(c)}</span>`
-  ).join('');
+  const classBadges = classes.length
+    ? classes.map(c => '<span class="badge-tag blue">' + escapeHtml(c) + '</span>').join('')
+    : '<span style="color:var(--dash-muted);font-size:12px;">None listed</span>';
 
-  // Section badges — one per full section name
   const sectionBadgeColors = {
     'Nursery':          'background:rgba(251,191,36,0.18);color:#fbbf24;border-color:rgba(251,191,36,0.35);',
     'Primary':          'background:rgba(59,130,246,0.15);color:#60a5fa;border-color:rgba(59,130,246,0.35);',
     'Junior Secondary': 'background:rgba(168,85,247,0.15);color:#c084fc;border-color:rgba(168,85,247,0.35);',
     'Senior Secondary': 'background:rgba(34,197,94,0.15);color:#4ade80;border-color:rgba(34,197,94,0.35);',
   };
-  const sectionBadges = allSections.map(sec => {
-    const style = sectionBadgeColors[sec] || '';
-    return `<span class="badge-tag" style="${style}">${escapeHtml(sec)}</span>`;
-  }).join('');
+  const sectionBadges = allSections.length
+    ? allSections.map(sec => {
+        const style = sectionBadgeColors[sec] || '';
+        return '<span class="badge-tag" style="' + style + '">' + escapeHtml(sec) + '</span>';
+      }).join('')
+    : '<span style="color:var(--dash-muted);font-size:12px;">None listed</span>';
 
   const paymentRows = renderTeacherPaymentTable(teacher);
 
-  container.innerHTML = `
-    <div class="teacher-profile">
-      <div class="teacher-profile-header">
-        <div class="teacher-profile-avatar">👨‍🏫</div>
-        <div>
-          <div class="teacher-profile-name">${escapeHtml(teacher['Teacher Name'] || 'Unknown')}</div>
-          <div class="teacher-profile-section">📍 ${escapeHtml(allSections.join(' · ') || '—')}</div>
-        </div>
-      </div>
+  const infoRows = [
+    ['Teacher Name', name || 'Unknown'],
+    ['Class Category', rawCat || '\u2014'],
+    ['Class Type', classType || '\u2014'],
+    ['Class Section', classSection || '\u2014'],
+    ['Phone', phone || '\u2014'],
+    ['Qualification', qual || '\u2014'],
+    ['Salary', salary ? '\u20A6' + salary : '\u2014'],
+  ].map(([label, val]) =>
+    '<tr><td style="font-weight:800;color:var(--dash-muted);width:40%;">' + label + '</td>' +
+    '<td style="font-weight:800;color:var(--dash-text);">' + escapeHtml(val) + '</td></tr>'
+  ).join('');
 
-      <div class="teacher-profile-label">Section(s)</div>
-      <div class="badges-row">${sectionBadges || '<span style="color:var(--dash-muted);font-size:12px;">None listed</span>'}</div>
+  container.innerHTML =
+    '<div class="teacher-profile">' +
+      '<div class="teacher-profile-header">' +
+        '<div class="teacher-profile-avatar">\u{1F468}\u200D\u{1F3EB}</div>' +
+        '<div>' +
+          '<div class="teacher-profile-name">' + escapeHtml(name || 'Unknown') + '</div>' +
+          '<div class="teacher-profile-section">\u{1F4CD} ' + escapeHtml(allSections.join(' \u00B7 ') || '\u2014') + '</div>' +
+        '</div>' +
+      '</div>' +
 
-      <div class="teacher-profile-label">Subjects Teaching</div>
-      <div class="badges-row">${subjectBadges || '<span style="color:var(--dash-muted);font-size:12px;">None listed</span>'}</div>
+      '<div class="section-heading" style="font-size:13px;margin:12px 0 6px;">Teacher Information</div>' +
+      '<div style="overflow-x:auto;margin-bottom:14px;">' +
+        '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
+          '<tbody>' + infoRows + '</tbody>' +
+        '</table>' +
+      '</div>' +
 
-      <div class="teacher-profile-label">Classes Teaching</div>
-      <div class="badges-row">${classBadges || '<span style="color:var(--dash-muted);font-size:12px;">None listed</span>'}</div>
-    </div>
+      '<div class="teacher-profile-label">Class Category / Section(s)</div>' +
+      '<div class="badges-row">' + sectionBadges + '</div>' +
 
-    <div class="section-heading" style="margin-top:4px;">Salary Payment Tracker</div>
-    <div style="overflow-x:auto;">
-      <table class="salary-table">
-        <thead><tr>
-          <th>Term</th><th>Month</th><th>Status</th>
-        </tr></thead>
-        <tbody>${paymentRows}</tbody>
-      </table>
-    </div>
-  `;
+      '<div class="teacher-profile-label">Subjects Teaching</div>' +
+      '<div class="badges-row">' + subjectBadges + '</div>' +
+
+      '<div class="teacher-profile-label">Classes Teaching</div>' +
+      '<div class="badges-row">' + classBadges + '</div>' +
+    '</div>' +
+
+    '<div class="section-heading" style="margin-top:4px;">Salary Payment Tracker</div>' +
+    '<div style="overflow-x:auto;">' +
+      '<table class="salary-table">' +
+        '<thead><tr><th>Term</th><th>Month</th><th>Status</th></tr></thead>' +
+        '<tbody>' + paymentRows + '</tbody>' +
+      '</table>' +
+    '</div>';
 
   document.getElementById('teachers-section-picker').style.display = 'none';
   document.getElementById('teachers-list-view').style.display = 'none';
@@ -4633,37 +5079,64 @@ function showTeacherProfile(teacher) {
 }
 
 function renderTeacherPaymentTable(teacher) {
-  const teacherKey    = 'teacher_pay_' + (teacher['Teacher Name'] || '').replace(/\s/g,'_');
-  // Unique prefix per teacher so checkbox IDs never clash across profiles
+  const name          = getTeacherName(teacher);
+  const teacherKey    = 'teacher_pay_' + name.replace(/\s/g,'_');
   const teacherPrefix = teacherKey;
-  const saved = JSON.parse(localStorage.getItem(teacherKey) || '{}');
+  const saved         = JSON.parse(localStorage.getItem(teacherKey) || '{}');
 
+  // Support both new spec column names (FMonth1…TMonth3) and legacy names
   const TERMS = [
-    { label: 'First Term',  cls: 'term-first',  months: ['First Term Month 1','First Term Month 2','First Term Month 3'] },
-    { label: 'Second Term', cls: 'term-second', months: ['Second Term Month 1','Second Term Month 2','Second Term Month 3'] },
-    { label: 'Third Term',  cls: 'term-third',  months: ['Third Term Month 1','Third Term Month 2','Third Term Month 3'] },
+    {
+      label: 'First Term', cls: 'term-first',
+      months: [
+        { col: 'FMonth1', legacy: 'First Term Month 1', label: 'Month 1' },
+        { col: 'FMonth2', legacy: 'First Term Month 2', label: 'Month 2' },
+        { col: 'FMonth3', legacy: 'First Term Month 3', label: 'Month 3' },
+      ]
+    },
+    {
+      label: 'Second Term', cls: 'term-second',
+      months: [
+        { col: 'SMonth1', legacy: 'Second Term Month 1', label: 'Month 1' },
+        { col: 'SMonth2', legacy: 'Second Term Month 2', label: 'Month 2' },
+        { col: 'SMonth3', legacy: 'Second Term Month 3', label: 'Month 3' },
+      ]
+    },
+    {
+      label: 'Third Term', cls: 'term-third',
+      months: [
+        { col: 'TMonth1', legacy: 'Third Term Month 1', label: 'Month 1' },
+        { col: 'TMonth2', legacy: 'Third Term Month 2', label: 'Month 2' },
+        { col: 'TMonth3', legacy: 'Third Term Month 3', label: 'Month 3' },
+      ]
+    },
   ];
+
   let html = '';
   TERMS.forEach(term => {
-    term.months.forEach((col, idx) => {
-      const raw     = (teacher[col] || '').trim().toLowerCase();
-      const csvPaid = raw === 'paid' || raw === '1' || raw === 'true' || raw === 'yes';
-      const isPaid  = col in saved ? saved[col] : csvPaid;
-      // ID is scoped to this specific teacher to avoid duplicate-ID collisions
-      const cbId    = `${teacherPrefix}_${col.replace(/\s/g,'_')}`;
-      // Escape single quotes in teacher name for the inline onchange handler
-      const safeName = (teacher['Teacher Name'] || '').replace(/'/g, "\\'");
-      html += `<tr class="${term.cls}">
-        <td>${idx === 0 ? escapeHtml(term.label) : ''}</td>
-        <td>Month ${idx + 1}</td>
-        <td>
-          <label class="pay-checkbox-wrap">
-            <input type="checkbox" id="${cbId}" ${isPaid ? 'checked' : ''}
-              onchange="saveTeacherPaymentStatus('${safeName}','${col}',this.checked)">
-            <label for="${cbId}" style="color:${isPaid ? 'var(--dash-accent)' : '#fca5a5'};">${isPaid ? '✔ Paid' : '✘ Unpaid'}</label>
-          </label>
-        </td>
-      </tr>`;
+    term.months.forEach((m, idx) => {
+      // Read from new spec column first, fall back to legacy name
+      const rawVal  = (teacher[m.col] !== undefined ? teacher[m.col] : (teacher[m.legacy] || '')).toString().trim().toLowerCase();
+      const csvPaid = rawVal === 'paid' || rawVal === '1' || rawVal === 'true' || rawVal === 'yes';
+      // Use the new col key as storage key (prefer new spec)
+      const storageKey = m.col in teacher ? m.col : m.legacy;
+      const isPaid     = storageKey in saved ? saved[storageKey] : csvPaid;
+      const cbId       = teacherPrefix + '_' + m.col;
+      const safeName   = name.replace(/'/g, "\\'");
+      const badgeClass = isPaid ? 'pay-badge paid' : 'pay-badge unpaid';
+      html +=
+        '<tr class="' + term.cls + '">' +
+          '<td>' + (idx === 0 ? escapeHtml(term.label) : '') + '</td>' +
+          '<td>' + m.label + '</td>' +
+          '<td>' +
+            '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<span class="' + badgeClass + '" id="badge_' + cbId + '">' + (isPaid ? '\u2714 Paid' : '\u2718 Unpaid') + '</span>' +
+              '<input type="checkbox" id="' + cbId + '" ' + (isPaid ? 'checked' : '') +
+                ' onchange="saveTeacherPaymentStatus(\'' + safeName + '\',\'' + storageKey + '\',this.checked)" ' +
+                'style="accent-color:var(--dash-green);width:15px;height:15px;cursor:pointer;">' +
+            '</div>' +
+          '</td>' +
+        '</tr>';
     });
   });
   return html;
@@ -5676,14 +6149,20 @@ function saveTeacherPaymentStatus(teacherName, col, checked) {
   saved[col]  = checked;
   localStorage.setItem(key, JSON.stringify(saved));
 
-  // IDs are now scoped per teacher: teacher_pay_<name>_<col>
-  const cbId  = `${key}_${col.replace(/\s/g,'_')}`;
-  const label = document.querySelector(`label[for="${cbId}"]`);
+  // Update badge span (new UI uses badge span beside checkbox)
+  const cbId    = key + '_' + col.replace(/\s/g,'_');
+  const badgeEl = document.getElementById('badge_' + cbId);
+  if (badgeEl) {
+    badgeEl.textContent  = checked ? '\u2714 Paid' : '\u2718 Unpaid';
+    badgeEl.className    = checked ? 'pay-badge paid' : 'pay-badge unpaid';
+  }
+  // Also support legacy label-based UI
+  const label = document.querySelector('label[for="' + cbId + '"]');
   if (label) {
-    label.textContent = checked ? '✔ Paid' : '✘ Unpaid';
+    label.textContent = checked ? '\u2714 Paid' : '\u2718 Unpaid';
     label.style.color = checked ? 'var(--dash-accent)' : '#fca5a5';
   }
-  showToast(checked ? '✅ Marked as Paid' : '⚠ Marked as Unpaid');
+  showToast(checked ? '\u2705 Marked as Paid' : '\u26A0 Marked as Unpaid');
 }
 
 function clearTeacherPaymentData() {
@@ -5780,6 +6259,8 @@ window.downloadTeachersPDF      = typeof downloadTeachersPDF !== 'undefined' ? d
 window.downloadFeesSummaryPDF   = typeof downloadFeesSummaryPDF !== 'undefined' ? downloadFeesSummaryPDF : null;
 window.downloadFeesClassPDF     = typeof downloadFeesClassPDF !== 'undefined' ? downloadFeesClassPDF : null;
 window.renderAnalyticsCharts    = typeof renderAnalyticsCharts !== 'undefined' ? renderAnalyticsCharts : null;
+window.downloadAnalyticsWord    = downloadAnalyticsWord;
+window.computeTermAvg           = computeTermAvg;
 </script>
 </body>
 </html>
