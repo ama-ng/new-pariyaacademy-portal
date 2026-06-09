@@ -60,6 +60,281 @@
   --transition:   all 0.22s cubic-bezier(.4,0,.2,1);
 }
 
+/* ============================================================
+   LIGHT MODE THEME VARIABLES
+   ============================================================ */
+[data-theme="light"] {
+  --dash-bg:         #f0f4f1;
+  --dash-surface:    #ffffff;
+  --dash-card:       #f8faf8;
+  --dash-border:     #d1e0d4;
+  --dash-green:      #16a34a;
+  --dash-green-soft: rgba(22,163,74,0.10);
+  --dash-green-glow: rgba(22,163,74,0.22);
+  --dash-text:       #1a2e1e;
+  --dash-muted:      #4a6b52;
+  --dash-accent:     #15803d;
+  --dash-danger:     #dc2626;
+  --dash-blue:       #2563eb;
+}
+
+/* ── Theme Toggle Button ── */
+.theme-toggle-btn {
+  background: var(--dash-card);
+  border: 1px solid var(--dash-border);
+  border-radius: 999px;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 17px; transition: var(--transition);
+  flex-shrink: 0;
+}
+.theme-toggle-btn:hover {
+  border-color: var(--dash-green);
+  box-shadow: 0 0 10px var(--dash-green-glow);
+  transform: scale(1.08);
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: 230px;
+  background: var(--dash-surface);
+  border-right: 1px solid var(--dash-border);
+  display: flex; flex-direction: column;
+  z-index: 200;
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+  box-shadow: 4px 0 24px rgba(0,0,0,0.3);
+}
+.sidebar.open { transform: translateX(0); }
+
+.sidebar-header {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--dash-border);
+  display: flex; align-items: center; gap: 10px;
+}
+.sidebar-header img {
+  width: 32px; height: 32px; object-fit: contain; border-radius: 8px;
+}
+.sidebar-header-title {
+  font-family: var(--font-display); font-size: 13px;
+  color: var(--dash-accent); font-weight: 700; line-height: 1.2; flex: 1;
+}
+.sidebar-close {
+  background: none; border: none; color: var(--dash-muted); font-size: 18px;
+  cursor: pointer; padding: 2px 5px; border-radius: 6px; transition: var(--transition);
+}
+.sidebar-close:hover { color: var(--dash-danger); background: rgba(239,68,68,0.1); }
+
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 8px; }
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  color: var(--dash-muted); font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: var(--transition); margin-bottom: 2px;
+  border: none; background: none; width: 100%; text-align: left;
+  font-family: var(--font-ui);
+}
+.sidebar-item:hover, .sidebar-item.active {
+  background: var(--dash-green-soft); color: var(--dash-accent);
+}
+.sidebar-item .si-icon { font-size: 16px; flex-shrink: 0; }
+
+.sidebar-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 199; display: none;
+}
+.sidebar-overlay.show { display: block; }
+
+/* ── Hamburger ── */
+.hamburger-btn {
+  background: none; border: 1px solid var(--dash-border);
+  border-radius: var(--radius-sm); color: var(--dash-muted);
+  font-size: 18px; padding: 5px 9px; cursor: pointer;
+  transition: var(--transition);
+}
+.hamburger-btn:hover { color: var(--dash-accent); border-color: var(--dash-green); }
+
+/* ── Settings tab ── */
+.settings-grid { display: flex; flex-direction: column; gap: 16px; }
+.settings-card {
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius); padding: 18px 16px;
+}
+.settings-card-title {
+  font-size: 13px; font-weight: 900; color: var(--dash-accent);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.settings-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--dash-border);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row-label { font-size: 13px; font-weight: 700; color: var(--dash-text); }
+.settings-row-sub { font-size: 11px; color: var(--dash-muted); font-weight: 600; }
+.btn-settings-action {
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  background: var(--dash-green-soft); border: 1px solid rgba(34,197,94,0.3);
+  color: var(--dash-accent); font-family: var(--font-ui);
+  font-size: 12px; font-weight: 800; cursor: pointer; transition: var(--transition);
+}
+.btn-settings-action:hover { background: var(--dash-green); color: #fff; }
+.btn-settings-danger {
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+  color: #ef4444; font-family: var(--font-ui);
+  font-size: 12px; font-weight: 800; cursor: pointer; transition: var(--transition);
+}
+.btn-settings-danger:hover { background: rgba(239,68,68,0.22); }
+
+/* ── Animated fade-in for content ── */
+@keyframes fadeInUp {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.tab-panel.active { animation: fadeInUp 0.28s ease; }
+.stat-card, .class-card, .section-big-card {
+  animation: fadeInUp 0.3s ease both;
+}
+
+/* ── Login split layout ── */
+.login-split {
+  display: flex; min-height: 100vh; width: 100%;
+}
+.login-hero {
+  flex: 1; display: none;
+  background: linear-gradient(135deg, #0f2d12 0%, #1a4a20 40%, #0f1b14 100%);
+  padding: 40px 36px;
+  flex-direction: column; justify-content: space-between;
+  position: relative; overflow: hidden;
+}
+.login-hero::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse at 30% 20%, rgba(34,197,94,0.25) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, rgba(74,222,128,0.12) 0%, transparent 55%);
+}
+@media (min-width: 860px) {
+  .login-hero { display: flex; }
+  .login-right { min-width: 420px; max-width: 480px; }
+}
+.login-hero-content { position: relative; z-index: 1; }
+.login-hero-logo { width: 80px; height: 80px; object-fit: contain; border-radius: 16px; border: 2px solid rgba(74,222,128,0.4); margin-bottom: 24px; }
+.login-hero-title { font-family: var(--font-display); font-size: 28px; color: #e8f5ea; line-height: 1.25; margin-bottom: 10px; }
+.login-hero-sub { font-size: 14px; color: #7ca882; font-weight: 700; margin-bottom: 32px; }
+
+.hero-stat-cards { display: flex; flex-direction: column; gap: 10px; }
+.hero-stat-card {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(74,222,128,0.2);
+  border-radius: 12px; padding: 14px 16px; backdrop-filter: blur(8px);
+  animation: fadeInUp 0.5s ease both;
+}
+.hero-stat-card:nth-child(2) { animation-delay: 0.1s; }
+.hero-stat-card:nth-child(3) { animation-delay: 0.2s; }
+.hero-stat-num { font-size: 22px; font-weight: 900; color: var(--dash-accent); }
+.hero-stat-lbl { font-size: 11px; color: #7ca882; font-weight: 700; margin-top: 2px; }
+
+.login-hero-footer { position: relative; z-index: 1; font-size: 12px; color: #4a6b52; font-weight: 700; }
+
+.login-right {
+  flex: 1; display: flex; flex-direction: column;
+  background: var(--dash-bg);
+}
+.login-right-inner {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 32px 24px;
+}
+
+/* ── Smart login show/hide class selector ── */
+#smart-class-wrap {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(.4,0,.2,1), opacity 0.3s ease;
+  opacity: 0;
+}
+#smart-class-wrap.revealed {
+  max-height: 90px; opacity: 1;
+}
+
+/* ── Password show/hide toggle ── */
+.input-wrap { position: relative; margin-bottom: 14px; }
+.input-wrap .form-input { margin-bottom: 0; }
+.pw-toggle {
+  position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--dash-muted); font-size: 15px;
+  cursor: pointer; padding: 2px 4px; transition: var(--transition);
+}
+.pw-toggle:hover { color: var(--dash-accent); }
+
+/* ── Remember me row ── */
+.remember-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 14px; cursor: pointer;
+}
+.remember-row input[type="checkbox"] { accent-color: var(--dash-green); width: 15px; height: 15px; cursor: pointer; }
+.remember-row span { font-size: 12px; color: var(--dash-muted); font-weight: 700; }
+
+/* ── Login spinner ── */
+.btn-login-loading { opacity: 0.75; pointer-events: none; }
+.btn-login-spinner {
+  display: inline-block; width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff;
+  border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px;
+}
+
+/* ── Shake animation for login error ── */
+@keyframes loginShake {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-7px)}
+  40%{transform:translateX(7px)}
+  60%{transform:translateX(-5px)}
+  80%{transform:translateX(5px)}
+}
+.login-card.shake { animation: loginShake 0.45s ease; }
+
+/* ── Editable payment checkboxes ── */
+.pay-checkbox-wrap {
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.pay-checkbox-wrap input[type="checkbox"] {
+  accent-color: var(--dash-green); width: 15px; height: 15px; cursor: pointer;
+}
+.pay-checkbox-wrap label {
+  font-size: 12px; font-weight: 800; cursor: pointer; color: var(--dash-muted);
+}
+.pay-checkbox-wrap input[type="checkbox"]:checked + label { color: var(--dash-accent); }
+
+/* ── Admin mark-paid buttons in fees table ── */
+.btn-mark-paid {
+  padding: 4px 10px; border-radius: 999px; font-size: 10px; font-weight: 800;
+  cursor: pointer; transition: var(--transition); border: none;
+  background: var(--dash-green-soft); color: var(--dash-accent);
+}
+.btn-mark-paid:hover { background: var(--dash-green); color: #fff; }
+.btn-mark-paid.marked { background: rgba(239,68,68,0.15); color: #ef4444; }
+.btn-mark-paid.marked:hover { background: rgba(239,68,68,0.3); }
+
+/* ── Toast improvements ── */
+.toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--dash-surface); border: 1px solid var(--dash-border);
+  border-radius: var(--radius-sm); padding: 11px 20px;
+  font-size: 13px; font-weight: 800; color: var(--dash-text);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.35); z-index: 9998;
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  white-space: nowrap; max-width: 90vw;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.error { border-color: rgba(239,68,68,0.4); color: #fca5a5; }
+
+/* ── Responsive table scroll wrapper ── */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+@media (max-width: 600px) {
+  .dash-nav-brand span { display: none; }
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .class-grid { grid-template-columns: 1fr; }
+  .sidebar { width: 85vw; max-width: 300px; }
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 
@@ -967,34 +1242,205 @@ body {
   .fees-student-table th, .fees-student-table td { padding: 6px 7px; }
 }
 /* END CUSTOM EDIT SECTION — Teachers & School Fees Styles */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Charts, PDF Letter Header & Downloads
+   ============================================================ */
+
+/* ── Chart containers ── */
+.analytics-charts-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;
+}
+.analytics-chart-card {
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius); padding: 16px 14px;
+}
+.analytics-chart-title {
+  font-size: 12px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--dash-muted); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 6px;
+}
+.chart-canvas-wrap {
+  position: relative; width: 100%; min-height: 220px;
+}
+canvas.pa-chart {
+  width: 100% !important; max-height: 220px;
+}
+
+/* Education chart — Performance distribution */
+.edu-chart-card {
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius); padding: 16px 14px; margin-bottom: 20px;
+}
+.edu-chart-legend {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;
+}
+.edu-legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; color: var(--dash-muted);
+}
+.edu-legend-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+
+/* ── Download buttons ── */
+.btn-dl-pdf {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 18px; border-radius: var(--radius-sm); border: none;
+  font-family: var(--font-ui); font-size: 13px; font-weight: 800;
+  cursor: pointer; transition: var(--transition);
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #fff; box-shadow: 0 4px 14px rgba(59,130,246,0.3);
+  margin-bottom: 12px;
+}
+.btn-dl-pdf:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,0.4); }
+.btn-dl-pdf.green { background: linear-gradient(135deg, var(--dash-green), #16a34a); box-shadow: 0 4px 14px rgba(34,197,94,0.3); }
+.btn-dl-pdf.green:hover { box-shadow: 0 6px 20px rgba(34,197,94,0.4); }
+
+.dl-btn-row {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;
+}
+
+/* ── Hidden PDF letter template (rendered off-screen for html2pdf) ── */
+#pdf-letter-template {
+  position: absolute; left: -9999px; top: 0;
+  width: 794px; background: #fff; color: #222;
+  font-family: 'Inter', system-ui, sans-serif; font-size: 13px;
+  padding: 30px 36px 30px;
+}
+.pdf-letter-header {
+  display: flex; align-items: center; gap: 16px;
+  border-bottom: 3px solid #228B2A; padding-bottom: 14px; margin-bottom: 18px;
+}
+.pdf-letter-logo { width: 80px; height: 80px; object-fit: contain; }
+.pdf-letter-school-info { flex: 1; text-align: center; }
+.pdf-letter-school-name {
+  font-size: 17px; font-weight: 900; color: #228B2A; line-height: 1.2; margin-bottom: 4px;
+}
+.pdf-letter-school-sub { font-size: 11px; color: #555; margin-bottom: 3px; }
+.pdf-letter-school-contact { font-size: 11px; color: #228B2A; font-weight: 700; }
+.pdf-letter-jibwis { width: 62px; height: 62px; object-fit: contain; }
+.pdf-letter-doc-title {
+  text-align: center; font-size: 15px; font-weight: 900; color: #228B2A;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 6px; padding: 8px;
+  border: 1px solid #C8E6C9; border-radius: 6px; background: #f0fdf4;
+}
+.pdf-letter-doc-sub {
+  text-align: center; font-size: 11px; color: #555; margin-bottom: 18px; font-weight: 600;
+}
+.pdf-letter-table {
+  width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 12px;
+}
+.pdf-letter-table th {
+  background: #228B2A; color: #fff; padding: 8px 10px;
+  border: 1px solid #1f6b3b; text-align: left; font-weight: 800;
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.pdf-letter-table td {
+  padding: 8px 10px; border: 1px solid #C8E6C9;
+  background: #fff; font-size: 12px;
+}
+.pdf-letter-table tbody tr:nth-child(even) td { background: #f0fdf4; }
+.pdf-letter-footer {
+  margin-top: 24px; border-top: 2px solid #228B2A; padding-top: 12px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; color: #555;
+}
+.pdf-letter-footer-sig { text-align: center; }
+.pdf-letter-footer-sig img { height: 44px; object-fit: contain; display: block; margin: 0 auto 4px; }
+.pdf-letter-footer-sig span { font-weight: 800; color: #228B2A; font-size: 12px; }
+
+@media (max-width: 480px) {
+  .analytics-charts-row { grid-template-columns: 1fr; }
+  .dl-btn-row { flex-direction: column; }
+}
+/* END CUSTOM EDIT SECTION — Charts, PDF Letter Header & Downloads */
 </style>
 </head>
 <body>
 
 <!-- ============================================================
-     SCREEN 1: PORTAL SELECTION
+     SCREEN 1: UNIFIED SMART LOGIN
      ============================================================ -->
 <div id="screen-portal" class="screen active">
-  <div class="login-wrap">
-    <div class="login-card" style="max-width:380px; text-align:center;">
-      <div class="login-logo-wrap">
-        <img id="portalLogoImg" src="https://i.postimg.cc/VvMcYqbb/LOGO.png" alt="School Logo" onerror="this.style.opacity='0'">
+  <div class="login-split">
+    <!-- Left Hero (desktop only) -->
+    <div class="login-hero">
+      <div class="login-hero-content">
+        <img class="login-hero-logo" src="https://i.postimg.cc/VvMcYqbb/LOGO.png" alt="Logo" onerror="this.style.display='none'">
+        <div class="login-hero-title">Pariya Academy<br>Report Card System</div>
+        <div class="login-hero-sub">For Modern Science and Quran</div>
+        <div class="hero-stat-cards">
+          <div class="hero-stat-card"><div class="hero-stat-num">13</div><div class="hero-stat-lbl">Classes Connected</div></div>
+          <div class="hero-stat-card"><div class="hero-stat-num">3</div><div class="hero-stat-lbl">Terms per Session</div></div>
+          <div class="hero-stat-card"><div class="hero-stat-num">2025/26</div><div class="hero-stat-lbl">Academic Session</div></div>
+        </div>
       </div>
-      <div class="login-school">
-        <h1>Pariya Academy</h1>
-        <p>For Modern Science and Quran</p>
-      </div>
-      <p style="font-size:12px;color:var(--dash-muted);font-weight:700;margin-bottom:20px;">Select your portal to continue</p>
-      <button class="btn-login" onclick="showScreen('screen-admin-login')" style="margin-bottom:12px;">🔐 Admin Portal</button>
-      <button class="btn-login" onclick="populateStudentClasses(); showScreen('screen-student-login')"
-        style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);box-shadow:0 4px 16px rgba(59,130,246,0.3);">
-        🎓 Student Portal
-      </button>
+      <div class="login-hero-footer">🔐 Secure • Premium • Professional</div>
     </div>
-  </div>
-  <div class="copyright-footer">
-    © <span>2026 Pariya Academy</span>. All Rights Reserved.<br>
-    Designed by <span>Arabo Modibbo</span>
+
+    <!-- Right Login Card -->
+    <div class="login-right">
+      <div class="login-right-inner">
+        <div class="login-card" style="max-width:420px;width:100%;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <div class="login-logo-wrap" style="margin-bottom:0;">
+              <img id="portalLogoImg" src="https://i.postimg.cc/VvMcYqbb/LOGO.png" alt="School Logo" onerror="this.style.opacity='0'" style="width:52px;height:52px;">
+            </div>
+            <button class="theme-toggle-btn" onclick="toggleTheme()" id="login-theme-btn" title="Toggle theme">🌙</button>
+          </div>
+          <div class="login-school">
+            <h1>Pariya Academy</h1>
+            <p>Sign in to your portal</p>
+          </div>
+          <div style="display:flex;justify-content:center;margin-bottom:18px;">
+            <span class="login-badge" id="login-badge-label">🔐 Smart Login</span>
+          </div>
+
+          <div id="smart-login-error" class="login-error"></div>
+
+          <label class="form-label">Username / Admission Number</label>
+          <input id="smart-username" class="form-input" type="text" placeholder="Admin username or admission no." autocomplete="off"
+            oninput="onSmartUsernameInput(this.value)">
+
+          <!-- Class selector — hidden until student detected -->
+          <div id="smart-class-wrap">
+            <label class="form-label">Your Class</label>
+            <select id="smart-class" class="form-input" style="margin-bottom:14px;">
+              <option value="">-- Select your class --</option>
+            </select>
+          </div>
+
+          <label class="form-label">Password</label>
+          <div class="input-wrap">
+            <input id="smart-password" class="form-input" type="password" placeholder="Enter password">
+            <button class="pw-toggle" type="button" onclick="togglePasswordVisibility('smart-password',this)">👁</button>
+          </div>
+
+          <label class="remember-row">
+            <input type="checkbox" id="smart-remember">
+            <span>Remember my username</span>
+          </label>
+
+          <div id="smart-loading" class="loading-bar" style="margin-bottom:12px;display:none;">
+            <div class="spinner"></div><span>Signing in…</span>
+          </div>
+
+          <button class="btn-login" id="smart-login-btn" onclick="smartLogin()">
+            Sign In →
+          </button>
+
+          <div class="login-switch" style="margin-top:14px;">
+            <span style="font-size:11px;color:var(--dash-muted);">🔒 Secure Session</span>
+          </div>
+        </div>
+      </div>
+      <div class="copyright-footer">
+        © <span>2026 Pariya Academy</span>. All Rights Reserved.<br>
+        Designed by <span>Arabo Modibbo</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1072,12 +1518,37 @@ body {
 <div id="screen-admin-dash" class="screen">
   <div class="dash-layout" style="flex:1;">
 
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="admin-sidebar">
+      <div class="sidebar-header">
+        <img src="https://i.postimg.cc/VvMcYqbb/LOGO.png" alt="Logo" onerror="this.style.display='none'">
+        <div class="sidebar-header-title">Pariya Academy</div>
+        <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="sidebar-item" onclick="switchTab('tab-classes');toggleSidebar()"><span class="si-icon">🏠</span> Dashboard</button>
+        <button class="sidebar-item" onclick="switchTab('tab-classes');toggleSidebar()"><span class="si-icon">🏫</span> Classes</button>
+        <button class="sidebar-item" onclick="openTeachersSection();toggleSidebar()"><span class="si-icon">👨‍🏫</span> Teachers</button>
+        <button class="sidebar-item" onclick="openFeesSection();toggleSidebar()"><span class="si-icon">💰</span> School Fees</button>
+        <button class="sidebar-item" onclick="switchTab('tab-progress');toggleSidebar()"><span class="si-icon">📊</span> Progress</button>
+        <button class="sidebar-item" onclick="switchTab('tab-analytics');toggleSidebar()"><span class="si-icon">📈</span> Analytics</button>
+        <button class="sidebar-item" onclick="switchTab('tab-websites');toggleSidebar()"><span class="si-icon">🌐</span> Websites</button>
+        <button class="sidebar-item" onclick="switchTab('tab-guide');toggleSidebar()"><span class="si-icon">📖</span> Guide</button>
+        <button class="sidebar-item" onclick="switchTab('tab-settings');toggleSidebar()"><span class="si-icon">⚙️</span> Settings</button>
+        <button class="sidebar-item" onclick="logout()"><span class="si-icon">🚪</span> Sign Out</button>
+      </nav>
+    </aside>
+
     <nav class="dash-nav">
       <div class="dash-nav-brand">
+        <button class="hamburger-btn" onclick="toggleSidebar()" title="Menu">☰</button>
         <img src="https://i.postimg.cc/VvMcYqbb/LOGO.png" alt="Logo" onerror="this.style.display='none'">
         <span>Pariya Academy</span>
       </div>
       <div class="dash-nav-actions">
+        <button class="theme-toggle-btn" onclick="toggleTheme()" id="admin-theme-btn" title="Toggle theme">🌙</button>
         <div class="nav-user-chip"><div class="avatar">A</div>Admin</div>
         <button class="btn-logout" onclick="logout()">Sign Out</button>
       </div>
@@ -1108,6 +1579,7 @@ body {
 
       <!-- START CUSTOM EDIT SECTION — Dashboard Tabs -->
       <div class="dash-tabs">
+        <button class="dash-tab" onclick="toggleSidebar()">☰</button>
         <button class="dash-tab active" onclick="switchTab('tab-classes')">🏫 Classes</button>
         <button class="dash-tab" onclick="switchTab('tab-progress')">📊 Progress</button>
         <button class="dash-tab" onclick="switchTab('tab-analytics')">📈 Analytics</button>
@@ -1115,6 +1587,7 @@ body {
         <button class="dash-tab" onclick="openFeesSection()">💰 School Fees</button>
         <button class="dash-tab" onclick="switchTab('tab-websites')">🌐 Websites</button>
         <button class="dash-tab" onclick="switchTab('tab-guide')">📖 Guide</button>
+        <button class="dash-tab" onclick="switchTab('tab-settings')">⚙️ Settings</button>
       </div>
 
       <!-- TAB: Classes -->
@@ -1184,6 +1657,9 @@ body {
         <div id="teachers-list-view" style="display:none;">
           <button class="btn-section-back" onclick="showTeachersSectionPicker()">← Back to Sections</button>
           <div class="section-heading" id="teachers-list-heading">Teachers</div>
+          <div class="dl-btn-row">
+            <button class="btn-dl-pdf" onclick="downloadTeachersPDF()">📄 Download Teachers PDF</button>
+          </div>
           <div class="teacher-list" id="teachers-list-container"></div>
         </div>
 
@@ -1204,6 +1680,9 @@ body {
         <!-- Sub-view: Fee summary + class cards -->
         <div id="fees-summary-view">
           <div class="section-heading">School Fees Overview</div>
+          <div class="dl-btn-row">
+            <button class="btn-dl-pdf green" onclick="downloadFeesSummaryPDF()">📄 Download Fees Summary PDF</button>
+          </div>
           <div id="fees-loading" class="loading-bar">
             <div class="spinner"></div>
             <span>Calculating fee data…</span>
@@ -1238,6 +1717,9 @@ body {
         <div id="fees-class-view" style="display:none;">
           <button class="btn-section-back" onclick="showFeesSummaryView()">← Back to Overview</button>
           <div class="section-heading" id="fees-class-heading">Select Term</div>
+          <div class="dl-btn-row">
+            <button class="btn-dl-pdf green" onclick="downloadFeesClassPDF()">📄 Download This Class Fees PDF</button>
+          </div>
           <div class="term-selector-row">
             <button class="btn-term-select" onclick="loadClassFeesData(currentFeesClass,'First Term',this)">📗 First Term</button>
             <button class="btn-term-select" onclick="loadClassFeesData(currentFeesClass,'Second Term',this)">📘 Second Term</button>
@@ -1346,6 +1828,37 @@ body {
           <span>Computing analytics…</span>
         </div>
 
+        <!-- ── Chart Section ── -->
+        <div id="analytics-charts-section" style="display:none;">
+          <div class="analytics-charts-row">
+            <!-- Bar Chart: Class averages -->
+            <div class="analytics-chart-card">
+              <div class="analytics-chart-title">📊 Class Average Scores (Bar)</div>
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-bar-avg" class="pa-chart"></canvas>
+              </div>
+            </div>
+            <!-- Pie Chart: Pass vs Fail distribution -->
+            <div class="analytics-chart-card">
+              <div class="analytics-chart-title">🥧 Pass / Fail Distribution (Pie)</div>
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-pie-pass" class="pa-chart"></canvas>
+              </div>
+            </div>
+          </div>
+          <!-- Educational Chart: Gender distribution bar -->
+          <div class="edu-chart-card">
+            <div class="analytics-chart-title">🎓 Gender Distribution Per Class (Educational Chart)</div>
+            <div class="chart-canvas-wrap" style="min-height:180px;">
+              <canvas id="chart-edu-gender" class="pa-chart" style="max-height:180px;"></canvas>
+            </div>
+            <div class="edu-chart-legend" id="edu-chart-legend">
+              <div class="edu-legend-item"><div class="edu-legend-dot" style="background:#3b82f6;"></div>Male</div>
+              <div class="edu-legend-item"><div class="edu-legend-dot" style="background:#ec4899;"></div>Female</div>
+            </div>
+          </div>
+        </div>
+
         <div id="analytics-cards"></div>
 
         <button class="btn-export-pdf" onclick="loadAllAnalytics()">
@@ -1375,7 +1888,73 @@ body {
       </div>
       <!-- END CUSTOM EDIT SECTION — Websites Tab -->
 
-      <!-- TAB: Admin Guide -->
+      <!-- TAB: Settings -->
+      <div id="tab-settings" class="tab-panel">
+        <div class="section-heading">⚙️ Portal Settings</div>
+        <div class="settings-grid">
+
+          <div class="settings-card">
+            <div class="settings-card-title">🎨 Appearance</div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Theme Mode</div>
+                <div class="settings-row-sub">Switch between dark and light</div>
+              </div>
+              <button class="btn-settings-action" onclick="toggleTheme()" id="settings-theme-btn">🌙 Dark Mode (Active)</button>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">🔒 Security</div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Security PIN</div>
+                <div class="settings-row-sub">PIN protects Teachers &amp; Fees sections</div>
+              </div>
+              <code style="font-size:12px;background:var(--dash-bg);padding:4px 10px;border-radius:6px;color:var(--dash-accent);border:1px solid var(--dash-border);">Change in SECURITY_PIN config</code>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">💾 Local Data</div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Teacher Payment Overrides</div>
+                <div class="settings-row-sub">Locally saved payment states for teachers</div>
+              </div>
+              <button class="btn-settings-danger" onclick="clearTeacherPaymentData()">🗑 Clear</button>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Student Fee Overrides</div>
+                <div class="settings-row-sub">Locally saved admin fee marking data</div>
+              </div>
+              <button class="btn-settings-danger" onclick="clearFeeOverrideData()">🗑 Clear</button>
+            </div>
+            <div class="settings-row">
+              <div>
+                <div class="settings-row-label">Reset All Local Data</div>
+                <div class="settings-row-sub">Clears all portal localStorage (theme, payments, fees)</div>
+              </div>
+              <button class="btn-settings-danger" onclick="resetAllLocalData()">⚠ Reset All</button>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <div class="settings-card-title">🏫 Portal Information</div>
+            <div class="settings-row">
+              <div class="settings-row-label">System Version</div>
+              <code style="font-size:11px;color:var(--dash-accent);">v3.1 — Pariya Academy</code>
+            </div>
+            <div class="settings-row">
+              <div class="settings-row-label">Designed By</div>
+              <span style="font-size:12px;font-weight:800;color:var(--dash-muted);">Arabo Modibbo</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <!-- END Settings Tab -->
       <!-- START CUSTOM EDIT SECTION — Guide Tab -->
       <div id="tab-guide" class="tab-panel">
         <div class="section-heading">System Administrator Guide</div>
@@ -1602,7 +2181,10 @@ body {
   <div class="student-dash">
     <nav class="student-nav">
       <span>🎓 Student Portal</span>
-      <button class="btn-logout" onclick="logout()">Sign Out</button>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="theme-toggle-btn" onclick="toggleTheme()" id="student-theme-btn" title="Toggle theme">🌙</button>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+      </div>
     </nav>
 
     <!-- START CUSTOM EDIT SECTION — Student Term Selection Page -->
@@ -1721,9 +2303,13 @@ body {
 <!-- Toast -->
 <div id="toast" class="toast"></div>
 
+<!-- Hidden PDF letter template -->
+<div id="pdf-letter-template" aria-hidden="true"></div>
+
 <!-- Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
 <script>
 /* ============================================================
@@ -3696,8 +4282,9 @@ async function exportGuidePDF() {
    ============================================================ */
 window.addEventListener('load', () => {
   document.documentElement.style.setProperty('--watermark', `url('${SCHOOL_CONFIG.schoolLogo}')`);
-  $('admin-password').addEventListener('keydown', e => { if (e.key==='Enter') adminLogin(); });
-  $('student-password').addEventListener('keydown', e => { if (e.key==='Enter') studentLogin(); });
+  // Safely attach enter-key handlers (elements may not exist in unified login)
+  const ap = $('admin-password');   if (ap) ap.addEventListener('keydown', e => { if (e.key==='Enter') adminLogin(); });
+  const sp = $('student-password'); if (sp) sp.addEventListener('keydown', e => { if (e.key==='Enter') studentLogin(); });
   // Pre-populate logo in portal screen
   const pl = $('portalLogoImg');
   if (pl) pl.src = SCHOOL_CONFIG.schoolLogo;
@@ -3967,6 +4554,9 @@ function showTeacherProfile(teacher) {
 }
 
 function renderTeacherPaymentTable(teacher) {
+  const teacherKey = 'teacher_pay_' + (teacher['Teacher Name'] || '').replace(/\s/g,'_');
+  const saved = JSON.parse(localStorage.getItem(teacherKey) || '{}');
+
   const TERMS = [
     { label: 'First Term',  cls: 'term-first',  months: ['First Term Month 1','First Term Month 2','First Term Month 3'] },
     { label: 'Second Term', cls: 'term-second', months: ['Second Term Month 1','Second Term Month 2','Second Term Month 3'] },
@@ -3976,14 +4566,19 @@ function renderTeacherPaymentTable(teacher) {
   TERMS.forEach(term => {
     term.months.forEach((col, idx) => {
       const raw    = (teacher[col] || '').trim().toLowerCase();
-      const isPaid = raw === 'paid' || raw === '1' || raw === 'true' || raw === 'yes';
-      const badge  = isPaid
-        ? '<span class="pay-badge paid">✔ Paid</span>'
-        : '<span class="pay-badge unpaid">✘ Unpaid</span>';
+      const csvPaid = raw === 'paid' || raw === '1' || raw === 'true' || raw === 'yes';
+      const isPaid  = col in saved ? saved[col] : csvPaid;
+      const cbId    = `pay_cb_${col.replace(/\s/g,'_')}`;
       html += `<tr class="${term.cls}">
         <td>${idx === 0 ? escapeHtml(term.label) : ''}</td>
         <td>Month ${idx + 1}</td>
-        <td>${badge}</td>
+        <td>
+          <label class="pay-checkbox-wrap">
+            <input type="checkbox" id="${cbId}" ${isPaid ? 'checked' : ''}
+              onchange="saveTeacherPaymentStatus('${escapeHtml(teacher['Teacher Name'] || '')}','${col}',this.checked)">
+            <label for="${cbId}" style="color:${isPaid ? 'var(--dash-accent)' : '#fca5a5'};">${isPaid ? '✔ Paid' : '✘ Unpaid'}</label>
+          </label>
+        </td>
       </tr>`;
     });
   });
@@ -4130,21 +4725,26 @@ async function loadClassFeesData(className, term, btn) {
     const rows = records.map((stu, i) => {
       const rawFee = (stu['Fees'] || '').toString().replace(/[₦,\s]/g, '');
       const amountPaid = parseFloat(rawFee) || 0;
-      const isPaid = amountPaid >= expected;
-      if (isPaid) { paid++; collected += amountPaid; }
+      const override   = getFeeOverride(className, term, stu['Admission No'] || '');
+      const isPaid     = override !== null ? override : (amountPaid >= expected);
+      if (isPaid) { paid++; collected += amountPaid >= expected ? amountPaid : expected; }
       else { outstanding++; owed += (expected - amountPaid); }
 
       const statusBadge = isPaid
         ? '<span class="pay-badge paid">✔ Paid</span>'
         : '<span class="pay-badge unpaid">✘ Outstanding</span>';
+      const admNo = escapeHtml(stu['Admission No'] || '');
+      const markBtn = `<button class="btn-mark-paid${isPaid ? ' marked' : ''}"
+        onclick="adminMarkStudentPaid('${className.replace(/'/g,"\\'")}','${term}','${admNo}',${isPaid},this)">
+        ${isPaid ? '✔ Paid' : '✘ Unpaid'}</button>`;
 
       return `<tr>
         <td>${i + 1}</td>
         <td>${escapeHtml(stu['Name'] || '—')}</td>
-        <td>${escapeHtml(stu['Admission No'] || '—')}</td>
+        <td>${admNo}</td>
         <td>₦${expected.toLocaleString()}</td>
         <td>₦${amountPaid.toLocaleString()}</td>
-        <td>${statusBadge}</td>
+        <td>${statusBadge} ${markBtn}</td>
       </tr>`;
     }).join('');
 
@@ -4280,6 +4880,801 @@ window.showFeesSummaryView         = showFeesSummaryView;
 window.checkStudentFeesStatus      = checkStudentFeesStatus;
 window.blockStudentResultIfUnpaid  = blockStudentResultIfUnpaid;
 /* END CUSTOM EDIT SECTION */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Analytics Charts
+   Purpose: Render bar, pie, and educational charts in analytics tab.
+   Uses Chart.js (loaded from CDN). All data comes from analyticsCache.
+   ============================================================ */
+
+// Track chart instances so we can destroy & re-draw on reload
+let _chartBarAvg    = null;
+let _chartPiePass   = null;
+let _chartEduGender = null;
+
+function renderAnalyticsCharts() {
+  const cache = analyticsCache;
+  const classes = Object.keys(cache);
+  if (!classes.length) return;
+
+  const section = document.getElementById('analytics-charts-section');
+  if (section) section.style.display = '';
+
+  const labels      = classes;
+  const avgData     = classes.map(c => cache[c].classAvg);
+  const passData    = classes.map(c => cache[c].passRate);
+  const failData    = classes.map(c => cache[c].failRate);
+  const maleData    = classes.map(c => cache[c].male);
+  const femaleData  = classes.map(c => cache[c].female);
+
+  // Palette
+  const greenPalette = classes.map((_, i) => `hsla(${140 + i * 8}, 65%, 48%, 0.85)`);
+  const greenBorder  = classes.map((_, i) => `hsla(${140 + i * 8}, 65%, 38%, 1)`);
+
+  // Chart defaults for dark theme
+  Chart.defaults.color = '#7ca882';
+  Chart.defaults.borderColor = '#2a3d2d';
+
+  // ── BAR: Class averages ──
+  const barCtx = document.getElementById('chart-bar-avg');
+  if (barCtx) {
+    if (_chartBarAvg) _chartBarAvg.destroy();
+    _chartBarAvg = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Class Average (%)',
+          data: avgData,
+          backgroundColor: greenPalette,
+          borderColor: greenBorder,
+          borderWidth: 1.5,
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: { label: ctx => ` ${ctx.parsed.y}%` }
+          }
+        },
+        scales: {
+          x: { ticks: { font: { size: 10, weight: '700' }, maxRotation: 45 }, grid: { color: '#2a3d2d' } },
+          y: {
+            beginAtZero: true, max: 100,
+            ticks: { callback: v => v + '%', font: { size: 10 } },
+            grid: { color: '#2a3d2d' }
+          }
+        }
+      }
+    });
+  }
+
+  // ── PIE: School-wide pass/fail ──
+  const pieCtx = document.getElementById('chart-pie-pass');
+  if (pieCtx) {
+    if (_chartPiePass) _chartPiePass.destroy();
+    const totalStudents = classes.reduce((s, c) => s + cache[c].total, 0);
+    const totalPass     = classes.reduce((s, c) => s + Math.round(cache[c].passRate / 100 * cache[c].total), 0);
+    const totalFail     = totalStudents - totalPass;
+    _chartPiePass = new Chart(pieCtx, {
+      type: 'pie',
+      data: {
+        labels: ['Pass', 'Fail'],
+        datasets: [{
+          data: [totalPass, totalFail],
+          backgroundColor: ['rgba(34,197,94,0.82)', 'rgba(239,68,68,0.78)'],
+          borderColor:     ['#16a34a', '#b91c1c'],
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { font: { size: 11, weight: '700' }, padding: 14, color: '#7ca882' }
+          },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const pct = totalStudents > 0 ? Math.round(ctx.parsed / totalStudents * 100) : 0;
+                return ` ${ctx.label}: ${ctx.parsed} students (${pct}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // ── EDUCATIONAL BAR: Gender distribution ──
+  const eduCtx = document.getElementById('chart-edu-gender');
+  if (eduCtx) {
+    if (_chartEduGender) _chartEduGender.destroy();
+    _chartEduGender = new Chart(eduCtx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Male',
+            data: maleData,
+            backgroundColor: 'rgba(59,130,246,0.75)',
+            borderColor: '#2563eb',
+            borderWidth: 1.5,
+            borderRadius: 5,
+          },
+          {
+            label: 'Female',
+            data: femaleData,
+            backgroundColor: 'rgba(236,72,153,0.72)',
+            borderColor: '#db2777',
+            borderWidth: 1.5,
+            borderRadius: 5,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}` } }
+        },
+        scales: {
+          x: { ticks: { font: { size: 10, weight: '700' }, maxRotation: 45 }, grid: { color: '#2a3d2d' } },
+          y: {
+            beginAtZero: true,
+            ticks: { font: { size: 10 } },
+            grid: { color: '#2a3d2d' }
+          }
+        }
+      }
+    });
+  }
+}
+/* END CUSTOM EDIT SECTION — Analytics Charts */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — PDF Letter Header Builder
+   Purpose: Builds a white-background A4 letter-head PDF DOM element
+   used as the template for Teachers and Fees PDFs.
+   ============================================================ */
+
+/**
+ * Build and return the full HTML string for a letter-headed PDF document.
+ * @param {string} docTitle   e.g. "Teachers List — Primary Section"
+ * @param {string} docSub     e.g. "Session: 2025/2026 | Generated: 09 Jun 2026"
+ * @param {string} tableHtml  Full <table> HTML to embed
+ */
+function buildLetterPdfHtml(docTitle, docSub, tableHtml) {
+  const cfg     = SCHOOL_CONFIG;
+  const today   = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+  return `
+<div style="width:794px;background:#fff;color:#222;font-family:Inter,system-ui,sans-serif;font-size:13px;padding:30px 36px;">
+  <!-- LETTER HEADER -->
+  <div style="display:flex;align-items:center;gap:16px;border-bottom:3px solid #228B2A;padding-bottom:14px;margin-bottom:16px;">
+    <img src="${cfg.schoolLogo}" style="width:76px;height:76px;object-fit:contain;" crossorigin="anonymous">
+    <div style="flex:1;text-align:center;">
+      <div style="font-size:17px;font-weight:900;color:#228B2A;line-height:1.2;margin-bottom:3px;">${cfg.name}</div>
+      <div style="font-size:11px;color:#555;margin-bottom:2px;">${cfg.motto}</div>
+      <div style="font-size:11px;color:#555;margin-bottom:2px;">${cfg.address}</div>
+      <div style="font-size:11px;color:#228B2A;font-weight:700;">Session: ${cfg.session}</div>
+    </div>
+    <img src="${cfg.jibwisLogo}" style="width:58px;height:58px;object-fit:contain;" crossorigin="anonymous">
+  </div>
+  <!-- DOCUMENT TITLE -->
+  <div style="text-align:center;font-size:15px;font-weight:900;color:#228B2A;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;padding:8px;border:1px solid #C8E6C9;border-radius:6px;background:#f0fdf4;">${docTitle}</div>
+  <div style="text-align:center;font-size:11px;color:#555;margin-bottom:18px;font-weight:600;">${docSub} &nbsp;|&nbsp; Generated: ${today}</div>
+  <!-- TABLE -->
+  ${tableHtml}
+  <!-- FOOTER -->
+  <div style="margin-top:28px;border-top:2px solid #228B2A;padding-top:12px;display:flex;justify-content:space-between;align-items:flex-end;font-size:11px;color:#555;">
+    <div>
+      <div style="font-weight:800;color:#228B2A;">Pariya Academy</div>
+      <div>${cfg.address}</div>
+    </div>
+    <div style="text-align:center;">
+      <img src="${cfg.principalSig}" style="height:42px;object-fit:contain;display:block;margin:0 auto 4px;" crossorigin="anonymous">
+      <div style="font-weight:800;color:#228B2A;font-size:12px;">${cfg.principalName}</div>
+      <div>Principal / Head of School</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-weight:800;">Date: ${today}</div>
+      <div style="color:#228B2A;font-weight:700;">Official Document</div>
+    </div>
+  </div>
+</div>`;
+}
+
+/** Common html2pdf options for letter PDFs */
+function letterPdfOptions(filename) {
+  return {
+    margin:      [0, 0, 0, 0],
+    filename,
+    image:       { type: 'jpeg', quality: 0.97 },
+    html2canvas: { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
+    jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+}
+
+/** Render HTML into the hidden template div and return it */
+function mountLetterTemplate(html) {
+  const el = document.getElementById('pdf-letter-template');
+  el.innerHTML = html;
+  return el;
+}
+/* END CUSTOM EDIT SECTION — PDF Letter Header Builder */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Download Teachers PDF
+   Purpose: Export current section's teacher list as a
+   letter-headed A4 PDF with school branding.
+   ============================================================ */
+async function downloadTeachersPDF() {
+  if (!teachersData || !teachersData.length) {
+    showToast('❌ No teachers data loaded yet.', 'error');
+    return;
+  }
+
+  const section  = currentTeacherSection || 'All';
+  const filtered = section === 'All'
+    ? teachersData
+    : teachersData.filter(t => (t['Section'] || '').trim().toLowerCase() === section.toLowerCase());
+
+  if (!filtered.length) {
+    showToast('❌ No teachers to export for this section.', 'error');
+    return;
+  }
+
+  showToast('⏳ Generating Teachers PDF…');
+
+  // Build table rows
+  const rows = filtered.map((t, i) => `
+    <tr style="background:${i % 2 === 0 ? '#fff' : '#f0fdf4'};">
+      <td style="padding:8px 10px;border:1px solid #C8E6C9;font-weight:700;">${i + 1}</td>
+      <td style="padding:8px 10px;border:1px solid #C8E6C9;font-weight:800;color:#1f6b3b;">${escapeHtml(t['Teacher Name'] || '—')}</td>
+      <td style="padding:8px 10px;border:1px solid #C8E6C9;">${escapeHtml(t['Section'] || '—')}</td>
+      <td style="padding:8px 10px;border:1px solid #C8E6C9;">${escapeHtml(t['Subjects'] || '—')}</td>
+      <td style="padding:8px 10px;border:1px solid #C8E6C9;">${escapeHtml(t['Classes'] || '—')}</td>
+    </tr>`).join('');
+
+  const tableHtml = `
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px;">
+      <thead>
+        <tr style="background:#228B2A;color:#fff;">
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">#</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Teacher Name</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Section</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Subjects</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Classes</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr style="background:#f0fdf4;">
+          <td colspan="5" style="padding:8px 10px;border:1px solid #C8E6C9;font-weight:900;color:#228B2A;text-align:right;">
+            Total Teachers: ${filtered.length}
+          </td>
+        </tr>
+      </tfoot>
+    </table>`;
+
+  const html = buildLetterPdfHtml(
+    `Teachers List — ${section} Section`,
+    `Section: ${section} | Total: ${filtered.length} teacher(s) | Academic Session: ${SCHOOL_CONFIG.session}`,
+    tableHtml
+  );
+
+  try {
+    const el = mountLetterTemplate(html);
+    await html2pdf().set(letterPdfOptions(`Pariya_Academy_Teachers_${section.replace(/\s/g,'_')}.pdf`)).from(el).save();
+    showToast('✅ Teachers PDF downloaded!');
+  } catch(e) {
+    console.error(e);
+    showToast('❌ PDF export failed.', 'error');
+  }
+}
+/* END CUSTOM EDIT SECTION — Download Teachers PDF */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Download Fees Summary PDF
+   Purpose: Export school-wide fees summary as a letter-headed PDF.
+   ============================================================ */
+async function downloadFeesSummaryPDF() {
+  const tbody = document.getElementById('fees-summary-tbody');
+  if (!tbody || tbody.rows.length === 0 || (tbody.rows[0] && tbody.rows[0].cells[0] && tbody.rows[0].cells[0].colSpan === 4)) {
+    showToast('❌ Please load class data first — click a class card to populate fees.', 'error');
+    return;
+  }
+
+  showToast('⏳ Generating Fees Summary PDF…');
+
+  // Grab rows from the summary table
+  const rows = Array.from(tbody.rows).map((row, i) => {
+    const cells = Array.from(row.cells).map(td => td.textContent.trim());
+    return `<tr style="background:${i % 2 === 0 ? '#fff' : '#f0fdf4'};">
+      ${cells.map(c => `<td style="padding:8px 10px;border:1px solid #C8E6C9;font-size:12px;">${c}</td>`).join('')}
+    </tr>`;
+  }).join('');
+
+  const grandTotal = document.getElementById('fees-grand-total')
+    ? document.getElementById('fees-grand-total').textContent : '—';
+
+  const tableHtml = `
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px;">
+      <thead>
+        <tr style="background:#228B2A;color:#fff;">
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Section</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Fee / Student</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Students</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Expected Total</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr style="background:#f0fdf4;">
+          <td colspan="3" style="padding:9px 10px;border:1px solid #C8E6C9;font-weight:900;color:#228B2A;">💰 Grand Total Expected</td>
+          <td style="padding:9px 10px;border:1px solid #C8E6C9;font-weight:900;color:#228B2A;font-size:14px;">${grandTotal}</td>
+        </tr>
+      </tfoot>
+    </table>`;
+
+  const html = buildLetterPdfHtml(
+    'School Fees Summary Report',
+    `Academic Session: ${SCHOOL_CONFIG.session} | All Sections`,
+    tableHtml
+  );
+
+  try {
+    const el = mountLetterTemplate(html);
+    await html2pdf().set(letterPdfOptions('Pariya_Academy_Fees_Summary.pdf')).from(el).save();
+    showToast('✅ Fees Summary PDF downloaded!');
+  } catch(e) {
+    console.error(e);
+    showToast('❌ PDF export failed.', 'error');
+  }
+}
+/* END CUSTOM EDIT SECTION — Download Fees Summary PDF */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Download Fees Class Detail PDF
+   Purpose: Export a specific class + term fees breakdown as
+   a letter-headed PDF with student payment rows.
+   ============================================================ */
+async function downloadFeesClassPDF() {
+  const tbody = document.getElementById('fees-student-tbody');
+  if (!tbody || tbody.rows.length === 0) {
+    showToast('❌ Select a term first to load the class fees data.', 'error');
+    return;
+  }
+  const firstCell = tbody.rows[0].cells[0];
+  if (firstCell && firstCell.colSpan > 1) {
+    showToast('❌ Select a term first to load student fees data.', 'error');
+    return;
+  }
+
+  const heading   = document.getElementById('fees-class-heading')?.textContent || 'Class Fees';
+  const className = currentFeesClass || 'Class';
+
+  // Stats
+  const total       = document.getElementById('fees-stat-total')?.textContent || '—';
+  const paid        = document.getElementById('fees-stat-paid')?.textContent || '—';
+  const outstanding = document.getElementById('fees-stat-outstanding')?.textContent || '—';
+  const collected   = document.getElementById('fees-stat-collected')?.textContent || '—';
+  const owed        = document.getElementById('fees-stat-owed')?.textContent || '—';
+  const rate        = document.getElementById('fees-stat-rate')?.textContent || '—';
+
+  showToast('⏳ Generating Fees Class PDF…');
+
+  // Summary stats block
+  const statsBlock = `
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:14px;">
+      <tr>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:800;color:#555;background:#f0fdf4;">Total Students</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:900;">${total}</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:800;color:#555;background:#f0fdf4;">Paid</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:900;color:#16a34a;">${paid}</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:800;color:#555;background:#f0fdf4;">Outstanding</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:900;color:#dc2626;">${outstanding}</td>
+      </tr>
+      <tr>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:800;color:#555;background:#f0fdf4;">Collected</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:900;color:#16a34a;">${collected}</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:800;color:#555;background:#f0fdf4;">Owed</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:900;color:#dc2626;">${owed}</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:800;color:#555;background:#f0fdf4;">Collection Rate</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:900;">${rate}</td>
+      </tr>
+    </table>`;
+
+  // Student rows
+  const studentRows = Array.from(tbody.rows).map((row, i) => {
+    const cells = Array.from(row.cells);
+    // strip any html badge text to plain text
+    const rowData = cells.map(td => td.textContent.trim().replace(/[✔✘]/g,'').trim());
+    const isUnpaid = (rowData[5] || '').toLowerCase().includes('outstanding');
+    return `<tr style="background:${i % 2 === 0 ? '#fff' : '#f0fdf4'};">
+      <td style="padding:7px 8px;border:1px solid #C8E6C9;text-align:center;">${rowData[0]}</td>
+      <td style="padding:7px 8px;border:1px solid #C8E6C9;font-weight:800;">${rowData[1]}</td>
+      <td style="padding:7px 8px;border:1px solid #C8E6C9;">${rowData[2]}</td>
+      <td style="padding:7px 8px;border:1px solid #C8E6C9;">${rowData[3]}</td>
+      <td style="padding:7px 8px;border:1px solid #C8E6C9;font-weight:800;color:#16a34a;">${rowData[4]}</td>
+      <td style="padding:7px 8px;border:1px solid #C8E6C9;font-weight:800;color:${isUnpaid ? '#dc2626' : '#16a34a'};">${rowData[5]}</td>
+    </tr>`;
+  }).join('');
+
+  const tableHtml = statsBlock + `
+    <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px;">
+      <thead>
+        <tr style="background:#228B2A;color:#fff;">
+          <th style="padding:8px;border:1px solid #1f6b3b;text-align:center;">#</th>
+          <th style="padding:8px;border:1px solid #1f6b3b;text-align:left;">Student Name</th>
+          <th style="padding:8px;border:1px solid #1f6b3b;text-align:left;">Admission No</th>
+          <th style="padding:8px;border:1px solid #1f6b3b;text-align:left;">Expected</th>
+          <th style="padding:8px;border:1px solid #1f6b3b;text-align:left;">Amount Paid</th>
+          <th style="padding:8px;border:1px solid #1f6b3b;text-align:left;">Status</th>
+        </tr>
+      </thead>
+      <tbody>${studentRows}</tbody>
+    </table>`;
+
+  const html = buildLetterPdfHtml(
+    `${className} — School Fees Report`,
+    `${heading} | Session: ${SCHOOL_CONFIG.session}`,
+    tableHtml
+  );
+
+  try {
+    const el = mountLetterTemplate(html);
+    await html2pdf().set(letterPdfOptions(`Pariya_Academy_Fees_${className.replace(/\s/g,'_')}.pdf`)).from(el).save();
+    showToast('✅ Class Fees PDF downloaded!');
+  } catch(e) {
+    console.error(e);
+    showToast('❌ PDF export failed.', 'error');
+  }
+}
+/* END CUSTOM EDIT SECTION — Download Fees Class Detail PDF */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Patch loadAllAnalytics to add charts
+   Purpose: After loading analytics data, render charts automatically.
+   Wraps original function without removing any logic.
+   ============================================================ */
+(function patchLoadAllAnalyticsForCharts() {
+  const _original = window.loadAllAnalytics;
+  window.loadAllAnalytics = async function() {
+    await _original();
+    renderAnalyticsCharts();
+  };
+})();
+/* END CUSTOM EDIT SECTION — Patch loadAllAnalytics for charts */
+
+/* ============================================================
+   THEME SYSTEM — Dark / Light Mode
+   ============================================================ */
+function initializeTheme() {
+  const saved = localStorage.getItem('portalTheme') || 'dark';
+  applyTheme(saved);
+}
+
+function applyTheme(theme) {
+  const root = document.documentElement;
+  if (theme === 'light') {
+    root.setAttribute('data-theme', 'light');
+  } else {
+    root.removeAttribute('data-theme');
+  }
+  localStorage.setItem('portalTheme', theme);
+  // Update all toggle buttons
+  const icon = theme === 'light' ? '☀️' : '🌙';
+  ['admin-theme-btn','login-theme-btn','student-theme-btn'].forEach(id => {
+    const btn = document.getElementById(id);
+    if (btn) btn.textContent = icon;
+  });
+  const stBtn = document.getElementById('settings-theme-btn');
+  if (stBtn) stBtn.textContent = theme === 'light' ? '☀️ Light Mode (Active)' : '🌙 Dark Mode (Active)';
+}
+
+function toggleTheme() {
+  const current = localStorage.getItem('portalTheme') || 'dark';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+}
+
+window.initializeTheme   = initializeTheme;
+window.applyTheme        = applyTheme;
+window.toggleTheme       = toggleTheme;
+
+/* ============================================================
+   SIDEBAR TOGGLE
+   ============================================================ */
+function toggleSidebar() {
+  const sidebar  = document.getElementById('admin-sidebar');
+  const overlay  = document.getElementById('sidebar-overlay');
+  if (!sidebar) return;
+  const isOpen = sidebar.classList.toggle('open');
+  if (overlay) overlay.classList.toggle('show', isOpen);
+}
+
+window.toggleSidebar = toggleSidebar;
+
+/* ============================================================
+   SMART UNIFIED LOGIN
+   ============================================================ */
+function onSmartUsernameInput(val) {
+  const wrap = document.getElementById('smart-class-wrap');
+  const badge = document.getElementById('login-badge-label');
+  if (!wrap) return;
+  const trimmed = val.trim().toLowerCase();
+  // If it looks like an admission number (not exactly admin username), reveal class selector
+  const isAdmin = trimmed === CREDENTIALS.admin.username.toLowerCase();
+  if (!isAdmin && trimmed.length > 0) {
+    wrap.classList.add('revealed');
+    if (badge) badge.textContent = '🎓 Student Login';
+  } else if (isAdmin) {
+    wrap.classList.remove('revealed');
+    if (badge) badge.textContent = '🔐 Admin Login';
+  } else {
+    wrap.classList.remove('revealed');
+    if (badge) badge.textContent = '🔐 Smart Login';
+  }
+}
+
+function showStudentFields() {
+  const wrap = document.getElementById('smart-class-wrap');
+  if (wrap) wrap.classList.add('revealed');
+}
+
+function hideStudentFields() {
+  const wrap = document.getElementById('smart-class-wrap');
+  if (wrap) wrap.classList.remove('revealed');
+}
+
+function smartLogin() {
+  const username  = (document.getElementById('smart-username')?.value || '').trim();
+  const password  = document.getElementById('smart-password')?.value || '';
+  const classVal  = document.getElementById('smart-class')?.value || '';
+  const rememberCb = document.getElementById('smart-remember');
+  const err       = document.getElementById('smart-login-error');
+  const btn       = document.getElementById('smart-login-btn');
+  const loader    = document.getElementById('smart-loading');
+
+  if (err) { err.textContent = ''; err.style.display = 'none'; }
+
+  if (!username || !password) {
+    _smartLoginError('❌ Please enter username and password.');
+    return;
+  }
+
+  // Remember me
+  if (rememberCb && rememberCb.checked) {
+    localStorage.setItem('pa_remember_user', username);
+  } else {
+    localStorage.removeItem('pa_remember_user');
+  }
+
+  // Admin check
+  if (username === CREDENTIALS.admin.username && password === CREDENTIALS.admin.password) {
+    _smartLoginLoading(true, btn, loader);
+    setTimeout(() => {
+      _smartLoginLoading(false, btn, loader);
+      initAdminDashboard();
+      showScreen('screen-admin-dash');
+      showToast('✅ Welcome, Admin!');
+    }, 500);
+    return;
+  }
+
+  // Student check — need class
+  if (!classVal) {
+    showStudentFields();
+    _smartLoginError('❌ Please select your class.');
+    return;
+  }
+
+  // Redirect to student login logic
+  document.getElementById('student-class').value      = classVal;
+  document.getElementById('student-admission').value  = username;
+  document.getElementById('student-password').value   = password;
+
+  _smartLoginLoading(true, btn, loader);
+
+  // Use the existing patched studentLogin flow
+  const url = getTermUrl(classVal, 'First Term');
+  if (!url) {
+    _smartLoginLoading(false, btn, loader);
+    _smartLoginError('❌ This class has no data yet. Contact admin.');
+    return;
+  }
+
+  if (password !== CREDENTIALS.student.password) {
+    _smartLoginLoading(false, btn, loader);
+    _smartLoginError('❌ Incorrect password.');
+    _shakeCard();
+    return;
+  }
+
+  fetchCSV(url).then(csv => {
+    const all = parseCSV(csv);
+    const stu = all.find(s =>
+      (s['Admission No'] || '').trim().toLowerCase() === username.toLowerCase()
+    );
+    _smartLoginLoading(false, btn, loader);
+    if (!stu) {
+      _smartLoginError('❌ Admission number not found in this class.');
+      _shakeCard();
+      return;
+    }
+
+    if (blockStudentResultIfUnpaid(stu, classVal)) return;
+
+    studentLoginData = { allStudents: all, admissionNo: username, className: classVal };
+    document.getElementById('studentWelcomeName').textContent = `Welcome, ${stu['Name']}!`;
+    document.getElementById('studentWelcomeSub').textContent  = `${classVal} — Select a term to view your result`;
+    document.getElementById('student-term-select').style.display = 'block';
+    document.getElementById('student-report-panel').style.display = 'none';
+    showScreen('screen-student-dash');
+    showToast('✅ Login successful! Select a term.');
+  }).catch(() => {
+    _smartLoginLoading(false, btn, loader);
+    _smartLoginError('❌ Could not fetch class data. Check connection.');
+  });
+}
+
+function _smartLoginError(msg) {
+  const err = document.getElementById('smart-login-error');
+  if (err) { err.textContent = msg; err.style.display = 'block'; }
+}
+
+function _smartLoginLoading(on, btn, loader) {
+  if (btn) btn.classList.toggle('btn-login-loading', on);
+  if (loader) loader.style.display = on ? 'flex' : 'none';
+}
+
+function _shakeCard() {
+  const card = document.querySelector('#screen-portal .login-card');
+  if (!card) return;
+  card.classList.remove('shake');
+  void card.offsetWidth;
+  card.classList.add('shake');
+  setTimeout(() => card.classList.remove('shake'), 500);
+}
+
+window.onSmartUsernameInput = onSmartUsernameInput;
+window.showStudentFields    = showStudentFields;
+window.hideStudentFields    = hideStudentFields;
+window.smartLogin           = smartLogin;
+
+/* ============================================================
+   PASSWORD SHOW / HIDE TOGGLE
+   ============================================================ */
+function togglePasswordVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const isText = input.type === 'text';
+  input.type = isText ? 'password' : 'text';
+  btn.textContent = isText ? '👁' : '🙈';
+}
+window.togglePasswordVisibility = togglePasswordVisibility;
+
+/* ============================================================
+   TEACHER PAYMENT — Save states to localStorage
+   ============================================================ */
+function saveTeacherPaymentStatus(teacherName, col, checked) {
+  const key   = 'teacher_pay_' + teacherName.replace(/\s/g,'_');
+  const saved = JSON.parse(localStorage.getItem(key) || '{}');
+  saved[col]  = checked;
+  localStorage.setItem(key, JSON.stringify(saved));
+
+  // Update label text next to checkbox
+  const cbId  = 'pay_cb_' + col.replace(/\s/g,'_');
+  const label = document.querySelector(`label[for="${cbId}"]`);
+  if (label) {
+    label.textContent = checked ? '✔ Paid' : '✘ Unpaid';
+    label.style.color = checked ? 'var(--dash-accent)' : '#fca5a5';
+  }
+  showToast(checked ? '✅ Marked as Paid' : '⚠ Marked as Unpaid');
+}
+
+function clearTeacherPaymentData() {
+  Object.keys(localStorage).filter(k => k.startsWith('teacher_pay_')).forEach(k => localStorage.removeItem(k));
+  showToast('✅ Teacher payment data cleared.');
+}
+
+window.saveTeacherPaymentStatus = saveTeacherPaymentStatus;
+window.clearTeacherPaymentData  = clearTeacherPaymentData;
+
+/* ============================================================
+   ADMIN FEE OVERRIDE — Mark students as paid locally
+   ============================================================ */
+function getFeeOverrideKey(className, term, admissionNo) {
+  return `fee_override_${className}_${term}_${admissionNo}`.replace(/\s/g,'_');
+}
+
+function adminMarkStudentPaid(className, term, admissionNo, currentlyPaid, btnEl) {
+  const key   = getFeeOverrideKey(className, term, admissionNo);
+  const newVal = !currentlyPaid;
+  localStorage.setItem(key, newVal ? '1' : '0');
+  if (btnEl) {
+    btnEl.textContent = newVal ? '✔ Paid' : '✘ Unpaid';
+    btnEl.classList.toggle('marked', !newVal);
+  }
+  showToast(newVal ? '✅ Marked as Paid' : '⚠ Marked as Unpaid');
+}
+
+function getFeeOverride(className, term, admissionNo) {
+  const key = getFeeOverrideKey(className, term, admissionNo);
+  const v   = localStorage.getItem(key);
+  return v === null ? null : v === '1';
+}
+
+function clearFeeOverrideData() {
+  Object.keys(localStorage).filter(k => k.startsWith('fee_override_')).forEach(k => localStorage.removeItem(k));
+  showToast('✅ Fee override data cleared.');
+}
+
+window.adminMarkStudentPaid = adminMarkStudentPaid;
+window.getFeeOverride       = getFeeOverride;
+window.clearFeeOverrideData = clearFeeOverrideData;
+
+/* ============================================================
+   SETTINGS HELPERS
+   ============================================================ */
+function resetAllLocalData() {
+  if (!confirm('This will reset all local data (theme, payments, fee overrides). Continue?')) return;
+  const keysToRemove = Object.keys(localStorage).filter(k =>
+    k.startsWith('teacher_pay_') || k.startsWith('fee_override_') || k === 'portalTheme' || k === 'pa_remember_user'
+  );
+  keysToRemove.forEach(k => localStorage.removeItem(k));
+  applyTheme('dark');
+  showToast('✅ All local data reset.');
+}
+
+window.resetAllLocalData = resetAllLocalData;
+
+/* ============================================================
+   INIT — Theme, remember-me, populate classes on load
+   ============================================================ */
+window.addEventListener('load', () => {
+  initializeTheme();
+
+  // Populate smart login class dropdown
+  const smartSel = document.getElementById('smart-class');
+  if (smartSel) {
+    smartSel.innerHTML = '<option value="">-- Select your class --</option>';
+    Object.keys(CLASS_LINKS).forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name; opt.textContent = name;
+      smartSel.appendChild(opt);
+    });
+  }
+
+  // Restore remember-me
+  const remembered = localStorage.getItem('pa_remember_user');
+  if (remembered) {
+    const uField = document.getElementById('smart-username');
+    if (uField) { uField.value = remembered; onSmartUsernameInput(remembered); }
+    const cb = document.getElementById('smart-remember');
+    if (cb) cb.checked = true;
+  }
+
+  // Enter key on smart login
+  const pwField = document.getElementById('smart-password');
+  if (pwField) pwField.addEventListener('keydown', e => { if (e.key === 'Enter') smartLogin(); });
+  const unField = document.getElementById('smart-username');
+  if (unField) unField.addEventListener('keydown', e => { if (e.key === 'Enter') smartLogin(); });
+});
+
+/* Expose new functions */
+window.downloadTeachersPDF      = typeof downloadTeachersPDF !== 'undefined' ? downloadTeachersPDF : null;
+window.downloadFeesSummaryPDF   = typeof downloadFeesSummaryPDF !== 'undefined' ? downloadFeesSummaryPDF : null;
+window.downloadFeesClassPDF     = typeof downloadFeesClassPDF !== 'undefined' ? downloadFeesClassPDF : null;
+window.renderAnalyticsCharts    = typeof renderAnalyticsCharts !== 'undefined' ? renderAnalyticsCharts : null;
 </script>
 </body>
 </html>
