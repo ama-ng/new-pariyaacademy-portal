@@ -3117,6 +3117,30 @@ async function fetchCSV(url) {
   return res.text();
 }
 
+/**
+ * Generic CSV parser — returns ALL non-empty rows as objects.
+ * Used for any CSV that is NOT the student scores sheet
+ * (e.g. teachers, fees summaries) so student-specific column
+ * filters don't silently discard every row.
+ */
+function parseCSVGeneric(csv) {
+  const lines = csv.split(/\r?\n/).filter(l => l.trim() !== '');
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.trim());
+  const records = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cols = lines[i].split(',');
+    // Skip rows that are entirely blank
+    if (cols.every(c => !c.trim())) continue;
+    const obj = {};
+    headers.forEach((h, idx) => {
+      obj[h] = cols[idx] ? cols[idx].trim() : '';
+    });
+    records.push(obj);
+  }
+  return records;
+}
+
 /* ============================================================
    PARSE CSV
    Purpose: Convert raw CSV text into an array of student objects
@@ -4499,7 +4523,9 @@ async function loadAllTeachers() {
   loader.classList.add('visible');
   try {
     const csv = await fetchCSV(TEACHERS_CSV_URL);
-    teachersData = parseCSV(csv);
+    // parseCSVGeneric does NOT filter by Name/Class Category/Class Type,
+    // so teacher rows (which lack those student-specific columns) are kept.
+    teachersData = parseCSVGeneric(csv);
     if (!teachersData.length) {
       showToast('⚠️ Teachers sheet loaded but appears empty.', 'error');
     }
