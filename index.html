@@ -668,6 +668,419 @@ body {
   .dash-tab { font-size: 11px; padding: 7px 10px; }
 }
 /* END CUSTOM EDIT SECTION — Admin Dashboard Extra Panels */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Teachers & School Fees Styles
+   ============================================================ */
+
+/* PIN Modal */
+.pin-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+.pin-modal-overlay.hidden { display: none; }
+
+.pin-modal {
+  background: var(--dash-surface);
+  border: 1px solid var(--dash-border);
+  border-radius: var(--radius);
+  padding: 28px 24px 24px;
+  width: 100%; max-width: 360px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  position: relative;
+}
+.pin-modal::before {
+  content:''; position:absolute; top:0; left:0; right:0;
+  height:3px;
+  background: linear-gradient(90deg, var(--dash-green), var(--dash-accent));
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.pin-modal h3 {
+  font-size:16px; font-weight:900; color:var(--dash-text);
+  text-align:center; margin-bottom:6px;
+}
+.pin-modal p {
+  font-size:12px; color:var(--dash-muted); font-weight:600;
+  text-align:center; margin-bottom:18px;
+}
+.pin-dots {
+  display: flex; justify-content: center; gap: 10px; margin-bottom: 20px;
+}
+.pin-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--dash-border);
+  transition: var(--transition);
+}
+.pin-dot.filled { background: var(--dash-accent); box-shadow: 0 0 8px var(--dash-green-glow); }
+
+.pin-keypad {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 12px;
+}
+.pin-key {
+  padding: 14px 0; background: var(--dash-card);
+  border: 1px solid var(--dash-border); border-radius: var(--radius-sm);
+  color: var(--dash-text); font-size: 18px; font-weight: 900;
+  cursor: pointer; transition: var(--transition); text-align: center;
+  font-family: var(--font-ui);
+}
+.pin-key:hover { background: var(--dash-green-soft); border-color: var(--dash-green); color: var(--dash-accent); }
+.pin-key.pin-del { font-size: 14px; color: var(--dash-muted); }
+.pin-key.pin-del:hover { color: var(--dash-danger); border-color: var(--dash-danger); }
+
+.pin-error {
+  background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3);
+  border-radius: var(--radius-sm); color: #fca5a5;
+  font-size: 13px; font-weight: 700; padding: 8px 12px;
+  text-align: center; display: none; margin-bottom: 10px;
+}
+.pin-error.show { display: block; animation: shakeX 0.4s ease; }
+
+@keyframes shakeX {
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-6px)}
+  80%{transform:translateX(6px)}
+}
+
+.btn-pin-cancel {
+  width:100%; padding:10px;
+  background:transparent; border:1px solid var(--dash-border);
+  border-radius:var(--radius-sm); color:var(--dash-muted);
+  font-family:var(--font-ui); font-size:13px; font-weight:700;
+  cursor:pointer; transition:var(--transition);
+}
+.btn-pin-cancel:hover { color:var(--dash-danger); border-color:var(--dash-danger); }
+
+/* Section cards for Teachers / Fees sections */
+.section-cards-grid {
+  display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 24px;
+}
+.section-big-card {
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius); padding: 20px 16px;
+  cursor: pointer; transition: var(--transition); text-align: center;
+  position: relative; overflow: hidden;
+}
+.section-big-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px; opacity:0; transition:var(--transition);
+}
+.section-big-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.section-big-card.sec-nursery::before  { background: linear-gradient(90deg,#A52A2A,#ef4444); }
+.section-big-card.sec-primary::before  { background: linear-gradient(90deg,#228B2A,#22c55e); }
+.section-big-card.sec-jss::before      { background: linear-gradient(90deg,#6A0DAD,#a855f7); }
+.section-big-card.sec-ss::before       { background: linear-gradient(90deg,#000080,#3b82f6); }
+.section-big-card.sec-nursery:hover  { border-color:#ef4444; background:rgba(165,42,42,0.08); }
+.section-big-card.sec-primary:hover  { border-color:var(--dash-green); background:var(--dash-green-soft); }
+.section-big-card.sec-jss:hover      { border-color:#a855f7; background:rgba(168,85,247,0.08); }
+.section-big-card.sec-ss:hover       { border-color:#3b82f6; background:rgba(59,130,246,0.08); }
+.section-big-card:hover::before { opacity:1; }
+.section-big-card-icon { font-size: 32px; margin-bottom: 10px; }
+.section-big-card-name { font-size: 15px; font-weight: 900; color: var(--dash-text); margin-bottom: 4px; }
+.section-big-card-sub  { font-size: 11px; color: var(--dash-muted); font-weight: 600; }
+
+/* Teacher list */
+.teacher-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.teacher-item {
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius-sm); padding: 12px 14px;
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: var(--transition);
+}
+.teacher-item:hover { border-color: var(--dash-green); background: var(--dash-green-soft); transform: translateX(4px); }
+.teacher-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--dash-green-soft); display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0; border: 1px solid var(--dash-border);
+}
+.teacher-item-name  { font-size: 14px; font-weight: 900; color: var(--dash-text); }
+.teacher-item-meta  { font-size: 11px; color: var(--dash-muted); font-weight: 600; margin-top: 2px; }
+
+/* Teacher profile */
+.teacher-profile {
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 20px;
+}
+.teacher-profile-header {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+  padding-bottom: 14px; border-bottom: 1px solid var(--dash-border);
+}
+.teacher-profile-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--dash-green-soft); border: 2px solid var(--dash-green);
+  display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
+}
+.teacher-profile-name  { font-size: 18px; font-weight: 900; color: var(--dash-accent); margin-bottom: 4px; }
+.teacher-profile-section { font-size: 12px; color: var(--dash-muted); font-weight: 700; }
+
+.badges-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.badge-tag {
+  padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 800;
+  background: var(--dash-green-soft); color: var(--dash-accent);
+  border: 1px solid rgba(34,197,94,0.3);
+}
+.badge-tag.blue { background: rgba(59,130,246,0.15); color: #93c5fd; border-color: rgba(59,130,246,0.3); }
+.teacher-profile-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; color: var(--dash-muted); margin-bottom: 6px; margin-top: 12px; }
+
+/* Salary payment table */
+.salary-table {
+  width: 100%; border-collapse: collapse; margin-top: 8px;
+}
+.salary-table th {
+  background: var(--dash-bg); color: var(--dash-muted);
+  font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 8px 10px; border: 1px solid var(--dash-border); text-align: left;
+}
+.salary-table td {
+  border: 1px solid var(--dash-border); padding: 9px 10px;
+  color: var(--dash-text); font-size: 13px; font-weight: 700;
+  background: var(--dash-surface);
+}
+.salary-table tr.term-first td { border-left: 3px solid #22c55e; }
+.salary-table tr.term-second td { border-left: 3px solid #a855f7; }
+.salary-table tr.term-third  td { border-left: 3px solid #3b82f6; }
+
+.pay-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 800;
+}
+.pay-badge.paid    { background: rgba(34,197,94,0.18); color: #4ade80; }
+.pay-badge.unpaid  { background: rgba(239,68,68,0.15); color: #fca5a5; }
+
+/* Fees summary table */
+.fees-summary-table {
+  width:100%; border-collapse:collapse; margin-bottom:16px;
+}
+.fees-summary-table th {
+  background:var(--dash-bg); color:var(--dash-muted);
+  font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em;
+  padding:8px 10px; border:1px solid var(--dash-border); text-align:left;
+}
+.fees-summary-table td {
+  border:1px solid var(--dash-border); padding:10px;
+  color:var(--dash-text); font-size:13px; font-weight:700;
+  background:var(--dash-surface);
+}
+.fees-summary-table tfoot td {
+  background: var(--dash-green-soft); color: var(--dash-accent);
+  font-size: 14px; font-weight: 900;
+}
+.fees-grand-total {
+  background: linear-gradient(135deg, var(--dash-green-soft), rgba(74,222,128,0.08));
+  border: 1px solid rgba(34,197,94,0.3);
+  border-radius: var(--radius); padding: 14px 16px; margin-bottom: 20px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.fees-grand-label { font-size: 13px; font-weight: 900; color: var(--dash-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.fees-grand-value { font-size: 22px; font-weight: 900; color: var(--dash-accent); }
+
+/* Student fees table */
+.fees-student-table {
+  width:100%; border-collapse:collapse;
+}
+.fees-student-table th {
+  background:var(--dash-bg); color:var(--dash-muted);
+  font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em;
+  padding:8px 10px; border:1px solid var(--dash-border); text-align:left;
+}
+.fees-student-table td {
+  border:1px solid var(--dash-border); padding:9px 10px;
+  color:var(--dash-text); font-size:12px; font-weight:700;
+  background:var(--dash-surface);
+}
+.fees-student-table tbody tr:hover td { background: var(--dash-green-soft); }
+.fees-stats-row {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px;
+}
+.fees-stat-card {
+  background:var(--dash-card); border:1px solid var(--dash-border);
+  border-radius:var(--radius-sm); padding:12px;
+}
+.fees-stat-label { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--dash-muted); }
+.fees-stat-value { font-size:18px; font-weight:900; color:var(--dash-accent); margin:3px 0; }
+.fees-stat-sub   { font-size:10px; color:var(--dash-muted); font-weight:600; }
+
+/* Blocked fees screen */
+.fees-blocked-card {
+  max-width: 420px; width:100%;
+  background: var(--dash-surface);
+  border: 1px solid rgba(239,68,68,0.4);
+  border-radius: var(--radius); padding: 28px 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  text-align: center;
+}
+.fees-blocked-card::before {
+  content:''; display:block;
+  font-size:48px; margin-bottom:12px;
+}
+.fees-blocked-icon { font-size:48px; margin-bottom:12px; }
+.fees-blocked-title { font-size:18px; font-weight:900; color:#ef4444; margin-bottom:8px; }
+.fees-blocked-msg { font-size:13px; color:var(--dash-muted); font-weight:700; line-height:1.6; margin-bottom:18px; }
+.fees-blocked-table {
+  width:100%; border-collapse:collapse; margin-bottom:16px; text-align:left;
+}
+.fees-blocked-table td {
+  padding:8px 10px; border:1px solid var(--dash-border);
+  font-size:12px; font-weight:700;
+}
+.fees-blocked-table td:first-child { color:var(--dash-muted); background:var(--dash-bg); }
+.fees-blocked-table td:last-child  { color:var(--dash-text); }
+.fees-blocked-contact {
+  font-size:12px; color:var(--dash-muted); font-weight:700;
+  background:var(--dash-card); border-radius:var(--radius-sm); padding:10px 14px;
+}
+
+/* Back button for sub-panels */
+.btn-section-back {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 14px; background:transparent; border:1px solid var(--dash-border);
+  border-radius:var(--radius-sm); color:var(--dash-muted);
+  font-family:var(--font-ui); font-size:13px; font-weight:800;
+  cursor:pointer; transition:var(--transition); margin-bottom:16px;
+}
+.btn-section-back:hover { border-color:var(--dash-green); color:var(--dash-accent); }
+
+/* Term selector buttons for fees class view */
+.term-selector-row {
+  display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;
+}
+.btn-term-select {
+  flex:1; min-width:100px; padding:10px;
+  background:var(--dash-card); border:1px solid var(--dash-border);
+  border-radius:var(--radius-sm); color:var(--dash-muted);
+  font-family:var(--font-ui); font-size:12px; font-weight:800;
+  cursor:pointer; transition:var(--transition); text-align:center;
+}
+.btn-term-select:hover, .btn-term-select.active {
+  background:var(--dash-green-soft); border-color:var(--dash-green); color:var(--dash-accent);
+}
+
+@media (max-width: 480px) {
+  .section-cards-grid { grid-template-columns: 1fr; }
+  .fees-stats-row { grid-template-columns: repeat(2,1fr); }
+  .salary-table, .fees-summary-table, .fees-student-table { font-size: 11px; }
+  .salary-table th, .salary-table td,
+  .fees-summary-table th, .fees-summary-table td,
+  .fees-student-table th, .fees-student-table td { padding: 6px 7px; }
+}
+/* END CUSTOM EDIT SECTION — Teachers & School Fees Styles */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Charts, PDF Letter Header & Downloads
+   ============================================================ */
+
+/* ── Chart containers ── */
+.analytics-charts-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px;
+}
+.analytics-chart-card {
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius); padding: 16px 14px;
+}
+.analytics-chart-title {
+  font-size: 12px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--dash-muted); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 6px;
+}
+.chart-canvas-wrap {
+  position: relative; width: 100%; min-height: 220px;
+}
+canvas.pa-chart {
+  width: 100% !important; max-height: 220px;
+}
+
+/* Education chart — Performance distribution */
+.edu-chart-card {
+  background: var(--dash-card); border: 1px solid var(--dash-border);
+  border-radius: var(--radius); padding: 16px 14px; margin-bottom: 20px;
+}
+.edu-chart-legend {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;
+}
+.edu-legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; color: var(--dash-muted);
+}
+.edu-legend-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+
+/* ── Download buttons ── */
+.btn-dl-pdf {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 18px; border-radius: var(--radius-sm); border: none;
+  font-family: var(--font-ui); font-size: 13px; font-weight: 800;
+  cursor: pointer; transition: var(--transition);
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #fff; box-shadow: 0 4px 14px rgba(59,130,246,0.3);
+  margin-bottom: 12px;
+}
+.btn-dl-pdf:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,0.4); }
+.btn-dl-pdf.green { background: linear-gradient(135deg, var(--dash-green), #16a34a); box-shadow: 0 4px 14px rgba(34,197,94,0.3); }
+.btn-dl-pdf.green:hover { box-shadow: 0 6px 20px rgba(34,197,94,0.4); }
+
+.dl-btn-row {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;
+}
+
+/* ── Hidden PDF letter template (rendered off-screen for html2pdf) ── */
+#pdf-letter-template {
+  position: absolute; left: -9999px; top: 0;
+  width: 794px; background: #fff; color: #222;
+  font-family: 'Inter', system-ui, sans-serif; font-size: 13px;
+  padding: 30px 36px 30px;
+}
+.pdf-letter-header {
+  display: flex; align-items: center; gap: 16px;
+  border-bottom: 3px solid #228B2A; padding-bottom: 14px; margin-bottom: 18px;
+}
+.pdf-letter-logo { width: 80px; height: 80px; object-fit: contain; }
+.pdf-letter-school-info { flex: 1; text-align: center; }
+.pdf-letter-school-name {
+  font-size: 17px; font-weight: 900; color: #228B2A; line-height: 1.2; margin-bottom: 4px;
+}
+.pdf-letter-school-sub { font-size: 11px; color: #555; margin-bottom: 3px; }
+.pdf-letter-school-contact { font-size: 11px; color: #228B2A; font-weight: 700; }
+.pdf-letter-jibwis { width: 62px; height: 62px; object-fit: contain; }
+.pdf-letter-doc-title {
+  text-align: center; font-size: 15px; font-weight: 900; color: #228B2A;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 6px; padding: 8px;
+  border: 1px solid #C8E6C9; border-radius: 6px; background: #f0fdf4;
+}
+.pdf-letter-doc-sub {
+  text-align: center; font-size: 11px; color: #555; margin-bottom: 18px; font-weight: 600;
+}
+.pdf-letter-table {
+  width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 12px;
+}
+.pdf-letter-table th {
+  background: #228B2A; color: #fff; padding: 8px 10px;
+  border: 1px solid #1f6b3b; text-align: left; font-weight: 800;
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+}
+.pdf-letter-table td {
+  padding: 8px 10px; border: 1px solid #C8E6C9;
+  background: #fff; font-size: 12px;
+}
+.pdf-letter-table tbody tr:nth-child(even) td { background: #f0fdf4; }
+.pdf-letter-footer {
+  margin-top: 24px; border-top: 2px solid #228B2A; padding-top: 12px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; color: #555;
+}
+.pdf-letter-footer-sig { text-align: center; }
+.pdf-letter-footer-sig img { height: 44px; object-fit: contain; display: block; margin: 0 auto 4px; }
+.pdf-letter-footer-sig span { font-weight: 800; color: #228B2A; font-size: 12px; }
+
+@media (max-width: 480px) {
+  .analytics-charts-row { grid-template-columns: 1fr; }
+  .dl-btn-row { flex-direction: column; }
+}
+/* END CUSTOM EDIT SECTION — Charts, PDF Letter Header & Downloads */
 </style>
 </head>
 <body>
@@ -812,6 +1225,8 @@ body {
         <button class="dash-tab active" onclick="switchTab('tab-classes')">🏫 Classes</button>
         <button class="dash-tab" onclick="switchTab('tab-progress')">📊 Progress</button>
         <button class="dash-tab" onclick="switchTab('tab-analytics')">📈 Analytics</button>
+        <button class="dash-tab" onclick="openTeachersSection()">👨‍🏫 Teachers</button>
+        <button class="dash-tab" onclick="openFeesSection()">💰 School Fees</button>
         <button class="dash-tab" onclick="switchTab('tab-websites')">🌐 Websites</button>
         <button class="dash-tab" onclick="switchTab('tab-guide')">📖 Guide</button>
       </div>
@@ -839,6 +1254,179 @@ body {
           </div>
         </div>
       </div>
+
+      <!-- ============================================================
+           START CUSTOM EDIT SECTION — Teachers Tab Panel
+           ============================================================ -->
+      <div id="tab-teachers" class="tab-panel">
+
+        <!-- Sub-view: Section picker -->
+        <div id="teachers-section-picker">
+          <div class="section-heading">Select Section</div>
+          <div class="section-cards-grid">
+            <div class="section-big-card sec-nursery" onclick="loadTeachersBySection('Nursery')">
+              <div class="section-big-card-icon">🌱</div>
+              <div class="section-big-card-name">Nursery</div>
+              <div class="section-big-card-sub">Early Years Teachers</div>
+            </div>
+            <div class="section-big-card sec-primary" onclick="loadTeachersBySection('Primary')">
+              <div class="section-big-card-icon">📚</div>
+              <div class="section-big-card-name">Primary</div>
+              <div class="section-big-card-sub">Primary School Teachers</div>
+            </div>
+            <div class="section-big-card sec-jss" onclick="loadTeachersBySection('Junior Secondary')">
+              <div class="section-big-card-icon">🔬</div>
+              <div class="section-big-card-name">Junior Secondary</div>
+              <div class="section-big-card-sub">JSS Teachers</div>
+            </div>
+            <div class="section-big-card sec-ss" onclick="loadTeachersBySection('Senior Secondary')">
+              <div class="section-big-card-icon">🎓</div>
+              <div class="section-big-card-name">Senior Secondary</div>
+              <div class="section-big-card-sub">SS Teachers</div>
+            </div>
+          </div>
+          <div id="teachers-loading" class="loading-bar">
+            <div class="spinner"></div>
+            <span>Loading teachers data…</span>
+          </div>
+          <p style="font-size:12px;color:var(--dash-muted);font-weight:600;">
+            Configure <code style="font-size:11px;background:var(--dash-bg);padding:1px 5px;border-radius:4px;color:var(--dash-accent);">TEACHERS_CSV_URL</code> in the config to load live teacher data.
+          </p>
+        </div>
+
+        <!-- Sub-view: Teacher list for a section -->
+        <div id="teachers-list-view" style="display:none;">
+          <button class="btn-section-back" onclick="showTeachersSectionPicker()">← Back to Sections</button>
+          <div class="section-heading" id="teachers-list-heading">Teachers</div>
+          <div class="dl-btn-row">
+            <button class="btn-dl-pdf" onclick="downloadTeachersPDF()">📄 Download Teachers PDF</button>
+          </div>
+          <div class="teacher-list" id="teachers-list-container"></div>
+        </div>
+
+        <!-- Sub-view: Teacher profile -->
+        <div id="teachers-profile-view" style="display:none;">
+          <button class="btn-section-back" onclick="showTeachersList()">← Back to Teachers</button>
+          <div id="teacher-profile-container"></div>
+        </div>
+
+      </div>
+      <!-- END CUSTOM EDIT SECTION — Teachers Tab Panel -->
+
+      <!-- ============================================================
+           START CUSTOM EDIT SECTION — School Fees Tab Panel
+           ============================================================ -->
+      <div id="tab-fees" class="tab-panel">
+
+        <!-- Sub-view: Fee summary + class cards -->
+        <div id="fees-summary-view">
+          <div class="section-heading">School Fees Overview</div>
+          <div class="dl-btn-row">
+            <button class="btn-dl-pdf green" onclick="downloadFeesSummaryPDF()">📄 Download Fees Summary PDF</button>
+          </div>
+          <div id="fees-loading" class="loading-bar">
+            <div class="spinner"></div>
+            <span>Calculating fee data…</span>
+          </div>
+
+          <!-- Fees summary table -->
+          <div style="overflow-x:auto;margin-bottom:16px;">
+            <table class="fees-summary-table" id="fees-summary-table">
+              <thead><tr>
+                <th>Section</th>
+                <th>Fee / Student</th>
+                <th>Students</th>
+                <th>Expected Total</th>
+              </tr></thead>
+              <tbody id="fees-summary-tbody">
+                <tr><td colspan="4" style="color:var(--dash-muted);font-size:12px;text-align:center;">Click a class below to load data</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Grand total -->
+          <div class="fees-grand-total">
+            <span class="fees-grand-label">💰 Grand Total Expected</span>
+            <span class="fees-grand-value" id="fees-grand-total">₦0</span>
+          </div>
+
+          <div class="section-heading">Select Class to View Payments</div>
+          <div class="class-grid" id="fees-class-grid"></div>
+        </div>
+
+        <!-- Sub-view: Term selector for a class -->
+        <div id="fees-class-view" style="display:none;">
+          <button class="btn-section-back" onclick="showFeesSummaryView()">← Back to Overview</button>
+          <div class="section-heading" id="fees-class-heading">Select Term</div>
+          <div class="dl-btn-row">
+            <button class="btn-dl-pdf green" onclick="downloadFeesClassPDF()">📄 Download This Class Fees PDF</button>
+          </div>
+          <div class="term-selector-row">
+            <button class="btn-term-select" onclick="loadClassFeesData(currentFeesClass,'First Term',this)">📗 First Term</button>
+            <button class="btn-term-select" onclick="loadClassFeesData(currentFeesClass,'Second Term',this)">📘 Second Term</button>
+            <button class="btn-term-select" onclick="loadClassFeesData(currentFeesClass,'Third Term',this)">📙 Third Term</button>
+          </div>
+
+          <!-- Stats -->
+          <div class="fees-stats-row" id="fees-stats-row">
+            <div class="fees-stat-card">
+              <div class="fees-stat-label">Total Students</div>
+              <div class="fees-stat-value" id="fees-stat-total">—</div>
+              <div class="fees-stat-sub">Enrolled</div>
+            </div>
+            <div class="fees-stat-card">
+              <div class="fees-stat-label">Paid</div>
+              <div class="fees-stat-value" style="color:#22c55e;" id="fees-stat-paid">—</div>
+              <div class="fees-stat-sub">Fully paid</div>
+            </div>
+            <div class="fees-stat-card">
+              <div class="fees-stat-label">Outstanding</div>
+              <div class="fees-stat-value" style="color:#ef4444;" id="fees-stat-outstanding">—</div>
+              <div class="fees-stat-sub">Not cleared</div>
+            </div>
+          </div>
+          <div class="fees-stats-row" style="margin-top:-4px;" id="fees-amount-row">
+            <div class="fees-stat-card">
+              <div class="fees-stat-label">Amount Collected</div>
+              <div class="fees-stat-value" style="color:#22c55e;" id="fees-stat-collected">—</div>
+              <div class="fees-stat-sub">This term</div>
+            </div>
+            <div class="fees-stat-card">
+              <div class="fees-stat-label">Outstanding Amount</div>
+              <div class="fees-stat-value" style="color:#ef4444;" id="fees-stat-owed">—</div>
+              <div class="fees-stat-sub">This term</div>
+            </div>
+            <div class="fees-stat-card">
+              <div class="fees-stat-label">Collection Rate</div>
+              <div class="fees-stat-value" id="fees-stat-rate">—</div>
+              <div class="fees-stat-sub">Percent</div>
+            </div>
+          </div>
+
+          <!-- Student fees table -->
+          <div id="fees-class-loading" class="loading-bar">
+            <div class="spinner"></div>
+            <span>Loading fees data…</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="fees-student-table" id="fees-student-table">
+              <thead><tr>
+                <th>#</th>
+                <th>Student Name</th>
+                <th>Admission No</th>
+                <th>Expected Fee</th>
+                <th>Amount Paid</th>
+                <th>Status</th>
+              </tr></thead>
+              <tbody id="fees-student-tbody">
+                <tr><td colspan="6" style="color:var(--dash-muted);text-align:center;font-size:12px;">Select a term above to load</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+      <!-- END CUSTOM EDIT SECTION — School Fees Tab Panel -->
 
       <!-- TAB: Performance Progress Tracker -->
       <!-- START CUSTOM EDIT SECTION — Progress Tracker Tab -->
@@ -879,6 +1467,37 @@ body {
         <div id="analytics-loading" class="loading-bar">
           <div class="spinner"></div>
           <span>Computing analytics…</span>
+        </div>
+
+        <!-- ── Chart Section ── -->
+        <div id="analytics-charts-section" style="display:none;">
+          <div class="analytics-charts-row">
+            <!-- Bar Chart: Class averages -->
+            <div class="analytics-chart-card">
+              <div class="analytics-chart-title">📊 Class Average Scores (Bar)</div>
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-bar-avg" class="pa-chart"></canvas>
+              </div>
+            </div>
+            <!-- Pie Chart: Pass vs Fail distribution -->
+            <div class="analytics-chart-card">
+              <div class="analytics-chart-title">🥧 Pass / Fail Distribution (Pie)</div>
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-pie-pass" class="pa-chart"></canvas>
+              </div>
+            </div>
+          </div>
+          <!-- Educational Chart: Gender distribution bar -->
+          <div class="edu-chart-card">
+            <div class="analytics-chart-title">🎓 Gender Distribution Per Class (Educational Chart)</div>
+            <div class="chart-canvas-wrap" style="min-height:180px;">
+              <canvas id="chart-edu-gender" class="pa-chart" style="max-height:180px;"></canvas>
+            </div>
+            <div class="edu-chart-legend" id="edu-chart-legend">
+              <div class="edu-legend-item"><div class="edu-legend-dot" style="background:#3b82f6;"></div>Male</div>
+              <div class="edu-legend-item"><div class="edu-legend-dot" style="background:#ec4899;"></div>Female</div>
+            </div>
+          </div>
         </div>
 
         <div id="analytics-cards"></div>
@@ -1187,15 +1806,82 @@ body {
   </div>
 </div>
 
+<!-- ============================================================
+     START CUSTOM EDIT SECTION — PIN Security Modal
+     ============================================================ -->
+<div id="pin-modal-overlay" class="pin-modal-overlay hidden">
+  <div class="pin-modal">
+    <h3>🔐 Security Required</h3>
+    <p id="pin-modal-subtitle">Enter 4-digit PIN to continue</p>
+    <div class="pin-dots" id="pin-dots">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-error" id="pin-error">❌ Incorrect Security PIN</div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinInput('1')">1</button>
+      <button class="pin-key" onclick="pinInput('2')">2</button>
+      <button class="pin-key" onclick="pinInput('3')">3</button>
+      <button class="pin-key" onclick="pinInput('4')">4</button>
+      <button class="pin-key" onclick="pinInput('5')">5</button>
+      <button class="pin-key" onclick="pinInput('6')">6</button>
+      <button class="pin-key" onclick="pinInput('7')">7</button>
+      <button class="pin-key" onclick="pinInput('8')">8</button>
+      <button class="pin-key" onclick="pinInput('9')">9</button>
+      <button class="pin-key pin-del" onclick="pinClear()">⌫ Clear</button>
+      <button class="pin-key" onclick="pinInput('0')">0</button>
+      <button class="pin-key pin-del" onclick="pinBackspace()">← Del</button>
+    </div>
+    <button class="btn-pin-cancel" onclick="closePinModal()">Cancel</button>
+  </div>
+</div>
+<!-- END CUSTOM EDIT SECTION — PIN Security Modal -->
+
+<!-- ============================================================
+     START CUSTOM EDIT SECTION — Student Fees Blocked Screen
+     ============================================================ -->
+<div id="screen-fees-blocked" class="screen">
+  <div class="login-wrap">
+    <div class="fees-blocked-card">
+      <div class="fees-blocked-icon">⚠️</div>
+      <div class="fees-blocked-title">Access Restricted</div>
+      <div class="fees-blocked-msg">
+        You are not allowed to view your report card until school fees payment is completed.
+      </div>
+      <table class="fees-blocked-table">
+        <tr><td>Expected Fee</td><td id="blocked-expected">—</td></tr>
+        <tr><td>Amount Paid</td><td id="blocked-paid">—</td></tr>
+        <tr><td>Outstanding</td><td id="blocked-outstanding" style="color:#ef4444;">—</td></tr>
+      </table>
+      <div class="fees-blocked-contact">
+        📞 Please contact the school management to clear your fees.
+      </div>
+      <div style="margin-top:16px;">
+        <button class="btn-logout" onclick="logout()" style="width:100%;padding:10px;font-size:13px;border-radius:var(--radius-sm);">← Back to Login</button>
+      </div>
+    </div>
+  </div>
+  <div class="copyright-footer">
+    © <span>2026 Pariya Academy</span>. All Rights Reserved. Designed by <span>Arabo Modibbo</span>
+  </div>
+</div>
+<!-- END CUSTOM EDIT SECTION — Student Fees Blocked Screen -->
+
 <!-- Hidden print container -->
 <div id="printContainer" style="display:none;"></div>
 
 <!-- Toast -->
 <div id="toast" class="toast"></div>
 
+<!-- Hidden PDF letter template -->
+<div id="pdf-letter-template" aria-hidden="true"></div>
+
 <!-- Libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
 <script>
 /* ============================================================
@@ -3208,6 +3894,1030 @@ window.downloadAnalyticsPDF        = downloadAnalyticsPDF;
 window.exportGuidePDF              = exportGuidePDF;
 window.toggleSiteCreds             = toggleSiteCreds;
 window.renderWebsites              = renderWebsites;
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — New Config Variables
+   ============================================================ */
+const SECURITY_PIN = "2017";
+
+const SCHOOL_FEES = {
+  nursery: 3000,
+  primary: 3000,
+  jss:     4000,
+  ss:      5000
+};
+
+// Paste your Google Sheet Teachers CSV URL here (columns: Teacher Name, Section,
+// Subjects, Classes, First Term Month 1-3, Second Term Month 1-3, Third Term Month 1-3)
+const TEACHERS_CSV_URL = "";
+
+// Cache for loaded teachers data
+let teachersData = [];
+let currentTeacherSection = '';
+let currentFeesClass = '';
+let pinTarget = ''; // 'teachers' | 'fees'
+let pinValue  = '';
+/* END CUSTOM EDIT SECTION — New Config Variables */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — PIN Security System
+   ============================================================ */
+function verifySecurityPin(target) {
+  pinTarget = target;
+  pinValue  = '';
+  updatePinDots();
+  const overlay = document.getElementById('pin-modal-overlay');
+  const subtitle = document.getElementById('pin-modal-subtitle');
+  const err = document.getElementById('pin-error');
+  subtitle.textContent = target === 'teachers'
+    ? 'Enter 4-digit PIN to access Teachers section'
+    : 'Enter 4-digit PIN to access School Fees section';
+  err.classList.remove('show');
+  overlay.classList.remove('hidden');
+}
+
+function closePinModal() {
+  document.getElementById('pin-modal-overlay').classList.add('hidden');
+  pinValue = '';
+  updatePinDots();
+}
+
+function pinInput(digit) {
+  if (pinValue.length >= 4) return;
+  pinValue += digit;
+  updatePinDots();
+  if (pinValue.length === 4) {
+    setTimeout(checkPin, 150);
+  }
+}
+
+function pinBackspace() {
+  pinValue = pinValue.slice(0, -1);
+  updatePinDots();
+}
+
+function pinClear() {
+  pinValue = '';
+  updatePinDots();
+}
+
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('pd' + i);
+    if (dot) dot.classList.toggle('filled', i < pinValue.length);
+  }
+}
+
+function checkPin() {
+  if (pinValue === SECURITY_PIN) {
+    closePinModal();
+    if (pinTarget === 'teachers') {
+      switchTab('tab-teachers');
+      showTeachersSectionPicker();
+      if (teachersData.length === 0) loadAllTeachers();
+    } else if (pinTarget === 'fees') {
+      switchTab('tab-fees');
+      showFeesSummaryView();
+      calculateSchoolFeesSummary();
+    }
+  } else {
+    const err = document.getElementById('pin-error');
+    err.classList.remove('show');
+    void err.offsetWidth; // reflow to restart animation
+    err.classList.add('show');
+    pinValue = '';
+    updatePinDots();
+  }
+}
+/* END CUSTOM EDIT SECTION — PIN Security System */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Open Teachers / Fees Sections
+   ============================================================ */
+function openTeachersSection() {
+  verifySecurityPin('teachers');
+}
+
+function openFeesSection() {
+  verifySecurityPin('fees');
+}
+/* END CUSTOM EDIT SECTION */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Teachers Feature
+   ============================================================ */
+
+/* Load all teachers from CSV or use demo data */
+async function loadAllTeachers() {
+  if (TEACHERS_CSV_URL && !TEACHERS_CSV_URL.includes('PASTE_')) {
+    const loader = document.getElementById('teachers-loading');
+    loader.classList.add('visible');
+    try {
+      const csv = await fetchCSV(TEACHERS_CSV_URL);
+      teachersData = parseCSV(csv);
+    } catch(e) {
+      showToast('⚠️ Could not load teachers CSV. Showing demo data.', 'error');
+      teachersData = getDemoTeachers();
+    } finally {
+      loader.classList.remove('visible');
+    }
+  } else {
+    teachersData = getDemoTeachers();
+  }
+}
+
+function getDemoTeachers() {
+  return [
+    { 'Teacher Name':'Mal. Hassan Usman',   'Section':'Nursery',          'Subjects':'English, Quran',        'Classes':'Nursery 1, Nursery 2', 'First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Paid','Second Term Month 1':'Paid','Second Term Month 2':'Unpaid','Second Term Month 3':'Unpaid','Third Term Month 1':'Unpaid','Third Term Month 2':'Unpaid','Third Term Month 3':'Unpaid' },
+    { 'Teacher Name':'Mal. Abdullahi Sani', 'Section':'Primary',          'Subjects':'Mathematics, Science',  'Classes':'Primary 1, Primary 2', 'First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Unpaid','Second Term Month 1':'Unpaid','Second Term Month 2':'Unpaid','Second Term Month 3':'Unpaid','Third Term Month 1':'Unpaid','Third Term Month 2':'Unpaid','Third Term Month 3':'Unpaid' },
+    { 'Teacher Name':'Mr. Yusuf Bello',     'Section':'Primary',          'Subjects':'English, Social Studies','Classes':'Primary 3, Primary 4', 'First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Paid','Second Term Month 1':'Paid','Second Term Month 2':'Paid','Second Term Month 3':'Unpaid','Third Term Month 1':'Unpaid','Third Term Month 2':'Unpaid','Third Term Month 3':'Unpaid' },
+    { 'Teacher Name':'Mr. Ibrahim Musa',    'Section':'Junior Secondary', 'Subjects':'Physics, Chemistry, Biology','Classes':'JSS 1, JSS 2',  'First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Paid','Second Term Month 1':'Paid','Second Term Month 2':'Paid','Second Term Month 3':'Paid','Third Term Month 1':'Unpaid','Third Term Month 2':'Unpaid','Third Term Month 3':'Unpaid' },
+    { 'Teacher Name':'Mal. Usman Garba',    'Section':'Junior Secondary', 'Subjects':'Mathematics, Further Math','Classes':'JSS 1, JSS 2, JSS 3','First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Paid','Second Term Month 1':'Unpaid','Second Term Month 2':'Unpaid','Second Term Month 3':'Unpaid','Third Term Month 1':'Unpaid','Third Term Month 2':'Unpaid','Third Term Month 3':'Unpaid' },
+    { 'Teacher Name':'Mr. Ahmad Suleiman',  'Section':'Senior Secondary', 'Subjects':'English Language, Literature','Classes':'SS 1, SS 2',  'First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Paid','Second Term Month 1':'Paid','Second Term Month 2':'Paid','Second Term Month 3':'Paid','Third Term Month 1':'Paid','Third Term Month 2':'Paid','Third Term Month 3':'Unpaid' },
+    { 'Teacher Name':'Mrs. Fatima Aliyu',   'Section':'Senior Secondary', 'Subjects':'Biology, Agricultural Science','Classes':'SS 1, SS 2, SS 3','First Term Month 1':'Paid','First Term Month 2':'Paid','First Term Month 3':'Paid','Second Term Month 1':'Paid','Second Term Month 2':'Paid','Second Term Month 3':'Paid','Third Term Month 1':'Paid','Third Term Month 2':'Unpaid','Third Term Month 3':'Unpaid' },
+  ];
+}
+
+function showTeachersSectionPicker() {
+  document.getElementById('teachers-section-picker').style.display = '';
+  document.getElementById('teachers-list-view').style.display = 'none';
+  document.getElementById('teachers-profile-view').style.display = 'none';
+}
+
+function showTeachersList() {
+  document.getElementById('teachers-section-picker').style.display = 'none';
+  document.getElementById('teachers-list-view').style.display = '';
+  document.getElementById('teachers-profile-view').style.display = 'none';
+}
+
+function loadTeachersBySection(section) {
+  currentTeacherSection = section;
+  document.getElementById('teachers-list-heading').textContent = '👨‍🏫 ' + section + ' Teachers';
+
+  const filtered = teachersData.filter(t =>
+    (t['Section'] || '').trim().toLowerCase() === section.toLowerCase()
+  );
+
+  const container = document.getElementById('teachers-list-container');
+  container.innerHTML = '';
+
+  if (!filtered.length) {
+    container.innerHTML = '<p style="font-size:12px;color:var(--dash-muted);font-weight:700;">No teachers found for this section.</p>';
+  } else {
+    filtered.forEach((teacher, i) => {
+      const item = document.createElement('div');
+      item.className = 'teacher-item';
+      item.innerHTML = `
+        <div class="teacher-avatar">👨‍🏫</div>
+        <div>
+          <div class="teacher-item-name">${escapeHtml(teacher['Teacher Name'] || 'Unknown')}</div>
+          <div class="teacher-item-meta">${escapeHtml(teacher['Subjects'] || '—')}</div>
+        </div>
+      `;
+      item.addEventListener('click', () => showTeacherProfile(teacher));
+      container.appendChild(item);
+    });
+  }
+
+  showTeachersList();
+}
+
+function showTeacherProfile(teacher) {
+  const container = document.getElementById('teacher-profile-container');
+
+  const subjects = (teacher['Subjects'] || '').split(',').map(s => s.trim()).filter(Boolean);
+  const classes  = (teacher['Classes']  || '').split(',').map(s => s.trim()).filter(Boolean);
+
+  const subjectBadges = subjects.map(s => `<span class="badge-tag">${escapeHtml(s)}</span>`).join('');
+  const classBadges   = classes.map(c  => `<span class="badge-tag blue">${escapeHtml(c)}</span>`).join('');
+
+  const paymentRows = renderTeacherPaymentTable(teacher);
+
+  container.innerHTML = `
+    <div class="teacher-profile">
+      <div class="teacher-profile-header">
+        <div class="teacher-profile-avatar">👨‍🏫</div>
+        <div>
+          <div class="teacher-profile-name">${escapeHtml(teacher['Teacher Name'] || 'Unknown')}</div>
+          <div class="teacher-profile-section">📍 ${escapeHtml(teacher['Section'] || '—')}</div>
+        </div>
+      </div>
+      <div class="teacher-profile-label">Subjects Teaching</div>
+      <div class="badges-row">${subjectBadges || '<span style="color:var(--dash-muted);font-size:12px;">None listed</span>'}</div>
+      <div class="teacher-profile-label">Classes Teaching</div>
+      <div class="badges-row">${classBadges || '<span style="color:var(--dash-muted);font-size:12px;">None listed</span>'}</div>
+    </div>
+
+    <div class="section-heading" style="margin-top:4px;">Salary Payment Tracker</div>
+    <div style="overflow-x:auto;">
+      <table class="salary-table">
+        <thead><tr>
+          <th>Term</th><th>Month</th><th>Status</th>
+        </tr></thead>
+        <tbody>${paymentRows}</tbody>
+      </table>
+    </div>
+  `;
+
+  document.getElementById('teachers-section-picker').style.display = 'none';
+  document.getElementById('teachers-list-view').style.display = 'none';
+  document.getElementById('teachers-profile-view').style.display = '';
+}
+
+function renderTeacherPaymentTable(teacher) {
+  const TERMS = [
+    { label: 'First Term',  cls: 'term-first',  months: ['First Term Month 1','First Term Month 2','First Term Month 3'] },
+    { label: 'Second Term', cls: 'term-second', months: ['Second Term Month 1','Second Term Month 2','Second Term Month 3'] },
+    { label: 'Third Term',  cls: 'term-third',  months: ['Third Term Month 1','Third Term Month 2','Third Term Month 3'] },
+  ];
+  let html = '';
+  TERMS.forEach(term => {
+    term.months.forEach((col, idx) => {
+      const raw    = (teacher[col] || '').trim().toLowerCase();
+      const isPaid = raw === 'paid' || raw === '1' || raw === 'true' || raw === 'yes';
+      const badge  = isPaid
+        ? '<span class="pay-badge paid">✔ Paid</span>'
+        : '<span class="pay-badge unpaid">✘ Unpaid</span>';
+      html += `<tr class="${term.cls}">
+        <td>${idx === 0 ? escapeHtml(term.label) : ''}</td>
+        <td>Month ${idx + 1}</td>
+        <td>${badge}</td>
+      </tr>`;
+    });
+  });
+  return html;
+}
+/* END CUSTOM EDIT SECTION — Teachers Feature */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — School Fees Feature
+   ============================================================ */
+
+/* Build class cards inside the fees tab */
+function buildFeesClassGrid() {
+  const grid = document.getElementById('fees-class-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  Object.keys(CLASS_LINKS).forEach(name => {
+    const meta = CLASS_META[name] || { icon:'📋', category:'primary', badge:'primary' };
+    const card = document.createElement('div');
+    card.className = `class-card cat-${meta.badge}`;
+    card.innerHTML = `
+      <div class="class-card-badge badge-${meta.badge}">${meta.category.toUpperCase()}</div>
+      <div class="class-card-icon">${meta.icon}</div>
+      <div class="class-card-name">${name}</div>
+      <div class="class-card-sub">Tap to view payments</div>
+    `;
+    card.addEventListener('click', () => openFeesClassView(name));
+    grid.appendChild(card);
+  });
+}
+
+/** Helper: get expected fee for a class */
+function getExpectedFeeForClass(className) {
+  const lower = className.toLowerCase();
+  if (lower.includes('nursery'))           return SCHOOL_FEES.nursery;
+  if (lower.includes('jss') || lower.includes('junior')) return SCHOOL_FEES.jss;
+  if (lower.includes('ss') || lower.includes('senior'))  return SCHOOL_FEES.ss;
+  return SCHOOL_FEES.primary;
+}
+
+/** Helper: get category key for a class */
+function getClassCategory(className) {
+  const lower = className.toLowerCase();
+  if (lower.includes('nursery'))           return 'Nursery';
+  if (lower.includes('primary'))           return 'Primary';
+  if (lower.includes('jss') || lower.includes('junior')) return 'Junior Secondary';
+  if (lower.includes('ss')  || lower.includes('senior')) return 'Senior Secondary';
+  return 'Primary';
+}
+
+async function calculateSchoolFeesSummary() {
+  const loader = document.getElementById('fees-loading');
+  loader.classList.add('visible');
+  buildFeesClassGrid();
+
+  // Group classes by section
+  const sections = {
+    'Nursery':          { fee: SCHOOL_FEES.nursery, count: 0 },
+    'Primary':          { fee: SCHOOL_FEES.primary, count: 0 },
+    'Junior Secondary': { fee: SCHOOL_FEES.jss,     count: 0 },
+    'Senior Secondary': { fee: SCHOOL_FEES.ss,      count: 0 },
+  };
+
+  // Count students per section from first-term CSVs
+  const classNames = Object.keys(CLASS_LINKS).filter(n => classHasAnyUrl(n));
+  const counts = await Promise.all(classNames.map(async name => {
+    try {
+      const url = getTermUrl(name, 'First Term');
+      if (!url) return { name, count: 0 };
+      const csv = await fetchCSV(url);
+      const records = parseCSV(csv);
+      return { name, count: records.length };
+    } catch { return { name, count: 0 }; }
+  }));
+
+  counts.forEach(({ name, count }) => {
+    const cat = getClassCategory(name);
+    if (sections[cat]) sections[cat].count += count;
+  });
+
+  // Render summary table
+  const tbody = document.getElementById('fees-summary-tbody');
+  let grand = 0;
+  const sectionIcons = { 'Nursery':'🌱', 'Primary':'📚', 'Junior Secondary':'🔬', 'Senior Secondary':'🎓' };
+
+  tbody.innerHTML = Object.entries(sections).map(([sec, { fee, count }]) => {
+    const total = fee * count;
+    grand += total;
+    return `<tr>
+      <td>${sectionIcons[sec] || ''} ${sec}</td>
+      <td>₦${fee.toLocaleString()}</td>
+      <td>${count}</td>
+      <td style="color:var(--dash-accent);font-weight:900;">₦${total.toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('fees-grand-total').textContent = '₦' + grand.toLocaleString();
+  loader.classList.remove('visible');
+}
+
+function showFeesSummaryView() {
+  document.getElementById('fees-summary-view').style.display = '';
+  document.getElementById('fees-class-view').style.display = 'none';
+}
+
+function openFeesClassView(className) {
+  currentFeesClass = className;
+  document.getElementById('fees-class-heading').textContent =
+    (CLASS_META[className] ? CLASS_META[className].icon + ' ' : '') + className + ' — Select Term';
+  document.getElementById('fees-summary-view').style.display = 'none';
+  document.getElementById('fees-class-view').style.display = '';
+
+  // Reset stats
+  ['fees-stat-total','fees-stat-paid','fees-stat-outstanding','fees-stat-collected','fees-stat-owed','fees-stat-rate']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.textContent = '—'; });
+  document.getElementById('fees-student-tbody').innerHTML =
+    '<tr><td colspan="6" style="color:var(--dash-muted);text-align:center;font-size:12px;">Select a term above</td></tr>';
+
+  // Clear active on term buttons
+  document.querySelectorAll('.btn-term-select').forEach(b => b.classList.remove('active'));
+}
+
+async function loadClassFeesData(className, term, btn) {
+  if (!className) return;
+  document.querySelectorAll('.btn-term-select').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  const url = getTermUrl(className, term);
+  if (!url) {
+    showToast(`❌ No ${term} data for ${className}.`, 'error');
+    return;
+  }
+
+  const loader = document.getElementById('fees-class-loading');
+  loader.classList.add('visible');
+
+  try {
+    const csv     = await fetchCSV(url);
+    const records = parseCSV(csv);
+    const expected = getExpectedFeeForClass(className);
+
+    let paid = 0, outstanding = 0, collected = 0, owed = 0;
+
+    const rows = records.map((stu, i) => {
+      const rawFee = (stu['Fees'] || '').toString().replace(/[₦,\s]/g, '');
+      const amountPaid = parseFloat(rawFee) || 0;
+      const isPaid = amountPaid >= expected;
+      if (isPaid) { paid++; collected += amountPaid; }
+      else { outstanding++; owed += (expected - amountPaid); }
+
+      const statusBadge = isPaid
+        ? '<span class="pay-badge paid">✔ Paid</span>'
+        : '<span class="pay-badge unpaid">✘ Outstanding</span>';
+
+      return `<tr>
+        <td>${i + 1}</td>
+        <td>${escapeHtml(stu['Name'] || '—')}</td>
+        <td>${escapeHtml(stu['Admission No'] || '—')}</td>
+        <td>₦${expected.toLocaleString()}</td>
+        <td>₦${amountPaid.toLocaleString()}</td>
+        <td>${statusBadge}</td>
+      </tr>`;
+    }).join('');
+
+    const total = records.length;
+    const rate  = total > 0 ? Math.round((paid / total) * 100) : 0;
+
+    document.getElementById('fees-stat-total').textContent       = total;
+    document.getElementById('fees-stat-paid').textContent        = paid;
+    document.getElementById('fees-stat-outstanding').textContent = outstanding;
+    document.getElementById('fees-stat-collected').textContent   = '₦' + collected.toLocaleString();
+    document.getElementById('fees-stat-owed').textContent        = '₦' + owed.toLocaleString();
+    document.getElementById('fees-stat-rate').textContent        = rate + '%';
+    document.getElementById('fees-student-tbody').innerHTML      = rows || '<tr><td colspan="6" style="text-align:center;color:var(--dash-muted);">No students found</td></tr>';
+  } catch(e) {
+    showToast('❌ Failed to load fees data.', 'error');
+  }
+
+  loader.classList.remove('visible');
+}
+/* END CUSTOM EDIT SECTION — School Fees Feature */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Student Fees Block (modifies studentLogin)
+   Purpose: Blocks student report card if fees are not paid.
+   Extends the existing studentLogin() without removing anything.
+   ============================================================ */
+function checkStudentFeesStatus(student, className) {
+  const expected  = getExpectedFeeForClass(className);
+  const rawFee    = (student['Fees'] || '').toString().replace(/[₦,\s]/g, '');
+  const paid      = parseFloat(rawFee) || 0;
+  return { expected, paid, isPaid: paid >= expected };
+}
+
+function blockStudentResultIfUnpaid(student, className) {
+  const { expected, paid, isPaid } = checkStudentFeesStatus(student, className);
+  if (isPaid) return false; // not blocked
+
+  const outstanding = expected - paid;
+  document.getElementById('blocked-expected').textContent    = '₦' + expected.toLocaleString();
+  document.getElementById('blocked-paid').textContent        = '₦' + paid.toLocaleString();
+  document.getElementById('blocked-outstanding').textContent = '₦' + outstanding.toLocaleString();
+  showScreen('screen-fees-blocked');
+  return true; // blocked
+}
+/* END CUSTOM EDIT SECTION — Student Fees Block */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Patch studentLogin to check fees
+   ============================================================ */
+(function patchStudentLoginForFees() {
+  const _originalStudentLogin = window.studentLogin;
+  window.studentLogin = function() {
+    const cls       = document.getElementById('student-class').value;
+    const admission = document.getElementById('student-admission').value.trim();
+    const password  = document.getElementById('student-password').value;
+    const err       = document.getElementById('student-error');
+    const loader    = document.getElementById('student-loading');
+
+    err.style.display = 'none';
+
+    if (!cls || !admission || !password) {
+      err.textContent = '❌ Please fill in all fields.';
+      err.style.display = 'block';
+      return;
+    }
+    if (password !== CREDENTIALS.student.password) {
+      err.textContent = '❌ Incorrect password.';
+      err.style.display = 'block';
+      return;
+    }
+
+    const url = getTermUrl(cls, 'First Term');
+    if (!url) {
+      err.textContent = '❌ This class has no data connected yet. Contact admin.';
+      err.style.display = 'block';
+      return;
+    }
+
+    loader.classList.add('visible');
+
+    fetchCSV(url).then(csv => {
+      const all = parseCSV(csv);
+      const stu = all.find(s =>
+        (s['Admission No'] || '').trim().toLowerCase() === admission.toLowerCase()
+      );
+      loader.classList.remove('visible');
+      if (!stu) {
+        err.textContent = '❌ Admission number not found in this class.';
+        err.style.display = 'block';
+        return;
+      }
+
+      // ── FEES CHECK ──
+      if (blockStudentResultIfUnpaid(stu, cls)) return;
+
+      // ── Allow access: proceed as normal ──
+      studentLoginData = { allStudents: all, admissionNo: admission, className: cls };
+      document.getElementById('studentWelcomeName').textContent = `Welcome, ${stu['Name']}!`;
+      document.getElementById('studentWelcomeSub').textContent  = `${cls} — Select a term to view your result`;
+      document.getElementById('student-term-select').style.display = 'block';
+      document.getElementById('student-report-panel').style.display = 'none';
+      showScreen('screen-student-dash');
+      showToast('✅ Login successful! Select a term.');
+    }).catch(() => {
+      loader.classList.remove('visible');
+      err.textContent = '❌ Could not fetch class data. Check connection or contact admin.';
+      err.style.display = 'block';
+    });
+  };
+})();
+/* END CUSTOM EDIT SECTION — Patch studentLogin for fees */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Expose new functions to global scope
+   ============================================================ */
+window.openTeachersSection         = openTeachersSection;
+window.openFeesSection             = openFeesSection;
+window.verifySecurityPin           = verifySecurityPin;
+window.closePinModal               = closePinModal;
+window.pinInput                    = pinInput;
+window.pinBackspace                = pinBackspace;
+window.pinClear                    = pinClear;
+window.loadTeachersBySection       = loadTeachersBySection;
+window.showTeacherProfile          = showTeacherProfile;
+window.showTeachersSectionPicker   = showTeachersSectionPicker;
+window.showTeachersList            = showTeachersList;
+window.renderTeacherPaymentTable   = renderTeacherPaymentTable;
+window.openFeesSection             = openFeesSection;
+window.calculateSchoolFeesSummary  = calculateSchoolFeesSummary;
+window.openFeesClassView           = openFeesClassView;
+window.loadClassFeesData           = loadClassFeesData;
+window.showFeesSummaryView         = showFeesSummaryView;
+window.checkStudentFeesStatus      = checkStudentFeesStatus;
+window.blockStudentResultIfUnpaid  = blockStudentResultIfUnpaid;
+/* END CUSTOM EDIT SECTION */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Analytics Charts
+   Purpose: Render bar, pie, and educational charts in analytics tab.
+   Uses Chart.js (loaded from CDN). All data comes from analyticsCache.
+   ============================================================ */
+
+// Track chart instances so we can destroy & re-draw on reload
+let _chartBarAvg    = null;
+let _chartPiePass   = null;
+let _chartEduGender = null;
+
+function renderAnalyticsCharts() {
+  const cache = analyticsCache;
+  const classes = Object.keys(cache);
+  if (!classes.length) return;
+
+  const section = document.getElementById('analytics-charts-section');
+  if (section) section.style.display = '';
+
+  const labels      = classes;
+  const avgData     = classes.map(c => cache[c].classAvg);
+  const passData    = classes.map(c => cache[c].passRate);
+  const failData    = classes.map(c => cache[c].failRate);
+  const maleData    = classes.map(c => cache[c].male);
+  const femaleData  = classes.map(c => cache[c].female);
+
+  // Palette
+  const greenPalette = classes.map((_, i) => `hsla(${140 + i * 8}, 65%, 48%, 0.85)`);
+  const greenBorder  = classes.map((_, i) => `hsla(${140 + i * 8}, 65%, 38%, 1)`);
+
+  // Chart defaults for dark theme
+  Chart.defaults.color = '#7ca882';
+  Chart.defaults.borderColor = '#2a3d2d';
+
+  // ── BAR: Class averages ──
+  const barCtx = document.getElementById('chart-bar-avg');
+  if (barCtx) {
+    if (_chartBarAvg) _chartBarAvg.destroy();
+    _chartBarAvg = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Class Average (%)',
+          data: avgData,
+          backgroundColor: greenPalette,
+          borderColor: greenBorder,
+          borderWidth: 1.5,
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: { label: ctx => ` ${ctx.parsed.y}%` }
+          }
+        },
+        scales: {
+          x: { ticks: { font: { size: 10, weight: '700' }, maxRotation: 45 }, grid: { color: '#2a3d2d' } },
+          y: {
+            beginAtZero: true, max: 100,
+            ticks: { callback: v => v + '%', font: { size: 10 } },
+            grid: { color: '#2a3d2d' }
+          }
+        }
+      }
+    });
+  }
+
+  // ── PIE: School-wide pass/fail ──
+  const pieCtx = document.getElementById('chart-pie-pass');
+  if (pieCtx) {
+    if (_chartPiePass) _chartPiePass.destroy();
+    const totalStudents = classes.reduce((s, c) => s + cache[c].total, 0);
+    const totalPass     = classes.reduce((s, c) => s + Math.round(cache[c].passRate / 100 * cache[c].total), 0);
+    const totalFail     = totalStudents - totalPass;
+    _chartPiePass = new Chart(pieCtx, {
+      type: 'pie',
+      data: {
+        labels: ['Pass', 'Fail'],
+        datasets: [{
+          data: [totalPass, totalFail],
+          backgroundColor: ['rgba(34,197,94,0.82)', 'rgba(239,68,68,0.78)'],
+          borderColor:     ['#16a34a', '#b91c1c'],
+          borderWidth: 2,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { font: { size: 11, weight: '700' }, padding: 14, color: '#7ca882' }
+          },
+          tooltip: {
+            callbacks: {
+              label: ctx => {
+                const pct = totalStudents > 0 ? Math.round(ctx.parsed / totalStudents * 100) : 0;
+                return ` ${ctx.label}: ${ctx.parsed} students (${pct}%)`;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // ── EDUCATIONAL BAR: Gender distribution ──
+  const eduCtx = document.getElementById('chart-edu-gender');
+  if (eduCtx) {
+    if (_chartEduGender) _chartEduGender.destroy();
+    _chartEduGender = new Chart(eduCtx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Male',
+            data: maleData,
+            backgroundColor: 'rgba(59,130,246,0.75)',
+            borderColor: '#2563eb',
+            borderWidth: 1.5,
+            borderRadius: 5,
+          },
+          {
+            label: 'Female',
+            data: femaleData,
+            backgroundColor: 'rgba(236,72,153,0.72)',
+            borderColor: '#db2777',
+            borderWidth: 1.5,
+            borderRadius: 5,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}` } }
+        },
+        scales: {
+          x: { ticks: { font: { size: 10, weight: '700' }, maxRotation: 45 }, grid: { color: '#2a3d2d' } },
+          y: {
+            beginAtZero: true,
+            ticks: { font: { size: 10 } },
+            grid: { color: '#2a3d2d' }
+          }
+        }
+      }
+    });
+  }
+}
+/* END CUSTOM EDIT SECTION — Analytics Charts */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — PDF Letter Header Builder
+   Purpose: Builds a white-background A4 letter-head PDF DOM element
+   used as the template for Teachers and Fees PDFs.
+   ============================================================ */
+
+/**
+ * Build and return the full HTML string for a letter-headed PDF document.
+ * @param {string} docTitle   e.g. "Teachers List — Primary Section"
+ * @param {string} docSub     e.g. "Session: 2025/2026 | Generated: 09 Jun 2026"
+ * @param {string} tableHtml  Full <table> HTML to embed
+ */
+function buildLetterPdfHtml(docTitle, docSub, tableHtml) {
+  const cfg     = SCHOOL_CONFIG;
+  const today   = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+  return `
+<div style="width:794px;background:#fff;color:#222;font-family:Inter,system-ui,sans-serif;font-size:13px;padding:30px 36px;">
+  <!-- LETTER HEADER -->
+  <div style="display:flex;align-items:center;gap:16px;border-bottom:3px solid #228B2A;padding-bottom:14px;margin-bottom:16px;">
+    <img src="${cfg.schoolLogo}" style="width:76px;height:76px;object-fit:contain;" crossorigin="anonymous">
+    <div style="flex:1;text-align:center;">
+      <div style="font-size:17px;font-weight:900;color:#228B2A;line-height:1.2;margin-bottom:3px;">${cfg.name}</div>
+      <div style="font-size:11px;color:#555;margin-bottom:2px;">${cfg.motto}</div>
+      <div style="font-size:11px;color:#555;margin-bottom:2px;">${cfg.address}</div>
+      <div style="font-size:11px;color:#228B2A;font-weight:700;">Session: ${cfg.session}</div>
+    </div>
+    <img src="${cfg.jibwisLogo}" style="width:58px;height:58px;object-fit:contain;" crossorigin="anonymous">
+  </div>
+  <!-- DOCUMENT TITLE -->
+  <div style="text-align:center;font-size:15px;font-weight:900;color:#228B2A;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;padding:8px;border:1px solid #C8E6C9;border-radius:6px;background:#f0fdf4;">${docTitle}</div>
+  <div style="text-align:center;font-size:11px;color:#555;margin-bottom:18px;font-weight:600;">${docSub} &nbsp;|&nbsp; Generated: ${today}</div>
+  <!-- TABLE -->
+  ${tableHtml}
+  <!-- FOOTER -->
+  <div style="margin-top:28px;border-top:2px solid #228B2A;padding-top:12px;display:flex;justify-content:space-between;align-items:flex-end;font-size:11px;color:#555;">
+    <div>
+      <div style="font-weight:800;color:#228B2A;">Pariya Academy</div>
+      <div>${cfg.address}</div>
+    </div>
+    <div style="text-align:center;">
+      <img src="${cfg.principalSig}" style="height:42px;object-fit:contain;display:block;margin:0 auto 4px;" crossorigin="anonymous">
+      <div style="font-weight:800;color:#228B2A;font-size:12px;">${cfg.principalName}</div>
+      <div>Principal / Head of School</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-weight:800;">Date: ${today}</div>
+      <div style="color:#228B2A;font-weight:700;">Official Document</div>
+    </div>
+  </div>
+</div>`;
+}
+
+/** Common html2pdf options for letter PDFs */
+function letterPdfOptions(filename) {
+  return {
+    margin:      [0, 0, 0, 0],
+    filename,
+    image:       { type: 'jpeg', quality: 0.97 },
+    html2canvas: { scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff' },
+    jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+}
+
+/** Render HTML into the hidden template div and return it */
+function mountLetterTemplate(html) {
+  const el = document.getElementById('pdf-letter-template');
+  el.innerHTML = html;
+  return el;
+}
+/* END CUSTOM EDIT SECTION — PDF Letter Header Builder */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Download Teachers PDF
+   Purpose: Export current section's teacher list as a
+   letter-headed A4 PDF with school branding.
+   ============================================================ */
+async function downloadTeachersPDF() {
+  if (!teachersData || !teachersData.length) {
+    showToast('❌ No teachers data loaded yet.', 'error');
+    return;
+  }
+
+  const section  = currentTeacherSection || 'All';
+  const filtered = section === 'All'
+    ? teachersData
+    : teachersData.filter(t => (t['Section'] || '').trim().toLowerCase() === section.toLowerCase());
+
+  if (!filtered.length) {
+    showToast('❌ No teachers to export for this section.', 'error');
+    return;
+  }
+
+  showToast('⏳ Generating Teachers PDF…');
+
+  // Build table rows
+  const rows = filtered.map((t, i) => `
+    <tr style="background:${i % 2 === 0 ? '#fff' : '#f0fdf4'};">
+      <td style="padding:8px 10px;border:1px solid #C8E6C9;font-weight:700;">${i + 1}</td>
+      <td style="padding:8px 10px;border:1px solid #C8E6C9;font-weight:800;color:#1f6b3b;">${escapeHtml(t['Teacher Name'] || '—')}</td>
+      <td style="padding:8px 10px;border:1px solid #C8E6C9;">${escapeHtml(t['Section'] || '—')}</td>
+      <td style="padding:8px 10px;border:1px solid #C8E6C9;">${escapeHtml(t['Subjects'] || '—')}</td>
+      <td style="padding:8px 10px;border:1px solid #C8E6C9;">${escapeHtml(t['Classes'] || '—')}</td>
+    </tr>`).join('');
+
+  const tableHtml = `
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px;">
+      <thead>
+        <tr style="background:#228B2A;color:#fff;">
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">#</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Teacher Name</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Section</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Subjects</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Classes</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr style="background:#f0fdf4;">
+          <td colspan="5" style="padding:8px 10px;border:1px solid #C8E6C9;font-weight:900;color:#228B2A;text-align:right;">
+            Total Teachers: ${filtered.length}
+          </td>
+        </tr>
+      </tfoot>
+    </table>`;
+
+  const html = buildLetterPdfHtml(
+    `Teachers List — ${section} Section`,
+    `Section: ${section} | Total: ${filtered.length} teacher(s) | Academic Session: ${SCHOOL_CONFIG.session}`,
+    tableHtml
+  );
+
+  try {
+    const el = mountLetterTemplate(html);
+    await html2pdf().set(letterPdfOptions(`Pariya_Academy_Teachers_${section.replace(/\s/g,'_')}.pdf`)).from(el).save();
+    showToast('✅ Teachers PDF downloaded!');
+  } catch(e) {
+    console.error(e);
+    showToast('❌ PDF export failed.', 'error');
+  }
+}
+/* END CUSTOM EDIT SECTION — Download Teachers PDF */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Download Fees Summary PDF
+   Purpose: Export school-wide fees summary as a letter-headed PDF.
+   ============================================================ */
+async function downloadFeesSummaryPDF() {
+  const tbody = document.getElementById('fees-summary-tbody');
+  if (!tbody || tbody.rows.length === 0 || (tbody.rows[0] && tbody.rows[0].cells[0] && tbody.rows[0].cells[0].colSpan === 4)) {
+    showToast('❌ Please load class data first — click a class card to populate fees.', 'error');
+    return;
+  }
+
+  showToast('⏳ Generating Fees Summary PDF…');
+
+  // Grab rows from the summary table
+  const rows = Array.from(tbody.rows).map((row, i) => {
+    const cells = Array.from(row.cells).map(td => td.textContent.trim());
+    return `<tr style="background:${i % 2 === 0 ? '#fff' : '#f0fdf4'};">
+      ${cells.map(c => `<td style="padding:8px 10px;border:1px solid #C8E6C9;font-size:12px;">${c}</td>`).join('')}
+    </tr>`;
+  }).join('');
+
+  const grandTotal = document.getElementById('fees-grand-total')
+    ? document.getElementById('fees-grand-total').textContent : '—';
+
+  const tableHtml = `
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px;">
+      <thead>
+        <tr style="background:#228B2A;color:#fff;">
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Section</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Fee / Student</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Students</th>
+          <th style="padding:9px 10px;border:1px solid #1f6b3b;text-align:left;font-size:11px;text-transform:uppercase;">Expected Total</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr style="background:#f0fdf4;">
+          <td colspan="3" style="padding:9px 10px;border:1px solid #C8E6C9;font-weight:900;color:#228B2A;">💰 Grand Total Expected</td>
+          <td style="padding:9px 10px;border:1px solid #C8E6C9;font-weight:900;color:#228B2A;font-size:14px;">${grandTotal}</td>
+        </tr>
+      </tfoot>
+    </table>`;
+
+  const html = buildLetterPdfHtml(
+    'School Fees Summary Report',
+    `Academic Session: ${SCHOOL_CONFIG.session} | All Sections`,
+    tableHtml
+  );
+
+  try {
+    const el = mountLetterTemplate(html);
+    await html2pdf().set(letterPdfOptions('Pariya_Academy_Fees_Summary.pdf')).from(el).save();
+    showToast('✅ Fees Summary PDF downloaded!');
+  } catch(e) {
+    console.error(e);
+    showToast('❌ PDF export failed.', 'error');
+  }
+}
+/* END CUSTOM EDIT SECTION — Download Fees Summary PDF */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Download Fees Class Detail PDF
+   Purpose: Export a specific class + term fees breakdown as
+   a letter-headed PDF with student payment rows.
+   ============================================================ */
+async function downloadFeesClassPDF() {
+  const tbody = document.getElementById('fees-student-tbody');
+  if (!tbody || tbody.rows.length === 0) {
+    showToast('❌ Select a term first to load the class fees data.', 'error');
+    return;
+  }
+  const firstCell = tbody.rows[0].cells[0];
+  if (firstCell && firstCell.colSpan > 1) {
+    showToast('❌ Select a term first to load student fees data.', 'error');
+    return;
+  }
+
+  const heading   = document.getElementById('fees-class-heading')?.textContent || 'Class Fees';
+  const className = currentFeesClass || 'Class';
+
+  // Stats
+  const total       = document.getElementById('fees-stat-total')?.textContent || '—';
+  const paid        = document.getElementById('fees-stat-paid')?.textContent || '—';
+  const outstanding = document.getElementById('fees-stat-outstanding')?.textContent || '—';
+  const collected   = document.getElementById('fees-stat-collected')?.textContent || '—';
+  const owed        = document.getElementById('fees-stat-owed')?.textContent || '—';
+  const rate        = document.getElementById('fees-stat-rate')?.textContent || '—';
+
+  showToast('⏳ Generating Fees Class PDF…');
+
+  // Summary stats block
+  const statsBlock = `
+    <table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:14px;">
+      <tr>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:800;color:#555;background:#f0fdf4;">Total Students</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:900;">${total}</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:800;color:#555;background:#f0fdf4;">Paid</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:900;color:#16a34a;">${paid}</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:800;color:#555;background:#f0fdf4;">Outstanding</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:900;color:#dc2626;">${outstanding}</td>
+      </tr>
+      <tr>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:800;color:#555;background:#f0fdf4;">Collected</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:900;color:#16a34a;">${collected}</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:800;color:#555;background:#f0fdf4;">Owed</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:900;color:#dc2626;">${owed}</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:800;color:#555;background:#f0fdf4;">Collection Rate</td>
+        <td style="padding:7px 10px;border:1px solid #C8E6C9;font-weight:900;">${rate}</td>
+      </tr>
+    </table>`;
+
+  // Student rows
+  const studentRows = Array.from(tbody.rows).map((row, i) => {
+    const cells = Array.from(row.cells);
+    // strip any html badge text to plain text
+    const rowData = cells.map(td => td.textContent.trim().replace(/[✔✘]/g,'').trim());
+    const isUnpaid = (rowData[5] || '').toLowerCase().includes('outstanding');
+    return `<tr style="background:${i % 2 === 0 ? '#fff' : '#f0fdf4'};">
+      <td style="padding:7px 8px;border:1px solid #C8E6C9;text-align:center;">${rowData[0]}</td>
+      <td style="padding:7px 8px;border:1px solid #C8E6C9;font-weight:800;">${rowData[1]}</td>
+      <td style="padding:7px 8px;border:1px solid #C8E6C9;">${rowData[2]}</td>
+      <td style="padding:7px 8px;border:1px solid #C8E6C9;">${rowData[3]}</td>
+      <td style="padding:7px 8px;border:1px solid #C8E6C9;font-weight:800;color:#16a34a;">${rowData[4]}</td>
+      <td style="padding:7px 8px;border:1px solid #C8E6C9;font-weight:800;color:${isUnpaid ? '#dc2626' : '#16a34a'};">${rowData[5]}</td>
+    </tr>`;
+  }).join('');
+
+  const tableHtml = statsBlock + `
+    <table style="width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px;">
+      <thead>
+        <tr style="background:#228B2A;color:#fff;">
+          <th style="padding:8px;border:1px solid #1f6b3b;text-align:center;">#</th>
+          <th style="padding:8px;border:1px solid #1f6b3b;text-align:left;">Student Name</th>
+          <th style="padding:8px;border:1px solid #1f6b3b;text-align:left;">Admission No</th>
+          <th style="padding:8px;border:1px solid #1f6b3b;text-align:left;">Expected</th>
+          <th style="padding:8px;border:1px solid #1f6b3b;text-align:left;">Amount Paid</th>
+          <th style="padding:8px;border:1px solid #1f6b3b;text-align:left;">Status</th>
+        </tr>
+      </thead>
+      <tbody>${studentRows}</tbody>
+    </table>`;
+
+  const html = buildLetterPdfHtml(
+    `${className} — School Fees Report`,
+    `${heading} | Session: ${SCHOOL_CONFIG.session}`,
+    tableHtml
+  );
+
+  try {
+    const el = mountLetterTemplate(html);
+    await html2pdf().set(letterPdfOptions(`Pariya_Academy_Fees_${className.replace(/\s/g,'_')}.pdf`)).from(el).save();
+    showToast('✅ Class Fees PDF downloaded!');
+  } catch(e) {
+    console.error(e);
+    showToast('❌ PDF export failed.', 'error');
+  }
+}
+/* END CUSTOM EDIT SECTION — Download Fees Class Detail PDF */
+
+/* ============================================================
+   START CUSTOM EDIT SECTION — Patch loadAllAnalytics to add charts
+   Purpose: After loading analytics data, render charts automatically.
+   Wraps original function without removing any logic.
+   ============================================================ */
+(function patchLoadAllAnalyticsForCharts() {
+  const _original = window.loadAllAnalytics;
+  window.loadAllAnalytics = async function() {
+    await _original();
+    renderAnalyticsCharts();
+  };
+})();
+/* END CUSTOM EDIT SECTION — Patch loadAllAnalytics for charts */
+
+/* Expose new functions */
+window.downloadTeachersPDF      = downloadTeachersPDF;
+window.downloadFeesSummaryPDF   = downloadFeesSummaryPDF;
+window.downloadFeesClassPDF     = downloadFeesClassPDF;
+window.renderAnalyticsCharts    = renderAnalyticsCharts;
 </script>
 </body>
 </html>
