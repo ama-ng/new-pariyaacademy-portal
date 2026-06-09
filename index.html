@@ -2273,21 +2273,31 @@ canvas.pa-chart {
 <div id="screen-fees-blocked" class="screen">
   <div class="login-wrap">
     <div class="fees-blocked-card">
-      <div class="fees-blocked-icon">⚠️</div>
-      <div class="fees-blocked-title">Access Restricted</div>
+      <div class="fees-blocked-icon">🔒</div>
+      <div class="fees-blocked-title">⚠️ REPORT CARD BLOCKED</div>
       <div class="fees-blocked-msg">
-        You are not allowed to view your report card until school fees payment is completed.
+        You are not allowed to view your report card because your school fees payment for this term is incomplete.
       </div>
       <table class="fees-blocked-table">
-        <tr><td>Expected Fee</td><td id="blocked-expected">—</td></tr>
-        <tr><td>Amount Paid</td><td id="blocked-paid">—</td></tr>
-        <tr><td>Outstanding</td><td id="blocked-outstanding" style="color:#ef4444;">—</td></tr>
+        <tr><td>Student Name</td><td id="blocked-name" style="color:var(--dash-text);font-weight:900;">—</td></tr>
+        <tr><td>Class</td><td id="blocked-class" style="color:var(--dash-text);font-weight:900;">—</td></tr>
+        <tr><td>Term</td><td id="blocked-term" style="color:var(--dash-text);font-weight:900;">—</td></tr>
+        <tr><td>Expected Fee</td><td id="blocked-expected" style="color:var(--dash-accent);font-weight:900;">—</td></tr>
+        <tr><td>Amount Paid</td><td id="blocked-paid" style="color:#f59e0b;font-weight:900;">—</td></tr>
+        <tr><td>Outstanding</td><td id="blocked-outstanding" style="color:#ef4444;font-weight:900;">—</td></tr>
       </table>
       <div class="fees-blocked-contact">
-        📞 Please contact the school management to clear your fees.
+        📞 Please contact the school management after completing payment to gain access to your result.
       </div>
-      <div style="margin-top:16px;">
-        <button class="btn-logout" onclick="logout()" style="width:100%;padding:10px;font-size:13px;border-radius:var(--radius-sm);">← Back to Login</button>
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
+        <button class="btn-login" onclick="feesBlockedChangeTerm()"
+          style="background:linear-gradient(135deg,var(--dash-green),#16a34a);font-size:13px;padding:11px;">
+          ← Try Another Term
+        </button>
+        <button class="btn-logout" onclick="logout()"
+          style="width:100%;padding:10px;font-size:13px;border-radius:var(--radius-sm);">
+          🚪 Back to Login
+        </button>
       </div>
     </div>
   </div>
@@ -2764,6 +2774,16 @@ function studentLoadTerm(term) {
 
       if (!stuRecord) {
         showToast(`❌ Your result for ${term} was not found.`, 'error');
+        $('student-term-select').style.display = 'block';
+        $('student-report-panel').style.display = 'none';
+        return;
+      }
+
+      // ── PER-TERM FEES CHECK ──
+      // Uses the Fees column from THIS term's CSV so each term is checked independently.
+      // If the student hasn't paid for this specific term, block the report card.
+      if (blockStudentResultIfUnpaid(stuRecord, studentLoginData.className, term)) {
+        // Put the UI back to term-selection so the student can try a different term
         $('student-term-select').style.display = 'block';
         $('student-report-panel').style.display = 'none';
         return;
@@ -4775,20 +4795,43 @@ function checkStudentFeesStatus(student, className) {
   const expected  = getExpectedFeeForClass(className);
   const rawFee    = (student['Fees'] || '').toString().replace(/[₦,\s]/g, '');
   const paid      = parseFloat(rawFee) || 0;
-  return { expected, paid, isPaid: paid >= expected };
+  return { expected, paid, isPaid: paid >= expected, outstanding: Math.max(0, expected - paid) };
 }
 
-function blockStudentResultIfUnpaid(student, className) {
-  const { expected, paid, isPaid } = checkStudentFeesStatus(student, className);
-  if (isPaid) return false; // not blocked
+/**
+ * Checks the student's Fees column for the given term's data.
+ * If unpaid, shows the blocked screen with full details and returns true.
+ * @param {object} student    — the parsed CSV row for this student (from the term's own CSV)
+ * @param {string} className  — e.g. "JSS 2"
+ * @param {string} term       — e.g. "Second Term"  (pass '' when checking at login)
+ * @returns {boolean} true = blocked, false = allowed
+ */
+function blockStudentResultIfUnpaid(student, className, term) {
+  const { expected, paid, isPaid, outstanding } = checkStudentFeesStatus(student, className);
+  if (isPaid) return false; // allowed
 
-  const outstanding = expected - paid;
-  document.getElementById('blocked-expected').textContent    = '₦' + expected.toLocaleString();
-  document.getElementById('blocked-paid').textContent        = '₦' + paid.toLocaleString();
-  document.getElementById('blocked-outstanding').textContent = '₦' + outstanding.toLocaleString();
+  // Populate blocked screen fields
+  const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setTxt('blocked-name',        student['Name'] || '—');
+  setTxt('blocked-class',       className       || '—');
+  setTxt('blocked-term',        term            || '—');
+  setTxt('blocked-expected',    '₦' + expected.toLocaleString());
+  setTxt('blocked-paid',        '₦' + paid.toLocaleString());
+  setTxt('blocked-outstanding', '₦' + outstanding.toLocaleString());
+
   showScreen('screen-fees-blocked');
   return true; // blocked
 }
+
+/** Returns the student back to the term-selection screen after seeing the blocked screen */
+function feesBlockedChangeTerm() {
+  showScreen('screen-student-dash');
+  const termSel   = document.getElementById('student-term-select');
+  const reportPnl = document.getElementById('student-report-panel');
+  if (termSel)   termSel.style.display   = 'block';
+  if (reportPnl) reportPnl.style.display = 'none';
+}
+window.feesBlockedChangeTerm = feesBlockedChangeTerm;
 /* END CUSTOM EDIT SECTION — Student Fees Block */
 
 /* ============================================================
@@ -4837,10 +4880,7 @@ function blockStudentResultIfUnpaid(student, className) {
         return;
       }
 
-      // ── FEES CHECK ──
-      if (blockStudentResultIfUnpaid(stu, cls)) return;
-
-      // ── Allow access: proceed as normal ──
+      // ── Login verified: identity confirmed, fees checked per-term in studentLoadTerm ──
       studentLoginData = { allStudents: all, admissionNo: admission, className: cls };
       document.getElementById('studentWelcomeName').textContent = `Welcome, ${stu['Name']}!`;
       document.getElementById('studentWelcomeSub').textContent  = `${cls} — Select a term to view your result`;
@@ -5511,8 +5551,7 @@ function smartLogin() {
       return;
     }
 
-    if (blockStudentResultIfUnpaid(stu, classVal)) return;
-
+    // ── Identity confirmed; fees are checked per-term when student picks a term ──
     studentLoginData = { allStudents: all, admissionNo: username, className: classVal };
     document.getElementById('studentWelcomeName').textContent = `Welcome, ${stu['Name']}!`;
     document.getElementById('studentWelcomeSub').textContent  = `${classVal} — Select a term to view your result`;
